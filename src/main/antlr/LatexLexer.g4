@@ -1,15 +1,20 @@
 lexer grammar LatexLexer;
 
-BEGIN           : '\\begin';
-END             : '\\end';
+COMMAND_START       : '\\' + ALPHANUMERIC;
 
-COMMANDSTART    : '\\' + ALPHANUMERIC;
+CURLY_BRACKET_OPEN  : '{';
+CURLY_BRACKET_CLOSE : '}';
 
-BROPEN          : '{';
-BRCLOSE         : '}';
+SLASH_SQUARE_BRACKET_OPEN : '\\[';
+SLASH_SQUARE_BRACKET_CLOSE: '\\]';
 
-SBROPEN         : '[';
-SBRCLOSE        : ']';
+SQUARE_BRACKET_OPEN : '[';
+SQUARE_BRACKET_CLOSE: ']';
+
+DOLLAR_SIGN     : '$';
+
+ESCAPED_DOLLAR_SIGN : '\\$';
 
 ALPHANUMERIC    : [a-zA-Z0-9]+;
-ETC             : ~[a-zA-Z0-9\[\]\{\}\\]+;
+SPACES          : [ \r\n]+;
+ETC             : ~[a-zA-Z0-9\[\]\{\}\\\$\r\n ]+;

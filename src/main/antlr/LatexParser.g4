@@ -2,16 +2,15 @@ parser grammar LatexParser;
 
 options { tokenVocab=LatexLexer; }
 
-command     : COMMANDSTART commandArguments?;   
+content         : ( ALPHANUMERIC | ESCAPED_DOLLAR_SIGN | ETC | SPACES | blockFormula | command | curlyToken | inlineFormula )*;
 
-beginCommand : BEGIN BROPEN ALPHANUMERIC BRCLOSE commandArguments?;
+command         : COMMAND_START SPACES? commandArguments?;
+commandArguments: curlyToken;
 
-file : content EOF;
+blockFormula    : SLASH_SQUARE_BRACKET_OPEN content SLASH_SQUARE_BRACKET_CLOSE;
 
-endCommand : END BROPEN ALPHANUMERIC BRCLOSE; 
+squareToken     : SQUARE_BRACKET_OPEN content SQUARE_BRACKET_CLOSE;
 
-commandArguments: BROPEN content BRCLOSE;
+curlyToken      : CURLY_BRACKET_OPEN content CURLY_BRACKET_CLOSE;
 
-content     : (command | beginCommand | endCommand | wrappedToken | ALPHANUMERIC | ETC)*;
-
-wrappedToken : BROPEN content BRCLOSE;
+inlineFormula   : DOLLAR_SIGN content DOLLAR_SIGN;

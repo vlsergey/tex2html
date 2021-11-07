@@ -9,7 +9,7 @@ import org.antlr.v4.runtime.CommonTokenStream;
 import org.apache.commons.io.IOUtils;
 import org.junit.jupiter.api.Test;
 
-import com.github.vlsergey.tex2html.grammar.LatexParser.FileContext;
+import com.github.vlsergey.tex2html.grammar.LatexParser.ContentContext;
 
 public class HelloWorldTest {
 
@@ -20,8 +20,8 @@ public class HelloWorldTest {
 
 		final LatexLexer lexer = new LatexLexer(new ANTLRInputStream(src));
 		final LatexParser parser = new LatexParser(new CommonTokenStream(lexer));
-		final FileContext file = parser.file();
-		assertNotNull(file);
+		final ContentContext contentContext = parser.content();
+		assertNotNull(contentContext);
 	}
 
 }
