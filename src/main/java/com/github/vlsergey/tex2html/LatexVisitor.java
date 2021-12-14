@@ -122,9 +122,7 @@ final class LatexVisitor extends AbstractParseTreeVisitor<Void> {
 				}
 				default:
 					withFrame(new CommandFrame(commandName), () -> {
-						withFrame(new CommandContentFrame(), () -> {
-							appendCommandArguments(commandContext);
-						});
+						appendCommandArguments(commandContext);
 					});
 					return null;
 				}
