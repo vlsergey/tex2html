@@ -1,8 +1,6 @@
 package com.github.vlsergey.tex2html.frames;
 
-import java.io.PrintWriter;
-
-import org.apache.commons.lang3.StringEscapeUtils;
+import com.github.vlsergey.tex2html.html.HtmlWriter;
 
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
@@ -15,21 +13,16 @@ public class UnknownBeginEndCommandFrame extends BeginEndCommandFrame {
 	}
 
 	@Override
-	public void onExit(@NonNull PrintWriter out) {
-		out.println("<-- end of " + getCommandName() + " -->");
+	public void onExit(final @NonNull HtmlWriter out) {
+		out.appendComment("end of " + getCommandName());
 		log.warn("End of unknown command '{}' reached", getCommandName());
 	}
 
 	@Override
-	public @NonNull Frame onEnter(@NonNull PrintWriter out) {
-		out.println("<-- start of " + getCommandName() + " -->");
+	public @NonNull Frame onEnter(final @NonNull HtmlWriter out) {
+		out.appendComment("start of " + getCommandName());
 		log.warn("Start of unknown command '{}'", getCommandName());
 		return this;
-	}
-
-	@Override
-	public void onText(@NonNull PrintWriter out, String text) {
-		out.println(StringEscapeUtils.escapeHtml4(text));
 	}
 
 }

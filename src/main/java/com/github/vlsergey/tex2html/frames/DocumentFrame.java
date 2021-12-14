@@ -1,6 +1,6 @@
 package com.github.vlsergey.tex2html.frames;
 
-import java.io.PrintWriter;
+import com.github.vlsergey.tex2html.html.HtmlWriter;
 
 import lombok.NonNull;
 
@@ -11,18 +11,14 @@ public class DocumentFrame extends BeginEndCommandFrame {
 	}
 
 	@Override
-	public @NonNull DocumentFrame onEnter(PrintWriter out) {
-		out.println("<BODY>");
+	public @NonNull DocumentFrame onEnter(final @NonNull HtmlWriter out) {
+		out.beginElement("BODY");
 		return this;
 	}
 
 	@Override
-	public void onExit(PrintWriter out) {
-		out.println("</BODY>");
+	public void onExit(final @NonNull HtmlWriter out) {
+		out.endElement("BODY");
 	}
 
-	@Override
-	public void onText(PrintWriter out, String text) {
-		out.append(text);
-	}
 }

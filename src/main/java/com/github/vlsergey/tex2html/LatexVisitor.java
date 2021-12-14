@@ -23,6 +23,7 @@ import com.github.vlsergey.tex2html.frames.UnknownBeginEndCommandFrame;
 import com.github.vlsergey.tex2html.grammar.LatexLexer;
 import com.github.vlsergey.tex2html.grammar.LatexParser;
 import com.github.vlsergey.tex2html.grammar.LatexParser.CommandContext;
+import com.github.vlsergey.tex2html.html.HtmlWriter;
 
 import lombok.NonNull;
 
@@ -43,11 +44,11 @@ final class LatexVisitor extends AbstractParseTreeVisitor<Void> {
 		KNOWN_IGNORED_COMMANDS.put("\\documentclass", KnownCommandsArgumentStrategy.IGNORE);
 	}
 
-	private final @NonNull PrintWriter out;
+	private final @NonNull HtmlWriter out;
 	private final @NonNull LinkedList<Frame> stack = new LinkedList<>();
 
-	LatexVisitor(final @NonNull PrintWriter out) {
-		this.out = out;
+	LatexVisitor(final @NonNull HtmlWriter htmlWriter) {
+		this.out = htmlWriter;
 	}
 
 	@Override
@@ -83,7 +84,7 @@ final class LatexVisitor extends AbstractParseTreeVisitor<Void> {
 				}
 				case "\\end": {
 					final String innerCommandName = commandContext.commandArguments().curlyToken().content().getText();
-					final Frame frameToClose = stack.peek();
+					final Frame frameToClose = stack.poll();
 					if (!(frameToClose instanceof BeginEndCommandFrame)) {
 						throw new InputMismatchException("Found end of command '" + innerCommandName
 								+ "', but another context is not closed yet (" + frameToClose + ")");
@@ -126,7 +127,7 @@ final class LatexVisitor extends AbstractParseTreeVisitor<Void> {
 				break;
 			}
 			case LatexLexer.ESCAPED_DOLLAR_SIGN:
-				out.print("$");
+				this.stack.peek().onText(out, "$");
 				break;
 			default:
 				break;

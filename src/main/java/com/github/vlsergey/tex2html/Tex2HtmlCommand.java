@@ -5,6 +5,8 @@ import java.io.PrintWriter;
 import java.nio.charset.StandardCharsets;
 import java.util.concurrent.Callable;
 
+import javax.xml.transform.stream.StreamResult;
+
 import org.antlr.v4.runtime.ANTLRFileStream;
 import org.antlr.v4.runtime.CommonTokenStream;
 import org.antlr.v4.runtime.tree.AbstractParseTreeVisitor;
@@ -13,6 +15,7 @@ import org.springframework.stereotype.Component;
 import com.github.vlsergey.tex2html.grammar.LatexLexer;
 import com.github.vlsergey.tex2html.grammar.LatexParser;
 import com.github.vlsergey.tex2html.grammar.LatexParser.ContentContext;
+import com.github.vlsergey.tex2html.html.HtmlWriter;
 
 import lombok.SneakyThrows;
 import picocli.CommandLine.Command;
@@ -36,12 +39,13 @@ public class Tex2HtmlCommand implements Callable<Integer> {
 		final LatexParser parser = new LatexParser(new CommonTokenStream(lexer));
 		final ContentContext contentContext = parser.content();
 
+		final HtmlWriter htmlWriter = new HtmlWriter();
+		final AbstractParseTreeVisitor<Void> visitor = new LatexVisitor(htmlWriter);
+		visitor.visit(contentContext);
+
 		try (PrintWriter out = this.out != null ? new PrintWriter(this.out, StandardCharsets.UTF_8)
 				: new PrintWriter(System.out)) {
-
-			final AbstractParseTreeVisitor<Void> visitor = new LatexVisitor(out);
-			visitor.visit(contentContext);
-
+			htmlWriter.write(new StreamResult(out));
 		}
 		return 0;
 	}
