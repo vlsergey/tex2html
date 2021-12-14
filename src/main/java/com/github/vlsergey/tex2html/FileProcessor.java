@@ -21,6 +21,7 @@ public class FileProcessor {
 	private final File base;
 
 	public void processFile(String path, LatexVisitor latexVisitor) throws IOException {
+		path = path.replace('/', File.separatorChar);
 		File input = findFile(path);
 		if (!input.exists()) {
 			throw new FileNotFoundException(

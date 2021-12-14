@@ -87,12 +87,12 @@ final class LatexVisitor extends AbstractParseTreeVisitor<Void> {
 
 			if (ruleContext.getRuleIndex() == LatexParser.RULE_command) {
 				final @NonNull CommandContext commandContext = (CommandContext) ruleContext;
-
-				final String commandName = commandContext.getStart().getText();
+				final @NonNull ParsedCommand parsedCommand = new ParsedCommand(commandContext);
+				final String commandName = parsedCommand.getCommandName();
 
 				switch (commandName) {
 				case "\\begin": {
-					final String innerCommandName = commandContext.commandArguments().curlyToken().content().getText();
+					final String innerCommandName = parsedCommand.getRequiredArgument(0).getText();
 					if (StringUtils.equals(innerCommandName, "document")) {
 						stack.push(new DocumentFrame().onEnter(out));
 					} else {
@@ -104,13 +104,13 @@ final class LatexVisitor extends AbstractParseTreeVisitor<Void> {
 				case "\\input": {
 					FileFrame fileFrame = findFrame(FileFrame.class).get();
 
-					final String path = commandContext.commandArguments().curlyToken().content().getText();
+					final String path = parsedCommand.getRequiredArgument(0).getText();
 					final FileProcessor fileProcessor = new FileProcessor(fileFrame.getFile().getParentFile());
 					fileProcessor.processFile(path, this);
 					return null;
 				}
 				case "\\end": {
-					final String innerCommandName = commandContext.commandArguments().curlyToken().content().getText();
+					final String innerCommandName = parsedCommand.getRequiredArgument(0).getText();
 					final Frame frameToClose = stack.poll();
 					if (!(frameToClose instanceof BeginEndCommandFrame)) {
 						throw new InputMismatchException("Found end of command '" + innerCommandName
