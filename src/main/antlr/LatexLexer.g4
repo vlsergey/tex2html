@@ -16,5 +16,7 @@ DOLLAR_SIGN     : '$';
 ESCAPED_DOLLAR_SIGN : '\\$';
 
 ALPHANUMERIC    : [a-zA-Z0-9]+;
-SPACES          : [ \r\n]+;
-ETC             : ~[a-zA-Z0-9\[\]\{\}\\\$\r\n ]+;
+LINEEND         : '\r\n' | '\r' | '\n';
+SPACES          : [ ]+;
+PROCENT         : '%';
+ETC             : ~[a-zA-Z0-9\[\]\{\}\\\$\%\r\n ]+;

@@ -2,10 +2,13 @@ parser grammar LatexParser;
 
 options { tokenVocab=LatexLexer; }
 
-content         : ( ALPHANUMERIC | ESCAPED_DOLLAR_SIGN | ETC | SPACES | blockFormula | command | curlyToken | inlineFormula )*;
+content         : ( ALPHANUMERIC | ESCAPED_DOLLAR_SIGN | LINEEND | ETC | SPACES | blockFormula | comment | command | curlyToken | inlineFormula )*;
 
-command         : COMMAND_START SPACES? commandArguments?;
+command         : COMMAND_START SPACES? commandOptions? commandArguments?;
 commandArguments: curlyToken;
+commandOptions  : SQUARE_BRACKET_OPEN ( ALPHANUMERIC | ESCAPED_DOLLAR_SIGN | ETC | SPACES )* SQUARE_BRACKET_CLOSE;
+
+comment         : PROCENT ( ALPHANUMERIC | ESCAPED_DOLLAR_SIGN | ETC | SPACES | blockFormula | command | curlyToken | inlineFormula )* LINEEND;
 
 blockFormula    : SLASH_SQUARE_BRACKET_OPEN content SLASH_SQUARE_BRACKET_CLOSE;
 
