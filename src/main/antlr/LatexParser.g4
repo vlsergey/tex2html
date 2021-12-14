@@ -2,10 +2,27 @@ parser grammar LatexParser;
 
 options { tokenVocab=LatexLexer; }
 
-content             : ( ALPHANUMERIC | ESCAPED_DOLLAR_SIGN | LINEEND | ETC | SPACES | blockFormula | comment | command | curlyToken | inlineFormula )*;
+content             : (
+    ALPHANUMERIC |
+    ASTERIX |
+    ESCAPED_DOLLAR_SIGN |
+    ESCAPED_MINUS |
+    ESCAPED_SLASH |
+    ESCAPED_SPACE |
+    LINEEND |
+    ETC |
+    SPACES |
+    TILDA |
+    blockFormula |
+    comment |
+    command |
+    curlyToken |
+    inlineFormula
+)*;
 
-command             : commandStart SPACES? (requiredArgument | optionalArgument)*;
+command             : commandStart SPACES? commandArguments;
 commandStart        : SLASH (ALPHANUMERIC | AT)+;
+commandArguments    : (requiredArgument | optionalArgument)*;
 requiredArgument    : curlyToken;
 optionalArgument    : squareToken;
 

@@ -9,8 +9,6 @@ import javax.xml.transform.stream.StreamResult;
 
 import org.springframework.stereotype.Component;
 
-import com.github.vlsergey.tex2html.html.HtmlWriter;
-
 import lombok.SneakyThrows;
 import picocli.CommandLine.Command;
 import picocli.CommandLine.Option;
@@ -28,15 +26,16 @@ public class Tex2HtmlCommand implements Callable<Integer> {
 	@Override
 	@SneakyThrows
 	public Integer call() {
-		final HtmlWriter htmlWriter = new HtmlWriter();
-		final LatexVisitor visitor = new LatexVisitor(htmlWriter);
+		final XmlWriter xmlWriter = new XmlWriter();
+		final LatexVisitor visitor = new LatexVisitor(xmlWriter);
 
 		final FileProcessor fileProcessor = new FileProcessor(new File("."));
 		fileProcessor.processFile(this.in.getPath(), visitor);
 
 		try (PrintWriter out = this.out != null ? new PrintWriter(this.out, StandardCharsets.UTF_8)
 				: new PrintWriter(System.out)) {
-			htmlWriter.write(new StreamResult(out));
+			xmlWriter.writeXml(new StreamResult(out));
+			xmlWriter.writeHtml(new StreamResult(out));
 		}
 		return 0;
 	}

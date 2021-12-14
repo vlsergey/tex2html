@@ -1,20 +1,18 @@
 package com.github.vlsergey.tex2html.frames;
 
-import com.github.vlsergey.tex2html.html.HtmlWriter;
+import com.github.vlsergey.tex2html.XmlWriter;
 
 import lombok.NonNull;
 
 public interface Frame {
-	default void onExit(@NonNull HtmlWriter out) {
+
+	default void onExit(final @NonNull XmlWriter out) {
 
 	}
 
 	@NonNull
-	default Frame onEnter(@NonNull HtmlWriter out) {
+	default Frame onEnter(final @NonNull XmlWriter out) {
 		return this;
 	}
 
-	default void onText(@NonNull HtmlWriter out, String text) {
-		out.appendTextNode(text);
-	}
 }
