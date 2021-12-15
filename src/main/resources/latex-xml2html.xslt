@@ -45,9 +45,19 @@
     </em>
   </xsl:template>
 
+  <xsl:template match="command[@name='foreignlanguage']">
+    <span>
+      <xsl:attribute name="lang">
+        <xsl:apply-templates mode="language-to-code"
+        select="./argument[@required='true'][position()=1]/text()" />
+      </xsl:attribute>
+      <xsl:apply-templates select="./argument[@required='true'][position()=2]/node()" />
+    </span>
+  </xsl:template>
+
   <xsl:template match="command[@name='href']">
-    <a href="argument[@required='true'][0]/text()">
-      <xsl:apply-templates select="argument[@required='true'][1]/node()" />
+    <a href="{argument[@required='true'][1]/text()}">
+      <xsl:apply-templates select="argument[@required='true'][2]/node()" />
     </a>
   </xsl:template>
 
@@ -67,14 +77,40 @@
     </a>
   </xsl:template>
 
+  <xsl:template match="command[@name='selectlanguage']">
+      <xsl:attribute name="lang">
+        <xsl:apply-templates mode="language-to-code"
+        select="./argument[@required='true'][position()=1]/text()" />
+      </xsl:attribute>
+  </xsl:template>
+
+  <xsl:template match="command[@name='textit']">
+    <i>
+      <xsl:apply-templates select="./argument[@required='true']/node()" />
+    </i>
+  </xsl:template>
+
   <xsl:template match="command[@name='texttt']">
     <tt>
       <xsl:apply-templates select="./argument[@required='true']/node()" />
     </tt>
   </xsl:template>
 
+  <xsl:template match="command[@name='sloppy' or @name='usepackage']" />
+
   <xsl:template match="tilda">
     <xsl:text>&#160;</xsl:text>
+  </xsl:template>
+
+  <xsl:template match="text()" mode='language-to-code'>
+    <xsl:choose>
+      <xsl:when test=".='english'">
+        <xsl:text>en</xsl:text>
+      </xsl:when>
+      <xsl:otherwise>
+        <xsl:copy-of select="." />
+      </xsl:otherwise>
+    </xsl:choose>
   </xsl:template>
 
 </xsl:stylesheet>

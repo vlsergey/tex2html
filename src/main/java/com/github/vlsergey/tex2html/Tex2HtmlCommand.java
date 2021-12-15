@@ -7,7 +7,10 @@ import java.util.concurrent.Callable;
 
 import javax.xml.transform.stream.StreamResult;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+
+import com.github.vlsergey.tex2html.enchancers.NewCommandEnchancer;
 
 import lombok.SneakyThrows;
 import picocli.CommandLine.Command;
@@ -23,6 +26,9 @@ public class Tex2HtmlCommand implements Callable<Integer> {
 	@Option(names = "--out", description = "destination directory", required = false)
 	private File out;
 
+	@Autowired
+	private NewCommandEnchancer newCommandEnchancer;
+
 	@Override
 	@SneakyThrows
 	public Integer call() {
@@ -34,6 +40,9 @@ public class Tex2HtmlCommand implements Callable<Integer> {
 
 		try (PrintWriter out = this.out != null ? new PrintWriter(this.out, StandardCharsets.UTF_8)
 				: new PrintWriter(System.out)) {
+
+			newCommandEnchancer.process(xmlWriter.getDoc());
+
 			xmlWriter.writeXml(new StreamResult(out));
 			xmlWriter.writeHtml(new StreamResult(out));
 		}

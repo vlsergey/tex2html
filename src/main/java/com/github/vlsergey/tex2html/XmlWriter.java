@@ -19,8 +19,11 @@ import org.apache.commons.lang3.StringUtils;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
+import lombok.Getter;
+
 public class XmlWriter {
 
+	@Getter
 	private final Document doc;
 
 	private Deque<Element> stack = new LinkedList<>();
