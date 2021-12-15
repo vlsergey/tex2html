@@ -2,7 +2,6 @@ package com.github.vlsergey.tex2html.enchancers;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.function.Consumer;
 import java.util.function.Function;
 
 import javax.xml.xpath.XPathConstants;
