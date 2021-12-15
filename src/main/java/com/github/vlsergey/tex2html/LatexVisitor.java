@@ -172,6 +172,10 @@ final class LatexVisitor extends AbstractParseTreeVisitor<Void> {
 				out.appendElement("tilda");
 				break;
 			}
+			case LatexLexer.ESCAPED_APOSTROPHE: {
+				out.appendTextNode("\u0301");
+				break;
+			}
 			case LatexLexer.ESCAPED_DOLLAR_SIGN: {
 				out.appendTextNode("$");
 				break;

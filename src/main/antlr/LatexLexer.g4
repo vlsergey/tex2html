@@ -16,6 +16,7 @@ SLASH           : '\\';
 TILDA           : '~';
 SPACES          : [\r\n ]+;
 
+ESCAPED_APOSTROPHE  : '\\\'';
 ESCAPED_DOLLAR_SIGN : '\\$';
 ESCAPED_MINUS       : '\\-';
 ESCAPED_PROCENT     : '\\%';

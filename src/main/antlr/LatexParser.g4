@@ -5,6 +5,7 @@ options { tokenVocab=LatexLexer; }
 content             : (
     ALPHANUMERIC |
     ASTERIX |
+    ESCAPED_APOSTROPHE |
     ESCAPED_DOLLAR_SIGN |
     ESCAPED_MINUS |
     ESCAPED_SLASH |
