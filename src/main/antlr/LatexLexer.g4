@@ -11,10 +11,13 @@ SQUARE_BRACKET_CLOSE: ']';
 
 AT              : '@';
 ASTERIX         : '*';
+SHARP           : '#';
 DOLLAR_SIGN     : '$';
 SLASH           : '\\';
 TILDA           : '~';
 SPACES          : [\r\n ]+;
+
+SUBSTITUTION    : [#][0-9];
 
 ESCAPED_APOSTROPHE  : '\\\'';
 ESCAPED_DOLLAR_SIGN : '\\$';
@@ -24,7 +27,7 @@ ESCAPED_SLASH       : '\\\\';
 ESCAPED_SPACE       : '\\ ';
 
 ALPHANUMERIC    : [a-zA-Z0-9]+;
-ETC             : ~[a-zA-Z0-9\[\]\{\}\\\$\%\~\r\n ]+;
+ETC             : ~[a-zA-Z0-9\[\]\{\}\\\$\%\~\r\n #]+;
 
 PROCENT         : '%' -> pushMode(COMMENT);
 

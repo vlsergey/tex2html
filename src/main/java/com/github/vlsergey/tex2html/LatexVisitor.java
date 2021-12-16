@@ -1,7 +1,10 @@
 package com.github.vlsergey.tex2html;
 
+import java.io.IOException;
 import java.util.InputMismatchException;
+import java.util.LinkedHashMap;
 import java.util.LinkedList;
+import java.util.Map;
 import java.util.Optional;
 import java.util.function.Predicate;
 
@@ -16,6 +19,7 @@ import org.apache.commons.lang3.StringUtils;
 import com.github.vlsergey.tex2html.frames.CommandArgumentFrame;
 import com.github.vlsergey.tex2html.frames.CommandContentFrame;
 import com.github.vlsergey.tex2html.frames.CommandFrame;
+import com.github.vlsergey.tex2html.frames.CommandInvocationFrame;
 import com.github.vlsergey.tex2html.frames.FileFrame;
 import com.github.vlsergey.tex2html.frames.Frame;
 import com.github.vlsergey.tex2html.frames.ProjectFrame;
@@ -23,11 +27,14 @@ import com.github.vlsergey.tex2html.grammar.LatexLexer;
 import com.github.vlsergey.tex2html.grammar.LatexParser;
 import com.github.vlsergey.tex2html.grammar.LatexParser.CommandArgumentsContext;
 import com.github.vlsergey.tex2html.grammar.LatexParser.CommandContext;
+import com.github.vlsergey.tex2html.grammar.LatexParser.OptionalArgumentContext;
 import com.github.vlsergey.tex2html.grammar.LatexParser.RequiredArgumentContext;
 
 import lombok.NonNull;
 import lombok.SneakyThrows;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 final class LatexVisitor extends AbstractParseTreeVisitor<Void> {
 
 	static enum KnownCommandsArgumentStrategy {
@@ -44,93 +51,6 @@ final class LatexVisitor extends AbstractParseTreeVisitor<Void> {
 	LatexVisitor(final @NonNull XmlWriter xmlWriter) {
 		this.out = xmlWriter;
 		this.stack.push(new ProjectFrame());
-	}
-
-	@SuppressWarnings("unchecked")
-	private <C extends Frame> Optional<C> findFrame(Class<C> cls) {
-		return (Optional<C>) findFrame(cls::isInstance);
-	}
-
-	private Optional<Frame> findFrame(Predicate<Frame> predicate) {
-		return this.stack.stream().filter(predicate).findFirst();
-	}
-
-	@Override
-	@SneakyThrows
-	public Void visitChildren(RuleNode node) {
-		if (node.getPayload() instanceof RuleContext) {
-			final @NonNull RuleContext ruleContext = (RuleContext) node.getPayload();
-
-			if (ruleContext.getRuleIndex() == LatexParser.RULE_comment) {
-				final String commentText = StringUtils.trimToNull(ruleContext.getText());
-				if (commentText != null) {
-					out.appendComment(commentText);
-				}
-				return null;
-			}
-
-			if (ruleContext.getRuleIndex() == LatexParser.RULE_command) {
-				final @NonNull CommandContext commandContext = (CommandContext) ruleContext;
-				final String commandName = commandContext.commandStart().getText().substring(1);
-
-				switch (commandName) {
-				case "begin": {
-					final String innerCommandName = commandContext.commandArguments()
-							.getChild(RequiredArgumentContext.class, 0).curlyToken().content().getText();
-
-					stack.push(new CommandFrame(innerCommandName).onEnter(out));
-					appendCommandArguments(commandContext);
-					stack.push(new CommandContentFrame().onEnter(out));
-					return null;
-				}
-				case "input": {
-					FileFrame fileFrame = findFrame(FileFrame.class).get();
-
-					final String path = commandContext.commandArguments().getChild(RequiredArgumentContext.class, 0)
-							.curlyToken().content().getText();
-
-					final FileProcessor fileProcessor = new FileProcessor(fileFrame.getFile().getParentFile());
-					fileProcessor.processFile(path, this);
-					return null;
-				}
-				case "end": {
-					final String innerCommandName = commandContext.commandArguments()
-							.getChild(RequiredArgumentContext.class, 0).curlyToken().content().getText();
-
-					final Frame commandContentFrameToClose = stack.poll();
-					if (!(commandContentFrameToClose instanceof CommandContentFrame)) {
-						throw new InputMismatchException("Found end of command '" + innerCommandName
-								+ "', but another context is not closed yet (" + commandContentFrameToClose + ")");
-					}
-					commandContentFrameToClose.onExit(out);
-
-					final Frame frameToClose = stack.poll();
-					if (!(frameToClose instanceof CommandFrame)) {
-						throw new InputMismatchException("Found end of command '" + innerCommandName
-								+ "', but another context is not closed yet (" + frameToClose + ")");
-					}
-					final CommandFrame beginEndCommandFrameToClose = (CommandFrame) frameToClose;
-					if (!StringUtils.equals(innerCommandName, beginEndCommandFrameToClose.getCommandName())) {
-						throw new InputMismatchException(
-								"Found end of command '" + innerCommandName + "', but another command '"
-										+ beginEndCommandFrameToClose.getCommandName() + "' is not closed yet");
-					}
-					// everything is okay, close it and forget about it
-					beginEndCommandFrameToClose.onExit(out);
-					// do not output children (i.e. arguments)
-					return null;
-				}
-				default:
-					withFrame(new CommandFrame(commandName), () -> {
-						appendCommandArguments(commandContext);
-					});
-					return null;
-				}
-
-			}
-		}
-
-		return super.visitChildren(node);
 	}
 
 	private void appendCommandArguments(final CommandContext commandContext) {
@@ -153,6 +73,128 @@ final class LatexVisitor extends AbstractParseTreeVisitor<Void> {
 		}
 	}
 
+	@SuppressWarnings("unchecked")
+	private <C extends Frame> Optional<C> findFrame(Class<C> cls) {
+		return (Optional<C>) findFrame(cls::isInstance);
+	}
+
+	private Optional<Frame> findFrame(Predicate<Frame> predicate) {
+		return this.stack.stream().filter(predicate).findFirst();
+	}
+
+	@Override
+	@SneakyThrows
+	public Void visitChildren(RuleNode node) {
+		if (node.getPayload() instanceof RuleContext) {
+			final @NonNull RuleContext ruleContext = (RuleContext) node.getPayload();
+
+			if (ruleContext.getRuleIndex() == LatexParser.RULE_command) {
+				return visitCommand(ruleContext);
+			}
+
+			if (ruleContext.getRuleIndex() == LatexParser.RULE_comment) {
+				return visitComment(ruleContext);
+			}
+
+			if (ruleContext.getRuleIndex() == LatexParser.RULE_inlineFormula) {
+
+			}
+		}
+
+		return super.visitChildren(node);
+	}
+
+	private final Map<String, CommandContext> commandDefinitions = new LinkedHashMap<>();
+
+	private Void visitCommand(final RuleContext ruleContext) throws IOException {
+		final @NonNull CommandContext commandContext = (CommandContext) ruleContext;
+		final String commandName = commandContext.commandStart().getText().substring(1);
+
+		switch (commandName) {
+		case "begin": {
+			final String innerCommandName = commandContext.commandArguments().getChild(RequiredArgumentContext.class, 0)
+					.curlyToken().content().getText();
+
+			stack.push(new CommandFrame(innerCommandName).onEnter(out));
+			appendCommandArguments(commandContext);
+			stack.push(new CommandContentFrame().onEnter(out));
+			return null;
+		}
+		case "input": {
+			FileFrame fileFrame = findFrame(FileFrame.class).get();
+
+			final String path = commandContext.commandArguments().getChild(RequiredArgumentContext.class, 0)
+					.curlyToken().content().getText();
+
+			final FileProcessor fileProcessor = new FileProcessor(fileFrame.getFile().getParentFile());
+			fileProcessor.processFile(path, this);
+			return null;
+		}
+		case "newcommand": {
+			final String definedCommandName = commandContext.commandArguments()
+					.getChild(RequiredArgumentContext.class, 0).curlyToken().content().getText();
+			commandDefinitions.put(definedCommandName.substring(1), commandContext);
+			log.info("Found '{}' command definition", definedCommandName);
+			return null;
+		}
+		case "end": {
+			final String innerCommandName = commandContext.commandArguments().getChild(RequiredArgumentContext.class, 0)
+					.curlyToken().content().getText();
+
+			final Frame commandContentFrameToClose = stack.poll();
+			if (!(commandContentFrameToClose instanceof CommandContentFrame)) {
+				throw new InputMismatchException("Found end of command '" + innerCommandName
+						+ "', but another context is not closed yet (" + commandContentFrameToClose + ")");
+			}
+			commandContentFrameToClose.onExit(out);
+
+			final Frame frameToClose = stack.poll();
+			if (!(frameToClose instanceof CommandFrame)) {
+				throw new InputMismatchException("Found end of command '" + innerCommandName
+						+ "', but another context is not closed yet (" + frameToClose + ")");
+			}
+			final CommandFrame beginEndCommandFrameToClose = (CommandFrame) frameToClose;
+			if (!StringUtils.equals(innerCommandName, beginEndCommandFrameToClose.getCommandName())) {
+				throw new InputMismatchException(
+						"Found end of command '" + innerCommandName + "', but another command '"
+								+ beginEndCommandFrameToClose.getCommandName() + "' is not closed yet");
+			}
+			// everything is okay, close it and forget about it
+			beginEndCommandFrameToClose.onExit(out);
+			// do not output children (i.e. arguments)
+			return null;
+		}
+		default:
+			final CommandContext userDefinition = commandDefinitions.get(commandName);
+			if (userDefinition != null) {
+				log.info("Found invocation of previously defined command '{}'", commandName);
+
+				CommandInvocationFrame invocationFrame = new CommandInvocationFrame(userDefinition, commandContext);
+				withFrame(invocationFrame, () -> {
+					final RequiredArgumentContext contentToVisit = userDefinition.commandArguments()
+							.getChild(RequiredArgumentContext.class, 1);
+					if (contentToVisit != null) {
+						LatexVisitor.this.visit(contentToVisit);
+					}
+				});
+				return null;
+			}
+
+			withFrame(new CommandFrame(commandName), () -> {
+				appendCommandArguments(commandContext);
+			});
+			return null;
+		}
+	}
+
+	private Void visitComment(final RuleContext ruleContext) {
+		final String commentText = StringUtils.trimToNull(ruleContext.getText());
+		if (commentText != null) {
+			out.appendComment(commentText);
+		}
+		return null;
+	}
+
 	@Override
 	public Void visitTerminal(TerminalNode node) {
 		if (node.getPayload() instanceof Token) {
@@ -166,6 +208,23 @@ final class LatexVisitor extends AbstractParseTreeVisitor<Void> {
 			case LatexLexer.ETC:
 			case LatexLexer.SPACES: {
 				out.appendTextNode(token.getText());
+				break;
+			}
+			case LatexLexer.SUBSTITUTION: {
+				findFrame(CommandInvocationFrame.class).ifPresent(frame -> {
+
+					// XXX: in future here we also need to "cut" current stack until frame
+					// (included) and restore after processing
+
+					int index = Integer.parseInt(token.getText().substring(1)) - 1;
+					final ParseTree arg = frame.getInvocation().commandArguments().getChild(index);
+					if (arg instanceof OptionalArgumentContext) {
+						visit(((OptionalArgumentContext) arg).squareToken().content());
+					}
+					if (arg instanceof RequiredArgumentContext) {
+						visit(((RequiredArgumentContext) arg).curlyToken().content());
+					}
+				});
 				break;
 			}
 			case LatexLexer.TILDA: {

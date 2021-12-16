@@ -12,7 +12,9 @@ content             : (
     ESCAPED_SPACE |
     LINEEND |
     ETC |
+    SHARP |
     SPACES |
+    SUBSTITUTION |
     TILDA |
     blockFormula |
     comment |

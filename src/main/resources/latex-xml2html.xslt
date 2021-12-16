@@ -18,6 +18,20 @@
   <xsl:template match="command[@name='document']">
     <body>
       <xsl:apply-templates select="content/node()" />
+      <script>
+        <xsl:text>
+MathJax = {
+  tex: {
+    processHtmlClass: 'mathjax', 
+    // inlineMath: [['$', '$'], ['\\(', '\\)']]
+  },
+  svg: {
+    fontCache: 'global'
+  }
+};</xsl:text>
+      </script>
+      <script src="https://polyfill.io/v3/polyfill.min.js?features=es6" />
+      <script id="MathJax-script" async="yes" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js" />
     </body>
   </xsl:template>
 
@@ -78,9 +92,9 @@
   </xsl:template>
 
   <xsl:template match="command[@name='selectlanguage']">
-      <xsl:attribute name="lang">
+    <xsl:attribute name="lang">
         <xsl:apply-templates mode="language-to-code"
-        select="./argument[@required='true'][position()=1]/text()" />
+      select="./argument[@required='true'][position()=1]/text()" />
       </xsl:attribute>
   </xsl:template>
 
