@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<project>
+    <command name="documentclass">
+        <argument required="true">article</argument>
+    </command>
+    
+    <command name="document">
+        <argument required="true">document</argument>
+        <content>
+            
+            <command name="chapter">
+                <argument required="true">Chapter title</argument>
+            </command>
+            Hello, World!
+
+        </content>
+    </command>
+    
+</project>

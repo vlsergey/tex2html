@@ -46,7 +46,7 @@ class MainTest {
 	private List<TexXmlProcessor> processors;
 
 	@ParameterizedTest
-	@CsvSource({ "helloWorld", "innerFormula", "tabularInFigure" })
+	@CsvSource({ "chapter", "helloWorld", "innerFormula", "tabularInFigure" })
 	void testToHtml(String code) throws Exception {
 		final String src = IOUtils.toString(MainTest.class.getResource("test/" + code + ".tex"),
 				StandardCharsets.UTF_8);
@@ -73,7 +73,7 @@ class MainTest {
 	}
 
 	@ParameterizedTest
-	@CsvSource({ "helloWorld", "innerFormula", "tabularInFigure" })
+	@CsvSource({ "chapter", "helloWorld", "innerFormula", "tabularInFigure" })
 	void testToXml(String code) throws Exception {
 		final String src = IOUtils.toString(MainTest.class.getResource("test/" + code + ".tex"),
 				StandardCharsets.UTF_8);

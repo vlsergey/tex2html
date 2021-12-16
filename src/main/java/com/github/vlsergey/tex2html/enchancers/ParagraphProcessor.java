@@ -54,6 +54,7 @@ public class ParagraphProcessor implements TexXmlProcessor {
 						flush.run();
 						nextGroup.add(child);
 						flush.run();
+						return;
 					}
 
 					if (child instanceof Text && child.getNodeValue().contains("\n\n")) {
