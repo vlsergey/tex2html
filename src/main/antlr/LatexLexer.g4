@@ -14,6 +14,8 @@ ASTERIX         : '*';
 SHARP           : '#';
 DOLLAR_SIGN     : '$';
 LINE_BREAK      : '\r\n' | '\r' | '\n';
+DOUBLE_MINUS    : '--';
+TRIPLE_MINUS    : '---';
 SLASH           : '\\';
 TILDA           : '~';
 SPACES          : [ ]+;

@@ -12,6 +12,7 @@ formulaContent      : (
     ESCAPED_SPACE |
     ETC |
     LINE_BREAK |
+    DOUBLE_MINUS | TRIPLE_MINUS |
     SHARP |
     SPACES |
     SUBSTITUTION |
