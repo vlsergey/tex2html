@@ -11,7 +11,10 @@ formulaContent      : (
     ESCAPED_SLASH |
     ESCAPED_SPACE |
     ETC |
+    GT |
+    GTGT |
     LINE_BREAK |
+    LTLT |
     DOUBLE_MINUS | TRIPLE_MINUS |
     SHARP |
     SPACES |

@@ -13,7 +13,11 @@ AT              : '@';
 ASTERIX         : '*';
 SHARP           : '#';
 DOLLAR_SIGN     : '$';
+GT              : '>';
+GTGT            : '>>';
 LINE_BREAK      : '\r\n' | '\r' | '\n';
+LT              : '<';
+LTLT            : '<<';
 DOUBLE_MINUS    : '--';
 TRIPLE_MINUS    : '---';
 SLASH           : '\\';
@@ -30,7 +34,7 @@ ESCAPED_SLASH       : '\\\\';
 ESCAPED_SPACE       : '\\ ';
 
 ALPHANUMERIC    : [a-zA-Z0-9]+;
-ETC             : ~[a-zA-Z0-9\[\]\{\}\\\$\%\~\r\n #]+;
+ETC             : ~[a-zA-Z0-9\[\]\{\}\\\$\%\~\r\n<> #]+;
 
 PROCENT         : '%' -> pushMode(COMMENT);
 

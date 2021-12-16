@@ -171,18 +171,23 @@ final class StandardVisitor extends LatexVisitor {
 				this.latexContext.getOut().appendTextNode(token.getText());
 				break;
 			}
-			case LatexLexer.LINE_BREAK: {
+
+			case LatexLexer.GTGT:
+				this.latexContext.getOut().appendTextNode("»");
+				break;
+			case LatexLexer.LINE_BREAK:
 				this.latexContext.getOut().appendTextNode("\n");
 				break;
-			}
-			case LatexLexer.DOUBLE_MINUS: {
+			case LatexLexer.LTLT:
+				this.latexContext.getOut().appendTextNode("«");
+				break;
+			case LatexLexer.DOUBLE_MINUS:
 				this.latexContext.getOut().appendTextNode("\u2013"); // en dash
 				break;
-			}
-			case LatexLexer.TRIPLE_MINUS: {
+			case LatexLexer.TRIPLE_MINUS:
 				this.latexContext.getOut().appendTextNode("\u2014"); // em dash
 				break;
-			}
+
 			case LatexLexer.SUBSTITUTION: {
 				this.latexContext.findFrame(CommandInvocationFrame.class).ifPresent(frame -> {
 
