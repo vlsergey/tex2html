@@ -64,17 +64,4 @@ public class XmlWriter {
 		stack.peek().setAttribute(name, value);
 	}
 
-	public void writeXml(StreamResult to) throws TransformerException {
-		Transformer transformer = TransformerFactory.newInstance().newTransformer();
-		transformer.setOutputProperty(OutputKeys.ENCODING, StandardCharsets.UTF_8.name());
-		transformer.setOutputProperty(OutputKeys.INDENT, "yes");
-		transformer.setOutputProperty(OutputKeys.METHOD, "xml");
-		transformer.transform(new DOMSource(doc), to);
-	}
-
-	public void writeHtml(StreamResult to) throws TransformerException {
-		Transformer transformer = TransformerFactory.newInstance()
-				.newTransformer(new StreamSource(XmlWriter.class.getResourceAsStream("/latex-xml2html.xslt")));
-		transformer.transform(new DOMSource(doc), to);
-	}
 }

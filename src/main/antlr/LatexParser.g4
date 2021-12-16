@@ -10,8 +10,8 @@ formulaContent      : (
     ESCAPED_MINUS |
     ESCAPED_SLASH |
     ESCAPED_SPACE |
-    LINEEND |
     ETC |
+    LINE_BREAK |
     SHARP |
     SPACES |
     SUBSTITUTION |
@@ -28,7 +28,7 @@ commandArguments    : (requiredArgument | optionalArgument)*;
 requiredArgument    : curlyToken;
 optionalArgument    : squareToken;
 
-comment         : PROCENT COMMENT_TEXT? (LINEEND | EOF);
+comment         : PROCENT COMMENT_TEXT? (COMMENT_LINE_BREAK | EOF);
 
 blockFormula    : SLASH_SQUARE_BRACKET_OPEN formulaContent? SLASH_SQUARE_BRACKET_CLOSE;
 

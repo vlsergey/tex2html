@@ -3,14 +3,12 @@
     <command name="documentclass">
         <argument required="true">article</argument>
     </command>
-    &#13;
-
+    
     <command name="document">
         <argument required="true">document</argument>
-        <content>&#13;
-  Hello World!&#13;
+        <content>
+  Hello World!
 </content>
     </command>
-    &#13;
-
+    
 </project>

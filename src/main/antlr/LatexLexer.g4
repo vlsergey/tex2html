@@ -13,9 +13,10 @@ AT              : '@';
 ASTERIX         : '*';
 SHARP           : '#';
 DOLLAR_SIGN     : '$';
+LINE_BREAK      : '\r\n' | '\r' | '\n';
 SLASH           : '\\';
 TILDA           : '~';
-SPACES          : [\r\n ]+;
+SPACES          : [ ]+;
 
 SUBSTITUTION    : [#][0-9];
 
@@ -32,5 +33,5 @@ ETC             : ~[a-zA-Z0-9\[\]\{\}\\\$\%\~\r\n #]+;
 PROCENT         : '%' -> pushMode(COMMENT);
 
 mode COMMENT;
-COMMENT_TEXT    : ~[\r\n]+;
-LINEEND         : ('\r\n' | '\r' | '\n') -> popMode;
+COMMENT_TEXT        : ~[\r\n]+;
+COMMENT_LINE_BREAK  : ('\r\n' | '\r' | '\n') -> popMode;

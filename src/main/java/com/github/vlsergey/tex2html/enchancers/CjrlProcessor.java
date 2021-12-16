@@ -1,7 +1,6 @@
 package com.github.vlsergey.tex2html.enchancers;
 
 import java.io.StringReader;
-import java.util.function.Function;
 
 import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathFactory;
@@ -9,11 +8,11 @@ import javax.xml.xpath.XPathFactory;
 import org.antlr.v4.runtime.Token;
 import org.antlr.v4.runtime.UnbufferedCharStream;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
 
 import com.github.vlsergey.tex2html.grammar.CjrlLexer;
 
@@ -21,8 +20,9 @@ import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 
 @Component
+@Order(0)
 @Slf4j
-public class CjrlEnchancer {
+public class CjrlProcessor implements TexXmlProcessor {
 
 	private static final char[] MAPPING;
 
@@ -55,17 +55,6 @@ public class CjrlEnchancer {
 		return stringBuilder.toString();
 	}
 
-	public static void visit(Node node, Function<Node, Boolean> consumer) {
-		if (!consumer.apply(node)) {
-			return;
-		}
-		NodeList list = node.getChildNodes();
-		for (int i = 0; i < list.getLength(); i++) {
-			Node childNode = list.item(i);
-			visit(childNode, consumer);
-		}
-	}
-
 	private final XPathFactory xPathFactory = XPathFactory.newInstance();
 
 	@SneakyThrows
@@ -74,8 +63,8 @@ public class CjrlEnchancer {
 	}
 
 	@SneakyThrows
-	public void process(Document doc) {
-		visit(doc, node -> {
+	public Document process(Document doc) {
+		DomUtils.visit(doc, node -> {
 			if (node instanceof Element && node.getNodeName().equals("command")
 					&& node.getAttributes().getNamedItem("name") != null
 					&& StringUtils.equals(node.getAttributes().getNamedItem("name").getNodeValue(), "cjRL")) {
@@ -93,6 +82,8 @@ public class CjrlEnchancer {
 
 			return true;
 		});
+
+		return doc;
 	}
 
 }

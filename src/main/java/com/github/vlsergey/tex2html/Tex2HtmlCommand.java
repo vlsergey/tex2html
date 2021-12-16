@@ -3,14 +3,16 @@ package com.github.vlsergey.tex2html;
 import java.io.File;
 import java.io.PrintWriter;
 import java.nio.charset.StandardCharsets;
+import java.util.List;
 import java.util.concurrent.Callable;
 
 import javax.xml.transform.stream.StreamResult;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.w3c.dom.Document;
 
-import com.github.vlsergey.tex2html.enchancers.CjrlEnchancer;
+import com.github.vlsergey.tex2html.enchancers.TexXmlProcessor;
 
 import lombok.SneakyThrows;
 import picocli.CommandLine.Command;
@@ -21,7 +23,7 @@ import picocli.CommandLine.Option;
 public class Tex2HtmlCommand implements Callable<Integer> {
 
 	@Autowired
-	private CjrlEnchancer cjrlEnchancer;
+	private List<TexXmlProcessor> texXmlProcessors;
 
 	@Option(names = "--in", description = "source TeX file", required = true)
 	private File in;
@@ -41,10 +43,12 @@ public class Tex2HtmlCommand implements Callable<Integer> {
 		try (PrintWriter out = this.out != null ? new PrintWriter(this.out, StandardCharsets.UTF_8)
 				: new PrintWriter(System.out)) {
 
-			cjrlEnchancer.process(xmlWriter.getDoc());
+			Document doc = xmlWriter.getDoc();
+			for (TexXmlProcessor texXmlProcessor : texXmlProcessors) {
+				doc = texXmlProcessor.process(doc);
+			}
 
-			xmlWriter.writeXml(new StreamResult(out));
-			xmlWriter.writeHtml(new StreamResult(out));
+			XmlUtils.writeAsHtml(doc, true, new StreamResult(out));
 		}
 		return 0;
 	}

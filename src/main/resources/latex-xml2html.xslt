@@ -1,7 +1,6 @@
 <xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
 
-  <xsl:output method="html" version="5" encoding="utf-8" omit-xml-declaration="yes"
-    doctype-system="about:legacy-compat" indent="yes" />
+  <xsl:output method="xml" encoding="utf-8" indent="no" />
 
   <xsl:template match="@*|node()">
     <xsl:copy>
@@ -119,7 +118,7 @@ MathJax = {
   <xsl:template match="inline-formula">
     <span class="mathjax">
       <xsl:text>$</xsl:text>
-      <xsl:copy-of select="text()"/>
+      <xsl:copy-of select="text()" />
       <xsl:text>$</xsl:text>
     </span>
   </xsl:template>

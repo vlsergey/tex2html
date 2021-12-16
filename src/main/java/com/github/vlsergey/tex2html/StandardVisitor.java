@@ -171,6 +171,10 @@ final class StandardVisitor extends LatexVisitor {
 				this.latexContext.getOut().appendTextNode(token.getText());
 				break;
 			}
+			case LatexLexer.LINE_BREAK: {
+				this.latexContext.getOut().appendTextNode("\n");
+				break;
+			}
 			case LatexLexer.SUBSTITUTION: {
 				this.latexContext.findFrame(CommandInvocationFrame.class).ifPresent(frame -> {
 
