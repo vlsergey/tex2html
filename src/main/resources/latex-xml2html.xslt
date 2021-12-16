@@ -52,6 +52,17 @@ MathJax = {
     </h1>
   </xsl:template>
 
+  <xsl:template match="command[@name='figure']">
+    <figure>
+      <xsl:apply-templates select="./content/*[not( name()='command' and (@name='caption' or @name='centering') )]" />
+      <xsl:if test="./content/command[@name='caption']">
+        <figcaption>
+          <xsl:apply-templates select="./content/command[@name='caption']/argument[@required='true'][1]/node()" />
+        </figcaption>
+      </xsl:if>
+    </figure>
+  </xsl:template>
+
   <xsl:template match="command[@name='emph']">
     <em>
       <xsl:apply-templates select="./argument[@required='true']/node()" />
