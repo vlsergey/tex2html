@@ -53,11 +53,13 @@ MathJax = {
   </xsl:template>
 
   <xsl:template match="command[@name='figure']">
-    <figure>
-      <xsl:apply-templates select="./content/*[not( name()='command' and (@name='caption' or @name='centering') )]" />
+    <figure style="display: flex; flex-wrap: wrap;">
+      <xsl:apply-templates
+        select="./content/*[not( name()='command' and (@name='caption' or @name='centering') )]" />
       <xsl:if test="./content/command[@name='caption']">
-        <figcaption>
-          <xsl:apply-templates select="./content/command[@name='caption']/argument[@required='true'][1]/node()" />
+        <figcaption style="flex-basis: 100%;">
+          <xsl:apply-templates
+            select="./content/command[@name='caption']/argument[@required='true'][1]/node()" />
         </figcaption>
       </xsl:if>
     </figure>
@@ -106,6 +108,15 @@ MathJax = {
         <xsl:apply-templates mode="language-to-code"
       select="./argument[@required='true'][position()=1]/text()" />
       </xsl:attribute>
+  </xsl:template>
+
+  <xsl:template match="command[@name='subcaptionbox']">
+    <figure>
+      <xsl:apply-templates select="./argument[@required='true'][2]/node()" />
+      <figcaption>
+        <xsl:apply-templates select="./argument[@required='true'][1]/node()" />
+      </figcaption>
+    </figure>
   </xsl:template>
 
   <xsl:template match="command[@name='textit']">
