@@ -33,7 +33,7 @@ public class Tex2HtmlCommand implements Callable<Integer> {
 	@SneakyThrows
 	public Integer call() {
 		final XmlWriter xmlWriter = new XmlWriter();
-		final LatexVisitor visitor = new LatexVisitor(xmlWriter);
+		final StandardVisitor visitor = new StandardVisitor(new LatexContext(xmlWriter));
 
 		final FileProcessor fileProcessor = new FileProcessor(new File("."));
 		fileProcessor.processFile(this.in.getPath(), visitor);

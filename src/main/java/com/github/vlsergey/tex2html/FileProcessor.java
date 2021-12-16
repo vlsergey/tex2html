@@ -33,7 +33,7 @@ public class FileProcessor {
 		final LatexParser parser = new LatexParser(new CommonTokenStream(lexer));
 		final ContentContext contentContext = parser.content();
 
-		latexVisitor.withFrame(new FileFrame(input), () -> {
+		latexVisitor.getLatexContext().withFrame(new FileFrame(input), () -> {
 			latexVisitor.visit(contentContext);
 		});
 	}

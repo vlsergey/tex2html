@@ -23,7 +23,7 @@
 MathJax = {
   tex: {
     processHtmlClass: 'mathjax', 
-    // inlineMath: [['$', '$'], ['\\(', '\\)']]
+    inlineMath: [['$', '$']]
   },
   svg: {
     fontCache: 'global'
@@ -114,6 +114,14 @@ MathJax = {
 
   <xsl:template match="tilda">
     <xsl:text>&#160;</xsl:text>
+  </xsl:template>
+
+  <xsl:template match="inline-formula">
+    <span class="mathjax">
+      <xsl:text>$</xsl:text>
+      <xsl:copy-of select="text()"/>
+      <xsl:text>$</xsl:text>
+    </span>
   </xsl:template>
 
   <xsl:template match="text()" mode='language-to-code'>

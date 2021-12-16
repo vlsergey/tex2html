@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<project>
+    <command name="documentclass">
+        <argument required="true">article</argument>
+    </command>
+    &#13;
+
+    <command name="document">
+        <argument required="true">document</argument>
+        <content>
+            &#13;
+&#13;
+
+            <command name="figure">
+                <argument required="true">figure</argument>
+                <argument required="false">t</argument>
+                <content>
+                    &#13;
+    
+                    <command name="centering"/>
+                    <command name="tabular">
+                        <argument required="true">tabular</argument>
+                        <argument required="true"> || c || c ||</argument>
+                        <content>
+                            &#13;
+
+                            <command name="hline"/>
+                            42 &amp; 42 &#13;
+
+                            <command name="hline"/>
+                            <command name="hline"/>
+                            42 &amp; 42 &#13;
+
+                            <command name="hline"/>
+                            <command name="hline"/>
+                        </content>
+                    </command>
+                    &#13;
+  
+                    <command name="caption">
+                        <argument required="true">test-caption</argument>
+                    </command>
+                    &#13;
+  
+                    <command name="label">
+                        <argument required="true">fig:test-label</argument>
+                    </command>
+                    &#13;
+
+                </content>
+            </command>
+            &#13;
+&#13;
+
+        </content>
+    </command>
+    &#13;
+
+</project>

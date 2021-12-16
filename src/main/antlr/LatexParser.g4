@@ -2,7 +2,7 @@ parser grammar LatexParser;
 
 options { tokenVocab=LatexLexer; }
 
-content             : (
+formulaContent      : (
     ALPHANUMERIC |
     ASTERIX |
     ESCAPED_APOSTROPHE |
@@ -16,12 +16,11 @@ content             : (
     SPACES |
     SUBSTITUTION |
     TILDA |
-    blockFormula |
     comment |
     command |
-    curlyToken |
-    inlineFormula
-)*;
+    curlyToken
+)+;
+content             : ( formulaContent | blockFormula | inlineFormula )+;
 
 command             : commandStart SPACES? commandArguments;
 commandStart        : SLASH (ALPHANUMERIC | AT)+;
@@ -31,10 +30,10 @@ optionalArgument    : squareToken;
 
 comment         : PROCENT COMMENT_TEXT? (LINEEND | EOF);
 
-blockFormula    : SLASH_SQUARE_BRACKET_OPEN content SLASH_SQUARE_BRACKET_CLOSE;
+blockFormula    : SLASH_SQUARE_BRACKET_OPEN formulaContent? SLASH_SQUARE_BRACKET_CLOSE;
 
-squareToken     : SQUARE_BRACKET_OPEN content SQUARE_BRACKET_CLOSE;
+squareToken     : SQUARE_BRACKET_OPEN content? SQUARE_BRACKET_CLOSE;
 
-curlyToken      : CURLY_BRACKET_OPEN content CURLY_BRACKET_CLOSE;
+curlyToken      : CURLY_BRACKET_OPEN content? CURLY_BRACKET_CLOSE;
 
-inlineFormula   : DOLLAR_SIGN content DOLLAR_SIGN;
+inlineFormula   : DOLLAR_SIGN formulaContent? DOLLAR_SIGN;
