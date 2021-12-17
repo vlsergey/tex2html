@@ -1,4 +1,4 @@
-package com.github.vlsergey.tex2html.enchancers;
+package com.github.vlsergey.tex2html.processors;
 
 import java.util.function.Function;
 import java.util.stream.Stream;

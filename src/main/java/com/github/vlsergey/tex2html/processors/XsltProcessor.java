@@ -1,4 +1,4 @@
-package com.github.vlsergey.tex2html.enchancers;
+package com.github.vlsergey.tex2html.processors;
 
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerFactory;

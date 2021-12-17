@@ -1,4 +1,4 @@
-package com.github.vlsergey.tex2html.enchancers;
+package com.github.vlsergey.tex2html.processors;
 
 import static java.util.Collections.singletonList;
 import static java.util.stream.Collectors.toList;

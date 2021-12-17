@@ -24,13 +24,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.w3c.dom.Document;
 
-import com.github.vlsergey.tex2html.enchancers.CjrlProcessor;
-import com.github.vlsergey.tex2html.enchancers.ParagraphProcessor;
-import com.github.vlsergey.tex2html.enchancers.TexXmlProcessor;
-import com.github.vlsergey.tex2html.enchancers.XsltProcessor;
 import com.github.vlsergey.tex2html.grammar.LatexLexer;
 import com.github.vlsergey.tex2html.grammar.LatexParser;
 import com.github.vlsergey.tex2html.grammar.LatexParser.ContentContext;
+import com.github.vlsergey.tex2html.processors.CjrlProcessor;
+import com.github.vlsergey.tex2html.processors.ParagraphProcessor;
+import com.github.vlsergey.tex2html.processors.TexXmlProcessor;
+import com.github.vlsergey.tex2html.processors.XsltProcessor;
 
 import lombok.NonNull;
 

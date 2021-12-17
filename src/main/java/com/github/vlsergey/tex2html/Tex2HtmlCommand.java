@@ -12,7 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.w3c.dom.Document;
 
-import com.github.vlsergey.tex2html.enchancers.TexXmlProcessor;
+import com.github.vlsergey.tex2html.processors.TexXmlProcessor;
 
 import lombok.SneakyThrows;
 import picocli.CommandLine.Command;
