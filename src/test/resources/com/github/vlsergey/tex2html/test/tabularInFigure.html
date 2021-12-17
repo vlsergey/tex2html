@@ -1,43 +1,31 @@
 <!DOCTYPE html SYSTEM "about:legacy-compat">
 <html>
     <body>
-        <command name="figure">
-            <argument required="true">figure</argument>
-            <argument required="false">t</argument>
-            <content>
+        <figure style="display: flex; flex-wrap: wrap;">
+            <command name="tabular">
+                <argument required="true">tabular</argument>
+                <argument required="true"> || c || c ||</argument>
+                <content>
                     
-                <command name="centering"></command>
-                
-                <command name="tabular">
-                    <argument required="true">tabular</argument>
-                    <argument required="true"> || c || c ||</argument>
-                    <content>
-                        
-                        <command name="hline"></command>
-                          42 &amp; 42 
+                    <command name="hline"></command>
+                      42 &amp; 42 
 
-                        <command name="hline"></command>
-                        
-                        <command name="hline"></command>
-                          42 &amp; 42 
+                    <command name="hline"></command>
+                    
+                    <command name="hline"></command>
+                      42 &amp; 42 
 
-                        <command name="hline"></command>
-                        
-                        <command name="hline"></command>
-                        
-                    </content>
-                </command>
-                  
-                <command name="caption">
-                    <argument required="true">test-caption</argument>
-                </command>
-                  
-                <command name="label">
-                    <argument required="true">fig:test-label</argument>
-                </command>
-                
-            </content>
-        </command>
+                    <command name="hline"></command>
+                    
+                    <command name="hline"></command>
+                    
+                </content>
+            </command>
+            <command name="label">
+                <argument required="true">fig:test-label</argument>
+            </command>
+            <figcaption style="flex-basis: 100%;">test-caption</figcaption>
+        </figure>
         <script>
 MathJax = {
   tex: {
