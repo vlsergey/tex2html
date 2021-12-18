@@ -63,6 +63,9 @@ MathJax = {
         select="./content/*[not( name()='command' and (@name='caption' or @name='centering' or @name='label') )]" />
       <xsl:if test="./content/command[@name='caption']">
         <figcaption style="flex-basis: 100%; text-align: center;">
+          <xsl:text>Рис. </xsl:text>
+          <xsl:value-of select="@index" />
+          <xsl:text> — </xsl:text>
           <xsl:apply-templates
             select="./content/command[@name='caption']/argument[@required='true'][1]/node()" />
         </figcaption>

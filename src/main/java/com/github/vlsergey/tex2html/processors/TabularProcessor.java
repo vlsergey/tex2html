@@ -1,6 +1,5 @@
 package com.github.vlsergey.tex2html.processors;
 
-import static java.util.Collections.emptyMap;
 import static java.util.Collections.unmodifiableMap;
 import static java.util.stream.Collectors.toList;
 
