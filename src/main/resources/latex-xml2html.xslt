@@ -153,6 +153,18 @@ MathJax = {
         </span>
     </xsl:template>
 
+    <xsl:template match="item">
+        <li>
+            <xsl:apply-templates />
+        </li>
+    </xsl:template>
+
+    <xsl:template match="itemize">
+        <ul>
+            <xsl:apply-templates />
+        </ul>
+    </xsl:template>
+
     <xsl:template match="text()" mode='language-to-code'>
         <xsl:choose>
             <xsl:when test=".='english'">

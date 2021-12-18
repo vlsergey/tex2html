@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<project>
+    <command name="documentclass">
+        <argument required="true">article</argument>
+    </command>
+    
+    <command name="document">
+        <argument required="true">document</argument>
+        <content>
+              
+            <command name="itemize">
+                <argument required="true">itemize</argument>
+                <content>
+                        
+                    <command name="item"/>
+                    42
+    
+                    <command name="item"/>
+                    84
+  
+                </content>
+            </command>
+            
+        </content>
+    </command>
+    
+</project>

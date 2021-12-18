@@ -7,7 +7,6 @@ import java.io.File;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.nio.charset.StandardCharsets;
-import java.nio.file.Paths;
 
 import javax.xml.transform.OutputKeys;
 import javax.xml.transform.Transformer;
@@ -24,23 +23,24 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.Configuration;
 import org.w3c.dom.Document;
 
 import com.github.vlsergey.tex2html.grammar.LatexLexer;
 import com.github.vlsergey.tex2html.grammar.LatexParser;
 import com.github.vlsergey.tex2html.grammar.LatexParser.ContentContext;
-import com.github.vlsergey.tex2html.processors.CjrlProcessor;
-import com.github.vlsergey.tex2html.processors.IncludeGraphicsProcessor;
-import com.github.vlsergey.tex2html.processors.ParagraphProcessor;
-import com.github.vlsergey.tex2html.processors.XsltProcessor;
 import com.github.vlsergey.tex2html.utils.ThrowingConsumer;
-import com.github.vlsergey.tex2html.utils.ThrowingFunction;
 
 import lombok.NonNull;
 
-@SpringBootTest(classes = { Tex2HtmlCommand.class, CjrlProcessor.class, IncludeGraphicsProcessor.class,
-		ParagraphProcessor.class, XsltProcessor.class })
+@SpringBootTest(classes = { Tex2HtmlCommand.class, MainTest.TestConfiguration.class })
 class MainTest {
+
+	@Configuration
+	@ComponentScan("com.github.vlsergey.tex2html.processors")
+	public static class TestConfiguration {
+	}
 
 	private static String readAndNormalize(String resourcePath) throws IOException {
 		return IOUtils.toString(MainTest.class.getResource(resourcePath), StandardCharsets.UTF_8).replace("\r\n", "\n")
@@ -63,7 +63,7 @@ class MainTest {
 	private Tex2HtmlCommand tex2HtmlCommand;
 
 	@ParameterizedTest
-	@CsvSource({ "chapter", "helloWorld", "innerFormula", "tabularInFigure" })
+	@CsvSource({ "chapter", "helloWorld", "innerFormula", "itemize", "tabularInFigure" })
 	void testToHtml(String code) throws Exception {
 		withTempFile(code, ".tex", in -> {
 			withTempFile(code, ".html", out -> {
@@ -84,7 +84,7 @@ class MainTest {
 	}
 
 	@ParameterizedTest
-	@CsvSource({ "chapter", "helloWorld", "innerFormula", "tabularInFigure" })
+	@CsvSource({ "chapter", "helloWorld", "innerFormula", "itemize", "tabularInFigure" })
 	void testToXml(String code) throws Exception {
 		final String src = IOUtils.toString(MainTest.class.getResource("test/" + code + ".tex"),
 				StandardCharsets.UTF_8);

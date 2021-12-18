@@ -1,6 +1,5 @@
 package com.github.vlsergey.tex2html.processors;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -17,6 +16,7 @@ import org.w3c.dom.Node;
 import org.w3c.dom.Text;
 
 import com.github.vlsergey.tex2html.utils.DomUtils;
+import com.github.vlsergey.tex2html.utils.StreamUtils;
 
 import lombok.SneakyThrows;
 
@@ -38,49 +38,32 @@ public class ParagraphProcessor implements TexXmlProcessor {
 
 		DomUtils.visit(xhtmlDoc, node -> {
 			if (node.getNodeType() == Node.ELEMENT_NODE && node.getNodeName().equals("body")) {
-				List<Node> nextGroup = new ArrayList<>();
 
-				final List<List<Node>> grouped = new ArrayList<>();
-				Runnable flush = () -> {
-					if (!nextGroup.isEmpty()) {
-						grouped.add(new ArrayList<>(nextGroup));
-					}
-					nextGroup.clear();
-				};
-
-				DomUtils.childrenStream(node).forEach(child -> {
-					if (!canBePartOfParagraph(child)) {
-						flush.run();
-						nextGroup.add(child);
-						flush.run();
-						return;
-					}
-
-					if (child instanceof Text && child.getNodeValue().contains("\n\n")) {
-						final String[] splitted = StringUtils.splitByWholeSeparator(child.getNodeValue(), "\n\n");
-						for (int i = 0; i < splitted.length; i++) {
-							if (i != 0) {
-								flush.run();
-							}
-							nextGroup.add(xhtmlDoc.createTextNode(splitted[i]));
+				final List<List<Node>> grouped = StreamUtils.group((nextGroup, flush) -> {
+					DomUtils.childrenStream(node).forEach(child -> {
+						if (!canBePartOfParagraph(child)) {
+							flush.run();
+							nextGroup.add(child);
+							flush.run();
+							return;
 						}
-					} else {
-						nextGroup.add(child);
-					}
+
+						if (child instanceof Text && child.getNodeValue().contains("\n\n")) {
+							final String[] splitted = StringUtils.splitByWholeSeparator(child.getNodeValue(), "\n\n");
+							for (int i = 0; i < splitted.length; i++) {
+								if (i != 0) {
+									flush.run();
+								}
+								nextGroup.add(xhtmlDoc.createTextNode(splitted[i]));
+							}
+						} else {
+							nextGroup.add(child);
+						}
+					});
 				});
 
 				if (grouped.size() > 1) {
-					grouped.forEach(group -> {
-						final Node first = group.get(0);
-						if (first instanceof Text) {
-							first.setNodeValue(first.getNodeValue().stripLeading());
-						}
-
-						final Node last = group.get(group.size() - 1);
-						if (last instanceof Text) {
-							last.setNodeValue(last.getNodeValue().stripTrailing());
-						}
-					});
+					grouped.forEach(DomUtils::trim);
 
 					// remove empty pars
 					for (Iterator<List<Node>> iterator = grouped.iterator(); iterator.hasNext();) {
@@ -94,7 +77,7 @@ public class ParagraphProcessor implements TexXmlProcessor {
 					for (int c = node.getChildNodes().getLength() - 1; c >= 0; c--) {
 						node.removeChild(node.getChildNodes().item(c));
 					}
-					grouped.forEach(group -> {
+					grouped.stream().filter(group -> !group.isEmpty()).forEach(group -> {
 						if (canBePartOfParagraph(group.get(0))) {
 							final Element par = xhtmlDoc.createElement("p");
 							group.forEach(par::appendChild);
