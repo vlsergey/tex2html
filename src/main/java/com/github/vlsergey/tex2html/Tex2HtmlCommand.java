@@ -23,15 +23,15 @@ import picocli.CommandLine.Option;
 @Command(name = "tex2html", mixinStandardHelpOptions = true)
 public class Tex2HtmlCommand implements Callable<Integer> {
 
-	@Option(names = "--in", description = "source TeX file", required = true)
+	@Option(names = "--in", description = "Source TeX file.", required = true)
 	@Setter(AccessLevel.PACKAGE)
 	private File in;
 
-	@Option(names = "--indent", description = "indent output", required = false, defaultValue = "false")
+	@Option(names = "--indent", description = "Indent output.", required = false, defaultValue = "false")
 	@Setter(AccessLevel.PACKAGE)
 	private boolean indent;
 
-	@Option(names = "--out", description = "destination directory", required = false)
+	@Option(names = "--out", description = "Destination HTML file. Output result to console if not specified.", required = false)
 	@Setter(AccessLevel.PACKAGE)
 	private File out;
 
