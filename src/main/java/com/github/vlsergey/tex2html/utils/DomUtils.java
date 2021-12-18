@@ -13,7 +13,7 @@ public class DomUtils {
 		return stream(node.getChildNodes());
 	}
 
-	public static void trim(List<Node> nodes) {
+	public static List<Node> trim(List<Node> nodes) {
 		boolean hasChanges = true;
 		while (hasChanges) {
 			hasChanges = false;
@@ -48,6 +48,8 @@ public class DomUtils {
 				}
 			}
 		}
+
+		return nodes;
 	}
 
 	public static void concatenateTextNodes(Node root) {

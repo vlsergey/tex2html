@@ -28,7 +28,7 @@ import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-final class StandardVisitor extends LatexVisitor {
+class StandardVisitor extends LatexVisitor {
 
 	public StandardVisitor(LatexContext context) {
 		super(context);
@@ -172,6 +172,9 @@ final class StandardVisitor extends LatexVisitor {
 				break;
 			}
 
+			case LatexLexer.AMPERSAND:
+				this.latexContext.getOut().appendElement("ampersand");
+				break;
 			case LatexLexer.GTGT:
 				this.latexContext.getOut().appendTextNode("»");
 				break;
@@ -186,6 +189,9 @@ final class StandardVisitor extends LatexVisitor {
 				break;
 			case LatexLexer.TRIPLE_MINUS:
 				this.latexContext.getOut().appendTextNode("\u2014"); // em dash
+				break;
+			case LatexLexer.DOUBLE_SLASH:
+				this.latexContext.getOut().appendElement("line-break"); // en dash
 				break;
 
 			case LatexLexer.SUBSTITUTION: {
@@ -209,12 +215,20 @@ final class StandardVisitor extends LatexVisitor {
 				this.latexContext.getOut().appendElement("tilda");
 				break;
 			}
+			case LatexLexer.ESCAPED_AMPERSAND: {
+				this.latexContext.getOut().appendTextNode("&");
+				break;
+			}
 			case LatexLexer.ESCAPED_APOSTROPHE: {
 				this.latexContext.getOut().appendTextNode("\u0301");
 				break;
 			}
 			case LatexLexer.ESCAPED_DOLLAR_SIGN: {
 				this.latexContext.getOut().appendTextNode("$");
+				break;
+			}
+			case LatexLexer.ESCAPED_MINUS: {
+				this.latexContext.getOut().appendElement("wbr");
 				break;
 			}
 			default:

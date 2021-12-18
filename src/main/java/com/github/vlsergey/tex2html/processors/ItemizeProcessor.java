@@ -15,6 +15,7 @@ import org.w3c.dom.Text;
 
 import com.github.vlsergey.tex2html.utils.DomUtils;
 import com.github.vlsergey.tex2html.utils.StreamUtils;
+import com.github.vlsergey.tex2html.utils.TexXmlUtils;
 
 import lombok.SneakyThrows;
 
@@ -26,14 +27,7 @@ public class ItemizeProcessor implements TexXmlProcessor {
 
 	@Override
 	public Document process(Document xmlDoc) {
-		DomUtils.visit(xmlDoc, node -> {
-			if (TexXmlUtils.isCommandElement(node, "itemize")) {
-				processImpl((Element) node);
-			}
-
-			return true;
-		});
-		return xmlDoc;
+		return TexXmlUtils.visitCommandNodes(xmlDoc, "itemize", this::processImpl);
 	}
 
 	@SneakyThrows

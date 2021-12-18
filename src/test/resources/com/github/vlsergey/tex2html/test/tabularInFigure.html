@@ -1,30 +1,20 @@
 <!DOCTYPE html SYSTEM "about:legacy-compat">
 <html>
     <body>
-        <figure style="display: flex; flex-wrap: wrap; align-items: baseline;">
-            <command name="tabular">
-                <argument required="true">tabular</argument>
-                <argument required="true"> || c || c ||</argument>
-                <content>
-                    
-                    <command name="hline"></command>
-                      42 &amp; 42 
-
-                    <command name="hline"></command>
-                    
-                    <command name="hline"></command>
-                      42 &amp; 42 
-
-                    <command name="hline"></command>
-                    
-                    <command name="hline"></command>
-                    
-                </content>
-            </command>
-            <command name="label">
-                <argument required="true">fig:test-label</argument>
-            </command>
-            <figcaption style="flex-basis: 100%;">test-caption</figcaption>
+        <figure style="margin-left: auto; margin-right: auto; display: flex; flex-wrap: wrap; align-items: baseline; justify-content: center; width: fit-content; height: fit-content;">
+            <table style="border-collapse: collapse;">
+                <colgroup>
+                    <col style="border-left: double;border-right: solid thin;">
+                    <col style="border-left: solid thin;border-right: double;">
+                </colgroup>
+                <tr style="border-bottom: solid thin;border-top: double;">
+                    <td style="padding-left: 6pt;padding-right: 6pt;text-align: center;">42 </td><td style="padding-left: 6pt;padding-right: 6pt;text-align: center;"> 42</td>
+                </tr>
+                <tr style="border-bottom: double;border-top: solid thin;">
+                    <td style="padding-left: 6pt;padding-right: 6pt;text-align: center;">42 </td><td style="padding-left: 6pt;padding-right: 6pt;text-align: center;"> 42</td>
+                </tr>
+            </table>
+            <figcaption style="flex-basis: 100%; text-align: center;">test-caption</figcaption>
         </figure>
         <script>
 MathJax = {

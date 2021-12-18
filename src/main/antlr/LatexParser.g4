@@ -8,11 +8,12 @@ options { tokenVocab=LatexLexer; }
 
 formulaContent      : (
     ALPHANUMERIC |
+    AMPERSAND |
     ASTERIX |
+    ESCAPED_AMPERSAND |
     ESCAPED_APOSTROPHE |
     ESCAPED_DOLLAR_SIGN |
     ESCAPED_MINUS |
-    ESCAPED_SLASH |
     ESCAPED_SPACE |
     ETC |
     GT |
@@ -21,6 +22,7 @@ formulaContent      : (
     LTLT |
     DOUBLE_MINUS | TRIPLE_MINUS |
     SHARP |
+    DOUBLE_SLASH |
     SPACES |
     SUBSTITUTION |
     TILDA |

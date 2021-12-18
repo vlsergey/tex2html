@@ -6,16 +6,10 @@ import static java.util.stream.Collectors.toMap;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.io.StringReader;
 import java.math.BigDecimal;
 import java.util.Map;
 
-import org.antlr.v4.runtime.ANTLRInputStream;
-import org.antlr.v4.runtime.BaseErrorListener;
-import org.antlr.v4.runtime.CommonTokenStream;
 import org.antlr.v4.runtime.ParserRuleContext;
-import org.antlr.v4.runtime.RecognitionException;
-import org.antlr.v4.runtime.Recognizer;
 import org.antlr.v4.runtime.tree.ParseTree;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
@@ -29,8 +23,10 @@ import com.github.vlsergey.tex2html.grammar.AttributesParser;
 import com.github.vlsergey.tex2html.grammar.AttributesParser.AttributeContext;
 import com.github.vlsergey.tex2html.grammar.AttributesParser.AttributesContext;
 import com.github.vlsergey.tex2html.grammar.AttributesParser.TextWidthRelativeContext;
+import com.github.vlsergey.tex2html.utils.AntlrUtils;
 import com.github.vlsergey.tex2html.utils.DomUtils;
 import com.github.vlsergey.tex2html.utils.FileUtils;
+import com.github.vlsergey.tex2html.utils.TexXmlUtils;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -72,19 +68,8 @@ public class IncludeGraphicsProcessor implements TexXmlProcessor {
 	}
 
 	private static Map<String, String> parseAttributes(String attrsString) throws IOException {
-		final ANTLRInputStream inputStream = new ANTLRInputStream(new StringReader(attrsString));
-		final AttributesLexer lexer = new AttributesLexer(inputStream);
-		final AttributesParser parser = new AttributesParser(new CommonTokenStream(lexer));
-		final AttributesContext attrsContext = parser.attributes();
-
-		parser.removeErrorListeners();
-		parser.addErrorListener(new BaseErrorListener() {
-			@Override
-			public void syntaxError(Recognizer<?, ?> recognizer, Object offendingSymbol, int line,
-					int charPositionInLine, String msg, RecognitionException e) {
-				log.warn("Problem with parsing '{}' @ {}: {}", attrsString, charPositionInLine, msg);
-			}
-		});
+		final AttributesContext attrsContext = AntlrUtils
+				.parse(AttributesLexer::new, AttributesParser::new, attrsString, log).attributes();
 
 		return attrsContext.children.stream().filter(AttributeContext.class::isInstance)
 				.map(attr -> (AttributeContext) attr).filter(attr -> attr.name() != null && attr.value() != null)
@@ -93,41 +78,36 @@ public class IncludeGraphicsProcessor implements TexXmlProcessor {
 
 	@Override
 	public Document process(Document xmlDoc) {
-		DomUtils.visit(xmlDoc, node -> {
-			if (TexXmlUtils.isCommandElement(node, "includegraphics")) {
-				final String filePath = TexXmlUtils.findRequiredArgument(node, 1);
-				final Node imageAttributesNode = TexXmlUtils.findOptionalArgumentNode(node, 1);
+		return TexXmlUtils.visitCommandNodes(xmlDoc, "includegraphics", this::processImpl);
+	}
 
-				if (filePath != null) {
-					try {
-						final File basePath = TexXmlUtils.findFileBasePath(node);
+	private void processImpl(Node node) {
+		final String filePath = TexXmlUtils.findRequiredArgument(node, 1);
+		final Node imageAttributesNode = TexXmlUtils.findOptionalArgumentNode(node, 1);
 
-						final File input = FileUtils.findFile(basePath, filePath, SUPPORTED_IMAGE_EXTENSIONS)
-								.orElseThrow(() -> new FileNotFoundException(
-										"Image " + filePath + "' not found with base '" + basePath.getPath()
-												+ "' and one of possible extensions: " + SUPPORTED_IMAGE_EXTENSIONS));
+		if (filePath != null) {
+			try {
+				final File basePath = TexXmlUtils.findFileBasePath(node);
 
-						final Element img = xmlDoc.createElement("include-graphics");
-						img.setAttribute("src", input.toURI().toASCIIString());
+				final File input = FileUtils.findFile(basePath, filePath, SUPPORTED_IMAGE_EXTENSIONS)
+						.orElseThrow(() -> new FileNotFoundException(
+								"Image " + filePath + "' not found with base '" + basePath.getPath()
+										+ "' and one of possible extensions: " + SUPPORTED_IMAGE_EXTENSIONS));
 
-						final Map<String, String> imageAttributes = imageAttributesNode == null ? emptyMap()
-								: parseAttributes(attributesToString(imageAttributesNode));
-						imageAttributes.forEach(img::setAttribute);
+				final Element img = node.getOwnerDocument().createElement("include-graphics");
+				img.setAttribute("src", input.toURI().toASCIIString());
 
-						node.getParentNode().replaceChild(img, node);
+				final Map<String, String> imageAttributes = imageAttributesNode == null ? emptyMap()
+						: parseAttributes(attributesToString(imageAttributesNode));
+				imageAttributes.forEach(img::setAttribute);
 
-					} catch (Exception exc) {
-						log.error("Unable to process includegraphics with path " + filePath + ": " + exc.getMessage(),
-								exc);
-					}
-				}
+				node.getParentNode().replaceChild(img, node);
 
-				return false;
+			} catch (Exception exc) {
+				log.error("Unable to process includegraphics with path " + filePath + ": " + exc.getMessage(), exc);
 			}
+		}
 
-			return true;
-		});
-		return xmlDoc;
 	}
 
 }
