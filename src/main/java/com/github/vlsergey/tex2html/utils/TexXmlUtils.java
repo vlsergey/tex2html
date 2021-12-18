@@ -43,9 +43,9 @@ public class TexXmlUtils {
 				&& StringUtils.equals(node.getAttributes().getNamedItem("name").getNodeValue(), commandName);
 	}
 
-	public static <E extends Exception> Document visitCommandNodes(Document xmlDoc, String commandName,
+	public static <N extends Node, E extends Exception> N visitCommandNodes(N root, String commandName,
 			ThrowingConsumer<Element, E> consumer) {
-		DomUtils.visit(xmlDoc, node -> {
+		DomUtils.visit(root, node -> {
 			if (TexXmlUtils.isCommandElement(node, commandName)) {
 				try {
 					consumer.accept((Element) node);
@@ -56,7 +56,7 @@ public class TexXmlUtils {
 
 			return true;
 		});
-		return xmlDoc;
+		return root;
 	}
 
 }

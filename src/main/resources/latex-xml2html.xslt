@@ -40,10 +40,8 @@ MathJax = {
 
   <xsl:template match="command[@name='cite']">
     <a>
-      <xsl:attribute name="href">
-                <xsl:text>#</xsl:text>
-                <xsl:apply-templates select="argument[@required='true']/text()" />
-            </xsl:attribute>
+      <xsl:attribute name="href"><xsl:text>#</xsl:text><xsl:apply-templates
+        select="argument[@required='true']/text()" /></xsl:attribute>
       <xsl:text>[</xsl:text>
       <xsl:apply-templates select="argument[@required='true']/text()" />
       <xsl:text>]</xsl:text>
@@ -52,6 +50,9 @@ MathJax = {
 
   <xsl:template match="command[@name='chapter']">
     <h1>
+      <xsl:text>Глава </xsl:text>
+      <xsl:value-of select="@index" />
+      <xsl:text>. </xsl:text>
       <xsl:apply-templates select="./argument[@required='true']/node()" />
     </h1>
   </xsl:template>
@@ -128,6 +129,9 @@ MathJax = {
       </xsl:attribute>
       <img src="{./argument[@required='true'][2]/include-graphics/@src}" style="width: 100%" />
       <figcaption>
+        <xsl:text>(</xsl:text>
+        <xsl:value-of select="@box-index" />
+        <xsl:text>) </xsl:text>
         <xsl:apply-templates select="./argument[@required='true'][1]/node()" />
       </figcaption>
     </figure>
