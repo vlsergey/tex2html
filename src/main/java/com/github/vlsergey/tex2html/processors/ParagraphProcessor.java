@@ -1,13 +1,9 @@
 package com.github.vlsergey.tex2html.processors;
 
-import static java.util.Collections.singletonList;
-import static java.util.stream.Collectors.toList;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Iterator;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
@@ -19,6 +15,8 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.Text;
+
+import com.github.vlsergey.tex2html.utils.DomUtils;
 
 import lombok.SneakyThrows;
 
@@ -33,6 +31,7 @@ public class ParagraphProcessor implements TexXmlProcessor {
 		return node instanceof Text || (node instanceof Element && NON_BLOCK_ELEMENTS.contains(node.getNodeName()));
 	}
 
+	@Override
 	@SneakyThrows
 	public Document process(Document xhtmlDoc) {
 		DomUtils.concatenateTextNodes(xhtmlDoc);

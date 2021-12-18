@@ -1,5 +1,9 @@
 parser grammar LatexParser;
 
+@header {
+   package com.github.vlsergey.tex2html.grammar;
+}
+
 options { tokenVocab=LatexLexer; }
 
 formulaContent      : (

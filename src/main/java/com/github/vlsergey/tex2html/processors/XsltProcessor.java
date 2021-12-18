@@ -18,6 +18,7 @@ import lombok.SneakyThrows;
 @Order(1000)
 public class XsltProcessor implements TexXmlProcessor {
 
+	@Override
 	@SneakyThrows
 	public Document process(Document xmlDoc) {
 		Transformer transformer = TransformerFactory.newInstance()

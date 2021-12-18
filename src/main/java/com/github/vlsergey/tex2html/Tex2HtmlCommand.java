@@ -1,8 +1,6 @@
 package com.github.vlsergey.tex2html;
 
 import java.io.File;
-import java.io.PrintWriter;
-import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.concurrent.Callable;
 
@@ -13,7 +11,10 @@ import org.springframework.stereotype.Component;
 import org.w3c.dom.Document;
 
 import com.github.vlsergey.tex2html.processors.TexXmlProcessor;
+import com.github.vlsergey.tex2html.utils.XmlUtils;
 
+import lombok.AccessLevel;
+import lombok.Setter;
 import lombok.SneakyThrows;
 import picocli.CommandLine.Command;
 import picocli.CommandLine.Option;
@@ -22,14 +23,20 @@ import picocli.CommandLine.Option;
 @Command(name = "tex2html", mixinStandardHelpOptions = true)
 public class Tex2HtmlCommand implements Callable<Integer> {
 
-	@Autowired
-	private List<TexXmlProcessor> texXmlProcessors;
-
 	@Option(names = "--in", description = "source TeX file", required = true)
+	@Setter(AccessLevel.PACKAGE)
 	private File in;
 
+	@Option(names = "--indent", description = "indent output", required = false, defaultValue = "false")
+	@Setter(AccessLevel.PACKAGE)
+	private boolean indent;
+
 	@Option(names = "--out", description = "destination directory", required = false)
+	@Setter(AccessLevel.PACKAGE)
 	private File out;
+
+	@Autowired
+	private List<TexXmlProcessor> texXmlProcessors;
 
 	@Override
 	@SneakyThrows
@@ -40,16 +47,17 @@ public class Tex2HtmlCommand implements Callable<Integer> {
 		final FileProcessor fileProcessor = new FileProcessor(new File("."));
 		fileProcessor.processFile(this.in.getPath(), visitor);
 
-		try (PrintWriter out = this.out != null ? new PrintWriter(this.out, StandardCharsets.UTF_8)
-				: new PrintWriter(System.out)) {
-
-			Document doc = xmlWriter.getDoc();
-			for (TexXmlProcessor texXmlProcessor : texXmlProcessors) {
-				doc = texXmlProcessor.process(doc);
-			}
-
-			XmlUtils.writeAsHtml(doc, true, new StreamResult(out));
+		Document doc = xmlWriter.getDoc();
+		for (TexXmlProcessor texXmlProcessor : texXmlProcessors) {
+			doc = texXmlProcessor.process(doc);
 		}
+
+		if (this.out == null) {
+			XmlUtils.writeAsHtml(doc, this.indent, new StreamResult(System.out));
+			return 0;
+		}
+
+		XmlUtils.writeAsHtml(doc, this.indent, new StreamResult(this.out));
 		return 0;
 	}
 

@@ -1,6 +1,5 @@
-package com.github.vlsergey.tex2html.processors;
+package com.github.vlsergey.tex2html.utils;
 
-import java.util.function.Function;
 import java.util.stream.Stream;
 
 import org.w3c.dom.Node;
@@ -33,7 +32,7 @@ public class DomUtils {
 		return Stream.iterate(0, i -> i + 1).limit(nodeList.getLength()).map(nodeList::item);
 	}
 
-	public static void visit(Node node, Function<Node, Boolean> consumer) {
+	public static <E extends Throwable> void visit(Node node, ThrowingFunction<Node, Boolean, E> consumer) throws E {
 		if (!consumer.apply(node)) {
 			return;
 		}

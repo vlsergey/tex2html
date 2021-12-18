@@ -1,4 +1,4 @@
-package com.github.vlsergey.tex2html;
+package com.github.vlsergey.tex2html.utils;
 
 import java.nio.charset.StandardCharsets;
 

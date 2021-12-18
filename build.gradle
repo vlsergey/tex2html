@@ -60,10 +60,6 @@ dependencies {
 
 generateGrammarSource {
 	outputDirectory = file("build/generated-src/antlr/com/github/vlsergey/tex2html/grammar")
-	arguments += [
-		"-package",
-		"com.github.vlsergey.tex2html.grammar"
-	]
 }
 sourceSets.main.java.srcDir "build/generated-src/antlr/"
 

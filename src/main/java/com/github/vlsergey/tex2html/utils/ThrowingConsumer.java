@@ -1,0 +1,8 @@
+package com.github.vlsergey.tex2html.utils;
+
+@FunctionalInterface
+public interface ThrowingConsumer<T, E extends Throwable> {
+
+	void accept(T t) throws E;
+
+}
