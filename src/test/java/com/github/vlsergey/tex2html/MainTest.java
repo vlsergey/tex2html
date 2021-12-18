@@ -22,6 +22,7 @@ import org.apache.commons.io.IOUtils;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
@@ -39,6 +40,7 @@ class MainTest {
 
 	@Configuration
 	@ComponentScan("com.github.vlsergey.tex2html.processors")
+	@EnableConfigurationProperties
 	public static class TestConfiguration {
 	}
 
@@ -63,7 +65,7 @@ class MainTest {
 	private Tex2HtmlCommand tex2HtmlCommand;
 
 	@ParameterizedTest
-	@CsvSource({ "chapter", "helloWorld", "innerFormula", "itemize", "tabularInFigure" })
+	@CsvSource({ "chapter", "helloWorld", "innerFormula", "itemize", "languages", "tabularInFigure" })
 	void testToHtml(String code) throws Exception {
 		withTempFile(code, ".tex", in -> {
 			withTempFile(code, ".html", out -> {
@@ -84,7 +86,7 @@ class MainTest {
 	}
 
 	@ParameterizedTest
-	@CsvSource({ "chapter", "helloWorld", "innerFormula", "itemize", "tabularInFigure" })
+	@CsvSource({ "chapter", "helloWorld", "innerFormula", "itemize", "languages", "tabularInFigure" })
 	void testToXml(String code) throws Exception {
 		final String src = IOUtils.toString(MainTest.class.getResource("test/" + code + ".tex"),
 				StandardCharsets.UTF_8);

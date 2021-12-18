@@ -1,0 +1,19 @@
+app:
+  languages:
+    fallback: russian
+    lang-to-code:
+      english: en
+      german: de
+      russian: ru
+    lang-to-labels:
+      german:
+        chapter: Kapitel
+        section: Abschnitt
+      russian:
+        chapter: Глава
+        section: Раздел
+        figure: Рис.
+      english:
+        chapter: Chapter
+        section: Section
+        figure: Fig.

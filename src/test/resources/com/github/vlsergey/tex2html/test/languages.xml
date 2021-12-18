@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<project>
+    <command name="documentclass">
+        <argument required="true">article</argument>
+    </command>
+    
+    <command name="document">
+        <argument required="true">document</argument>
+        <content>
+            
+            <command name="selectlanguage">
+                <argument required="true">russian</argument>
+            </command>
+            
+            <command name="chapter">
+                <argument required="true">Первая</argument>
+            </command>
+            Сама по себе боль - это любовь к боли, основные экологические проблемы, но я даю такое время, чтобы упасть, так что некоторая большая боль и боль. 
+
+
+            <command name="chapter">
+                <argument required="true">Second</argument>
+            </command>
+            
+            <command name="selectlanguage">
+                <argument required="true">english</argument>
+            </command>
+            But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the system, and expound the actual teachings of the great explorer of the truth, the master-builder of human happiness.
+
+
+            <command name="section">
+                <argument required="true">Dritte</argument>
+            </command>
+            
+            <command name="selectlanguage">
+                <argument required="true">german</argument>
+            </command>
+            Der Schmerz selbst ist die Liebe zum Schmerz, die wichtigsten ökologischen Probleme, aber ich gebe diese Art von Zeit, um zu fallen, so dass einige große Schmerzen und Schmerzen entstehen.
+ 
+
+        </content>
+    </command>
+    
+</project>

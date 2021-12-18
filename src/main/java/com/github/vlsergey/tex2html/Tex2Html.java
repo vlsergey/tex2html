@@ -5,11 +5,13 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.ExitCodeGenerator;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 
 import picocli.CommandLine;
 import picocli.CommandLine.IFactory;
 
 @SpringBootApplication
+@EnableConfigurationProperties
 public class Tex2Html implements CommandLineRunner, ExitCodeGenerator {
 
 	public static void main(String[] args) {

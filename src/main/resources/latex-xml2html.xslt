@@ -20,6 +20,9 @@
 
   <xsl:template match="command[@name='document']">
     <body>
+      <xsl:if test="@language-code">
+        <xsl:attribute name="lang"><xsl:value-of select="@lang-code" /></xsl:attribute>
+      </xsl:if>
       <xsl:apply-templates select="content/node()" />
       <script>
         <xsl:text>
@@ -50,11 +53,33 @@ MathJax = {
 
   <xsl:template match="command[@name='chapter']">
     <h1>
-      <xsl:text>Глава </xsl:text>
-      <xsl:value-of select="@index" />
-      <xsl:text>. </xsl:text>
+      <xsl:if test="@language-code">
+        <xsl:attribute name="lang"><xsl:value-of select="@language-code" /></xsl:attribute>
+      </xsl:if>
+      <xsl:value-of select="concat(@localized-label, ' ', @index, '. ')" />
       <xsl:apply-templates select="./argument[@required='true']/node()" />
     </h1>
+  </xsl:template>
+
+  <xsl:template match="command[@name='section']">
+    <h2>
+      <xsl:apply-templates select="." mode="section-header-content" />
+    </h2>
+  </xsl:template>
+  <xsl:template match="command[@name='subsection']">
+    <h3>
+      <xsl:apply-templates select="." mode="section-header-content" />
+    </h3>
+  </xsl:template>
+  <xsl:template match="command[@name='subsubsection']">
+    <h4>
+      <xsl:apply-templates select="." mode="section-header-content" />
+    </h4>
+  </xsl:template>
+
+  <xsl:template match="command" mode="section-header-content">
+    <xsl:value-of select="concat(@index, '. ')" />
+    <xsl:apply-templates select="./argument[@required='true']/node()" />
   </xsl:template>
 
   <xsl:template match="command[@name='figure']">
@@ -64,9 +89,7 @@ MathJax = {
         select="./content/*[not( name()='command' and (@name='caption' or @name='centering' or @name='label') )]" />
       <xsl:if test="./content/command[@name='caption']">
         <figcaption style="flex-basis: 100%; text-align: center;">
-          <xsl:text>Рис. </xsl:text>
-          <xsl:value-of select="@index" />
-          <xsl:text> — </xsl:text>
+          <xsl:value-of select="concat(@localized-label, ' ', @index, ' — ')" />
           <xsl:apply-templates
             select="./content/command[@name='caption']/argument[@required='true'][1]/node()" />
         </figcaption>
@@ -110,11 +133,6 @@ MathJax = {
         <xsl:apply-templates select="argument[@required='true']/text()" />
       </xsl:comment>
     </a>
-  </xsl:template>
-
-  <xsl:template match="command[@name='selectlanguage']">
-    <xsl:attribute name="lang"><xsl:apply-templates mode="language-to-code"
-      select="./argument[@required='true'][position()=1]/text()" /></xsl:attribute>
   </xsl:template>
 
   <xsl:template match="command[@name='subcaptionbox'][./argument[@required='true'][2]/include-graphics]">

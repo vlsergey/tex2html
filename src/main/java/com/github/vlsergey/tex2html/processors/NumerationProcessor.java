@@ -27,18 +27,37 @@ public class NumerationProcessor implements TexXmlProcessor {
 		final boolean haveChapters = (Boolean) xPathFactory.newXPath().evaluate("count(//command[@name='chapter']) > 0",
 				xmlDoc, XPathConstants.BOOLEAN);
 		final MutableInt chapterCounter = new MutableInt(0);
+		final MutableInt sectionCounter = new MutableInt(0);
+
 		final MutableInt figureCounter = new MutableInt(0);
 
 		final Element documentNode = (Element) xPathFactory.newXPath().evaluate("//command[@name='document']", xmlDoc,
 				XPathConstants.NODE);
 
 		DomUtils.visit(documentNode, node -> {
+			if (TexXmlUtils.isCommandElement(node, "document")) {
+				final Element document = (Element) node;
+				document.setAttribute("level", "-2");
+			}
+
 			if (TexXmlUtils.isCommandElement(node, "chapter")) {
 				chapterCounter.increment();
+				sectionCounter.setValue(0);
 
 				final Element chapter = (Element) node;
 				chapter.setAttribute("chapter-index", chapterCounter.toString());
+				chapter.setAttribute("level", "0");
 				chapter.setAttribute("index", chapterCounter.toString());
+			}
+
+			if (TexXmlUtils.isCommandElement(node, "section")) {
+				sectionCounter.increment();
+
+				final Element section = (Element) node;
+				section.setAttribute("level", "1");
+				section.setAttribute("section-index", sectionCounter.toString());
+				section.setAttribute("index", haveChapters ? chapterCounter.toString() + "." + sectionCounter.toString()
+						: sectionCounter.toString());
 			}
 
 			if (TexXmlUtils.isCommandElement(node, "figure")) {
