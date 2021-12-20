@@ -202,6 +202,18 @@ MathJax = {
     </ul>
   </xsl:template>
 
+  <xsl:template match="printbibliography">
+    <h1>Литература</h1>
+    <ol>
+      <xsl:for-each select="*">
+        <li>
+          <a name="{@name}" />
+          <xsl:copy-of select="node()" />
+        </li>
+      </xsl:for-each>
+    </ol>
+  </xsl:template>
+
   <xsl:template match="tabular">
     <xsl:variable name="paddingLeftStyle" select="'padding-left: 6pt;'" />
     <xsl:variable name="paddingRightStyle" select="'padding-right: 6pt;'" />
