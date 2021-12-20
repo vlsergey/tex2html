@@ -16,12 +16,18 @@ import com.github.vlsergey.tex2html.utils.XmlUtils;
 import lombok.AccessLevel;
 import lombok.Setter;
 import lombok.SneakyThrows;
+import lombok.extern.slf4j.Slf4j;
 import picocli.CommandLine.Command;
 import picocli.CommandLine.Option;
 
 @Component
 @Command(name = "tex2html", mixinStandardHelpOptions = true)
+@Slf4j
 public class Tex2HtmlCommand implements Callable<Integer> {
+
+	@Option(names = "--debugXml", description = "Print all intermediate XMLs after each processor.", required = false, defaultValue = "false")
+	@Setter(AccessLevel.PACKAGE)
+	private boolean debugXml;
 
 	@Option(names = "--in", description = "Source TeX file.", required = true)
 	@Setter(AccessLevel.PACKAGE)
@@ -48,8 +54,17 @@ public class Tex2HtmlCommand implements Callable<Integer> {
 		fileProcessor.processFile(this.in.getPath(), visitor);
 
 		Document doc = xmlWriter.getDoc();
+		if (this.debugXml) {
+			log.info("XML after parsing TEX before all processors:\n{}", XmlUtils.writeAsXmlString(doc, this.indent));
+		}
+
 		for (TexXmlProcessor texXmlProcessor : texXmlProcessors) {
 			doc = texXmlProcessor.process(doc);
+
+			if (this.debugXml) {
+				log.info("XML after parsing TEX after {} processor:\n{}", texXmlProcessor,
+						XmlUtils.writeAsXmlString(doc, this.indent));
+			}
 		}
 
 		if (this.out == null) {

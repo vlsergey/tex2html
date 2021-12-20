@@ -85,6 +85,7 @@ MathJax = {
   <xsl:template match="command[@name='figure']">
     <figure
       style="margin-left: auto; margin-right: auto; display: flex; flex-wrap: wrap; align-items: baseline; justify-content: center; width: fit-content; height: fit-content;">
+      <xsl:apply-templates select="@label" mode="own-label" />
       <xsl:apply-templates
         select="./content/*[not( name()='command' and (@name='caption' or @name='centering' or @name='label') )]" />
       <xsl:if test="./content/command[@name='caption']">
@@ -97,6 +98,10 @@ MathJax = {
     </figure>
   </xsl:template>
 
+  <xsl:template match="command[@name='label']">
+    <a name="#{argument[@required='true']/text()}" />
+  </xsl:template>
+
   <xsl:template match="command[@name='emph']">
     <em>
       <xsl:apply-templates select="./argument[@required='true']/node()" />
@@ -105,10 +110,8 @@ MathJax = {
 
   <xsl:template match="command[@name='foreignlanguage']">
     <span>
-      <xsl:attribute name="lang">
-                <xsl:apply-templates mode="language-to-code"
-        select="./argument[@required='true'][position()=1]/text()" />
-            </xsl:attribute>
+      <xsl:attribute name="lang"><xsl:apply-templates mode="language-to-code"
+        select="./argument[@required='true'][position()=1]/text()" /></xsl:attribute>
       <xsl:apply-templates select="./argument[@required='true'][position()=2]/node()" />
     </span>
   </xsl:template>
@@ -119,19 +122,26 @@ MathJax = {
     </a>
   </xsl:template>
 
-  <xsl:template match="command[@name='ref']">
-    <a href="#{argument[@required='true']/text()}">
-      <xsl:text>[</xsl:text>
-      <xsl:value-of select="argument[@required='true']/text()" />
-      <xsl:text>]</xsl:text>
-    </a>
-  </xsl:template>
-
   <xsl:template match="command[@name='index']">
     <a name="{generate-id(.)}">
       <xsl:comment>
         <xsl:apply-templates select="argument[@required='true']/text()" />
       </xsl:comment>
+    </a>
+  </xsl:template>
+
+  <xsl:template match="command[@name='ref']">
+    <xsl:variable name="labelName" select="argument[@required='true']/text()" />
+    <a href="#{$labelName}">
+      <xsl:choose>
+        <!-- TODO: replace with key-index -->
+        <xsl:when test="//command[@label=$labelName][@index]">
+          <xsl:value-of select="//command[@label=$labelName]/@index" />
+        </xsl:when>
+        <xsl:otherwise>
+          <xsl:value-of select="concat('[', $labelName, ']')" />
+        </xsl:otherwise>
+      </xsl:choose>
     </a>
   </xsl:template>
 
@@ -145,12 +155,11 @@ MathJax = {
           <xsl:text>;</xsl:text>
         </xsl:if>
       </xsl:attribute>
+      <xsl:apply-templates select="@label" mode="own-label" />
       <img src="{./argument[@required='true'][2]/include-graphics/@src}" style="width: 100%" />
       <figcaption>
-        <xsl:text>(</xsl:text>
-        <xsl:value-of select="@box-index" />
-        <xsl:text>) </xsl:text>
-        <xsl:apply-templates select="./argument[@required='true'][1]/node()" />
+        <xsl:value-of select="concat('(', @box-index, ') ')" />
+        <xsl:apply-templates select="./argument[@required='true'][1]/node()[not (@name='label')]" />
       </figcaption>
     </figure>
   </xsl:template>
@@ -247,6 +256,10 @@ MathJax = {
         <xsl:copy-of select="." />
       </xsl:otherwise>
     </xsl:choose>
+  </xsl:template>
+
+  <xsl:template match="@label" mode="own-label">
+    <a name="{.}" style="vertical-align: top;" />
   </xsl:template>
 
 </xsl:stylesheet>
