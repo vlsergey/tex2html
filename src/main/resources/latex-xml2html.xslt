@@ -150,6 +150,11 @@ window.MathJax = {
     </a>
   </xsl:template>
 
+  <xsl:template match="command[@name='resizebox']">
+    <!-- resizebox is not supported so far -->
+    <xsl:apply-templates select="argument[@required='true'][3]/node()" />
+  </xsl:template>
+
   <xsl:template match="command[@name='subcaptionbox'][./argument[@required='true'][2]/include-graphics]">
     <figure>
       <xsl:attribute name="style">
@@ -295,6 +300,7 @@ window.MathJax = {
                     <xsl:variable name="attrName" select="name()" />
                     <xsl:value-of select="concat(name(), ': ', ., ';')" />
                 </xsl:for-each>
+                <xsl:text>white-space: nowrap;</xsl:text>
               </xsl:attribute>
               <xsl:apply-templates />
             </td>
