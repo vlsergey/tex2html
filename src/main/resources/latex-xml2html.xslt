@@ -191,10 +191,22 @@ window.MathJax = {
     </figure>
   </xsl:template>
 
+  <xsl:template match="command[@name='textbf']">
+    <b>
+      <xsl:apply-templates select="./argument[@required='true']/node()" />
+    </b>
+  </xsl:template>
+
   <xsl:template match="command[@name='textit']">
     <i>
       <xsl:apply-templates select="./argument[@required='true']/node()" />
     </i>
+  </xsl:template>
+
+  <xsl:template match="command[@name='textsc']">
+    <span style="font-variant: small-caps;">
+      <xsl:apply-templates select="./argument[@required='true']/node()" />
+    </span>
   </xsl:template>
 
   <xsl:template match="command[@name='texttt']">
