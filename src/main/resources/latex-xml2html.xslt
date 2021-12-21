@@ -94,7 +94,7 @@ window.MathJax = {
 
   <xsl:template match="command[@name='center']">
     <div style="display: flex; align-items: center; justify-content: center;">
-      <xsl:apply-templates select="./content/node()" />
+      <xsl:apply-templates select="content/node()" />
     </div>
   </xsl:template>
 
@@ -144,6 +144,12 @@ window.MathJax = {
         <xsl:apply-templates select="argument[@required='true']/text()" />
       </xsl:comment>
     </a>
+  </xsl:template>
+
+  <xsl:template match="command[@name='quote']">
+    <blockquote>
+      <xsl:apply-templates select="content/node()" />
+    </blockquote>
   </xsl:template>
 
   <xsl:template match="command[@name='ref']">
@@ -198,6 +204,9 @@ window.MathJax = {
   </xsl:template>
 
   <xsl:template match="command[@name='sloppy' or @name='usepackage']" />
+  <xsl:template match="command[@name='sloppypar']">
+    <xsl:apply-templates select="content/node()" />
+  </xsl:template>
 
   <xsl:template match="block-formula">
     <div class="mathjax" style="text-align: center;">
@@ -326,7 +335,9 @@ window.MathJax = {
   </xsl:template>
 
   <xsl:template match="nonbreaking-interword-space">
-    <span class="nonbreaking-interword-space"><xsl:text> </xsl:text></span>
+    <span class="nonbreaking-interword-space">
+      <xsl:text> </xsl:text>
+    </span>
   </xsl:template>
 
   <xsl:template match="text()" mode='language-to-code'>
