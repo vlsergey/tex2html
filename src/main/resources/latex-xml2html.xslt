@@ -81,6 +81,12 @@ window.MathJax = {
     <xsl:apply-templates select="./argument[@required='true']/node()" />
   </xsl:template>
 
+  <xsl:template match="command[@name='center']">
+    <div style="display: flex; align-items: center; justify-content: center;">
+      <xsl:apply-templates select="./content/node()" />
+    </div>
+  </xsl:template>
+
   <xsl:template match="command[@name='figure']">
     <figure
       style="margin-left: auto; margin-right: auto; display: flex; flex-wrap: wrap; align-items: baseline; justify-content: center; width: fit-content; height: fit-content;">
