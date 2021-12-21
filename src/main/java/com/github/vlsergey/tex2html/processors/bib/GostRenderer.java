@@ -13,6 +13,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
+import org.w3c.dom.Node;
 
 @Component
 public class GostRenderer {
@@ -71,8 +72,27 @@ public class GostRenderer {
 			element.appendChild(doc.createTextNode("."));
 		}
 
-		sortKey.getYear().append(append(def, "year", "", identity(), ", ", element));
-		append(def, "month", "", str -> RENDER_MONTHES.getOrDefault(str, str), ", ", element);
+		final String location = StringUtils.join(def.getAttributes().get("location"), " and ");
+		final String publisher = StringUtils.join(def.getAttributes().get("publisher"), " and ");
+		if (location != null || publisher != null) {
+			element.appendChild(doc.createTextNode(" — "));
+			if (location != null) {
+				element.appendChild(doc.createTextNode(location));
+			}
+			if (location != null && publisher != null) {
+				element.appendChild(doc.createTextNode(" : "));
+			}
+			if (publisher != null) {
+				element.appendChild(doc.createTextNode(publisher));
+			}
+			element.appendChild(doc.createTextNode("."));
+		}
+
+		append(def, "year", "", year -> {
+			sortKey.getYear().append(year).append(";");
+			return doc.createTextNode(year);
+		}, ", ", element);
+		append(def, "month", "", str -> doc.createTextNode(RENDER_MONTHES.getOrDefault(str, str)), ", ", element);
 
 		final String[] volumes = def.getAttributes().get("volume");
 		final String[] numbers = def.getAttributes().get("number");
@@ -95,31 +115,37 @@ public class GostRenderer {
 			element.appendChild(doc.createTextNode("."));
 		}
 
-		append(def, "pages", "С. ", identity(), ", ", element);
-		append(def, "issn", "ISSN ", identity(), ", ", element);
-		append(def, "doi", "DOI ", identity(), ", ", element);
+		append(def, "pages", "С. ", doc::createTextNode, ", ", element);
+		append(def, "issn", "ISSN ", doc::createTextNode, ", ", element);
+		append(def, "doi", "DOI ", doi -> {
+			final Element a = doc.createElement("a");
+			a.setAttribute("href", "https://doi.org/" + doi);
+			a.setAttribute("style", "font-family: monospace;");
+			a.appendChild(doc.createTextNode(doi));
+			return a;
+		}, ", ", element);
 
 		return new RendererSource(def.getAlphabeticLabel(), element, sortKey);
 	}
 
-	private static String append(SourceDef def, String sourceAttr, String prefix,
-			Function<String, String> singleElementMapping, String separator, Element parent) {
+	private static void append(SourceDef def, String sourceAttr, String prefix,
+			Function<String, Node> singleElementMapping, String separator, Element parent) {
 		final String[] data = def.getAttributes().get(sourceAttr);
 		if (data == null || data.length == 0) {
-			return "";
+			return;
 		}
 
 		Document doc = parent.getOwnerDocument();
 
-		StringBuilder builder = new StringBuilder();
-		builder.append(" — ");
-		builder.append(prefix);
-		final String joined = Arrays.stream(data).map(singleElementMapping).collect(joining(", "));
-		builder.append(joined);
-		builder.append(".");
+		parent.appendChild(doc.createTextNode(" — " + prefix));
 
-		parent.appendChild(doc.createTextNode(builder.toString()));
-		return joined;
+		for (int i = 0; i < data.length; i++) {
+			if (i != 0) {
+				parent.appendChild(doc.createTextNode(separator));
+			}
+			parent.appendChild(singleElementMapping.apply(data[i]));
+		}
+		parent.appendChild(doc.createTextNode("."));
 	}
 
 	private String renderAuthor(String src) {
