@@ -12,6 +12,14 @@
     <html>
       <head>
         <meta charset="utf-8" />
+        <style type="text/css">
+          <xsl:text><![CDATA[
+div.mathjax {
+  padding-top: .5em;
+  padding-bottom: .5em;
+}
+]]></xsl:text>
+        </style>
       </head>
       <xsl:apply-templates select="./file/command[@name='document']" />
     </html>
