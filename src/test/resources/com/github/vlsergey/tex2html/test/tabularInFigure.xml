@@ -17,7 +17,7 @@
                     
                     <command name="tabular">
                         <argument required="true">tabular</argument>
-                        <argument required="true">|| c | c ||</argument>
+                        <argument required="true">|| c | *2c | c ||</argument>
                         <content>
                             
                             <command name="hline"/>
@@ -26,10 +26,18 @@
                               42 
                             <ampersand/>
                              42 
+                            <ampersand/>
+                             42 
+                            <ampersand/>
+                             42 
                             <line-break/>
                             
                             <command name="hline"/>
                               42 
+                            <ampersand/>
+                             42 
+                            <ampersand/>
+                             42 
                             <ampersand/>
                              42 
                             <line-break/>

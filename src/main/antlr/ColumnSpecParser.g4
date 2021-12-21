@@ -12,4 +12,8 @@ spec	: SPACES? ( borderSpec? SPACES? columnSpec SPACES? )+ borderSpec? ;
 
 borderSpec	: SINGLE_BORDER | DOUBLE_BORDER ;
 
-columnSpec	: L | C | R ;
+columnSpec			: colSpecMultiplier? colAlign ;
+colSpecMultiplier	: ASTERIX CURLY_BRACKET_OPEN number CURLY_BRACKET_CLOSE ;
+colAlign			: L | C | R ;
+
+number	: NUMERIC ;

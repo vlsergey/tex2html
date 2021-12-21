@@ -4,8 +4,13 @@ lexer grammar ColumnSpecLexer ;
    package com.github.vlsergey.tex2html.grammar;
 }
 
-SPACES	: [ ]+ ;
+NUMERIC	: [0-9]+ ;
+SPACES	: [ ]+	 ;
 
+CURLY_BRACKET_OPEN	: '{' ;
+CURLY_BRACKET_CLOSE : '}' ;
+
+ASTERIX			: '*'  ;
 DOUBLE_BORDER	: '||' ;
 SINGLE_BORDER	: '|'  ;
 

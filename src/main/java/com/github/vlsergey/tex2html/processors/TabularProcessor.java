@@ -75,33 +75,44 @@ public class TabularProcessor implements TexXmlProcessor {
 			if (child instanceof BorderSpecContext) {
 				continue;
 			}
-			assert child instanceof ColumnSpecContext;
 
-			final Function<ParseTree, String> borderWidthF = pt -> {
-				if (!(pt instanceof BorderSpecContext))
-					return null;
+			final ColumnSpecContext columnSpec = (ColumnSpecContext) child;
+			Map<String, String> cellProps = parseCellProps(withoutSpaces, i, columnSpec);
 
-				final BorderSpecContext borderSpec = (BorderSpecContext) pt;
-				return borderSpec.DOUBLE_BORDER() != null ? "double" //
-						: borderSpec.SINGLE_BORDER() != null ? "solid thin" //
-								: null;
-			};
+			final int repeat = columnSpec.colSpecMultiplier() != null
+					? Integer.parseInt(columnSpec.colSpecMultiplier().number().getText())
+					: 1;
 
-			final String borderLeft = i == 0 ? null : borderWidthF.apply(withoutSpaces.get(i - 1));
-			final String borderRight = i == withoutSpaces.size() - 1 ? null
-					: borderWidthF.apply(withoutSpaces.get(i + 1));
-			final String textAlign = COLUMN_SPEC_TO_TEXT_ALIGN.get(child.getText());
-
-			final Map<String, String> cellProps = new LinkedHashMap<>();
-			if (borderLeft != null)
-				cellProps.put("border-left", borderLeft);
-			if (borderRight != null)
-				cellProps.put("border-right", borderRight);
-			if (textAlign != null)
-				cellProps.put("text-align", textAlign);
-			result.add(cellProps);
+			for (int k = 0; k < repeat; k++) {
+				result.add(cellProps);
+			}
 		}
 		return result;
+	}
+
+	private Map<String, String> parseCellProps(List<ParseTree> withoutSpaces, int i, ColumnSpecContext child) {
+		final Function<ParseTree, String> borderWidthF = pt -> {
+			if (!(pt instanceof BorderSpecContext))
+				return null;
+
+			final BorderSpecContext borderSpec = (BorderSpecContext) pt;
+			return borderSpec.DOUBLE_BORDER() != null ? "double" //
+					: borderSpec.SINGLE_BORDER() != null ? "solid thin" //
+							: null;
+		};
+
+		final String borderLeft = i == 0 ? null : borderWidthF.apply(withoutSpaces.get(i - 1));
+		final String borderRight = i == withoutSpaces.size() - 1 ? null : borderWidthF.apply(withoutSpaces.get(i + 1));
+		final String textAlign = COLUMN_SPEC_TO_TEXT_ALIGN.get(child.getText());
+
+		final Map<String, String> cellProps = new LinkedHashMap<>();
+		if (borderLeft != null)
+			cellProps.put("border-left", borderLeft);
+		if (borderRight != null)
+			cellProps.put("border-right", borderRight);
+		if (textAlign != null)
+			cellProps.put("text-align", textAlign);
+		return cellProps;
 	}
 
 	private boolean isAmpersand(Node node) {
