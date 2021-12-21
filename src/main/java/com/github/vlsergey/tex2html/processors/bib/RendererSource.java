@@ -9,10 +9,10 @@ import lombok.Data;
 @Data
 public class RendererSource {
 
-	private final String name;
+	private final String alphabeticLabel;
 
 	private final Element result;
 
-	private final String sortKey;
+	private final SortKey sortKey;
 
 }

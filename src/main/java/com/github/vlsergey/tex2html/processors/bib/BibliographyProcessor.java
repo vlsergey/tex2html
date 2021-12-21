@@ -83,11 +83,23 @@ public class BibliographyProcessor implements TexXmlProcessor {
 		Set<String> used = new LinkedHashSet<>();
 
 		TexXmlUtils.visitCommandNodes(xmlDoc, "cite", command -> {
-			final String[] cites = StringUtils.split(TexXmlUtils.findRequiredArgument(command, 1), ",");
-			for (String cite : cites) {
-				used.add(cite.trim());
+			final String refStr = TexXmlUtils.findRequiredArgument(command, 1);
+			if (StringUtils.isBlank(refStr)) {
+				return;
 			}
+
+			final String[] refs = StringUtils.split(refStr, ", ");
+			final Element cite = xmlDoc.createElement("cite");
+			for (String ref : refs) {
+				final Element refElement = xmlDoc.createElement("ref");
+				refElement.setAttribute("name", ref);
+				cite.appendChild(refElement);
+				used.add(ref);
+			}
+
+			command.getParentNode().replaceChild(cite, command);
 		});
+
 		log.info("Found {} different bib sources references with \\cite", used.size());
 
 		List<RendererSource> renderedSourcesList = new ArrayList<>(used.size());
@@ -101,11 +113,12 @@ public class BibliographyProcessor implements TexXmlProcessor {
 			renderedSourcesList.add(gostRenderer.render(xmlDoc, def));
 		});
 
-		Collections.sort(renderedSourcesList, Comparator.comparing(RendererSource::getSortKey));
+		Collections.sort(renderedSourcesList,
+				Comparator.comparing(RendererSource::getSortKey, SortKey.comparator(SortKey.DEFAULT_SORTING)));
 		for (int i = 0; i < renderedSourcesList.size(); i++) {
 			final RendererSource rendered = renderedSourcesList.get(i);
 			rendered.getResult().setAttribute("index", String.valueOf(i + 1));
-			rendered.getResult().setAttribute("name", rendered.getName());
+			rendered.getResult().setAttribute("name", rendered.getAlphabeticLabel());
 		}
 
 		TexXmlUtils.visitCommandNodes(xmlDoc, "printbibliography", command -> {

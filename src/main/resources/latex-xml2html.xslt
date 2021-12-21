@@ -41,16 +41,6 @@ MathJax = {
     </body>
   </xsl:template>
 
-  <xsl:template match="command[@name='cite']">
-    <a>
-      <xsl:attribute name="href"><xsl:text>#</xsl:text><xsl:apply-templates
-        select="argument[@required='true']/text()" /></xsl:attribute>
-      <xsl:text>[</xsl:text>
-      <xsl:apply-templates select="argument[@required='true']/text()" />
-      <xsl:text>]</xsl:text>
-    </a>
-  </xsl:template>
-
   <xsl:template match="command[@name='chapter']">
     <h1>
       <xsl:if test="@language-code">
@@ -177,6 +167,46 @@ MathJax = {
   </xsl:template>
 
   <xsl:template match="command[@name='sloppy' or @name='usepackage']" />
+
+  <xsl:template match="cite">
+    <xsl:choose>
+      <xsl:when test="count(ref) &lt; 2">
+        <xsl:variable name="name" select="ref/@name" />
+        <a href="#{$name}">
+          <xsl:text>[</xsl:text>
+          <xsl:choose>
+            <xsl:when test="//printbibliography/*[@name=$name][@index]">
+              <xsl:value-of select="//printbibliography/*[@name=$name]/@index" />
+            </xsl:when>
+            <xsl:otherwise>
+              <xsl:value-of select="$name" />
+            </xsl:otherwise>
+          </xsl:choose>
+          <xsl:text>]</xsl:text>
+        </a>
+      </xsl:when>
+      <xsl:otherwise>
+        <xsl:text>[</xsl:text>
+        <xsl:for-each select="ref">
+          <xsl:variable name="name" select="@name" />
+          <a href="#{$name}">
+            <xsl:choose>
+              <xsl:when test="//printbibliography/*[@name=$name][@index]">
+                <xsl:value-of select="//printbibliography/*[@name=$name]/@index" />
+              </xsl:when>
+              <xsl:otherwise>
+                <xsl:value-of select="$name" />
+              </xsl:otherwise>
+            </xsl:choose>
+          </a>
+            <xsl:if test="position() != last()">
+              <xsl:text>, </xsl:text>
+            </xsl:if>
+        </xsl:for-each>
+        <xsl:text>]</xsl:text>
+      </xsl:otherwise>
+    </xsl:choose>
+  </xsl:template>
 
   <xsl:template match="tilda">
     <xsl:text>&#160;</xsl:text>

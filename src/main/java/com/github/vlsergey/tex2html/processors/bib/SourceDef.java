@@ -6,8 +6,9 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 
 @AllArgsConstructor
-@Data class SourceDef {
+@Data
+class SourceDef {
 	private final String type;
-	private final String name;
+	private final String alphabeticLabel;
 	private final LinkedHashMap<String, String[]> attributes;
 }

@@ -40,7 +40,7 @@ public class GostRenderer {
 
 		Element element = doc.createElement(def.getType());
 
-		StringBuilder sortKey = new StringBuilder();
+		SortKey sortKey = new SortKey();
 
 		final String[] authors = def.getAttributes().get("author");
 		if (authors != null && authors.length < 3) {
@@ -52,31 +52,26 @@ public class GostRenderer {
 			element.appendChild(i);
 			element.appendChild(doc.createTextNode(" "));
 
-			sortKey.append(renderedAuthors);
-			sortKey.append(" ");
+			sortKey.getName().append(renderedAuthors);
 		}
 
 		final String title = StringUtils.join(def.getAttributes().get("title"), " and ");
 		if (title != null) {
 			element.appendChild(doc.createTextNode(title));
-			sortKey.append(title);
+			sortKey.getTitle().append(title);
 		}
 
 		final String journal = StringUtils.join(def.getAttributes().get("journal"), " and ");
 		if (journal != null) {
 			if (title != null) {
 				element.appendChild(doc.createTextNode(" // "));
-				sortKey.append(" // ");
 			}
 
 			element.appendChild(doc.createTextNode(journal));
-			sortKey.append(journal);
-
 			element.appendChild(doc.createTextNode("."));
-			sortKey.append(".");
 		}
 
-		append(def, "year", "", identity(), ", ", element);
+		sortKey.getYear().append(append(def, "year", "", identity(), ", ", element));
 		append(def, "month", "", str -> RENDER_MONTHES.getOrDefault(str, str), ", ", element);
 
 		final String[] volumes = def.getAttributes().get("volume");
@@ -85,7 +80,9 @@ public class GostRenderer {
 			element.appendChild(doc.createTextNode(" — "));
 
 			if (volumes != null) {
-				element.appendChild(doc.createTextNode("Т. " + StringUtils.join(volumes, ", ")));
+				final String joined = StringUtils.join(volumes, ", ");
+				element.appendChild(doc.createTextNode("Т. " + joined));
+				sortKey.getVolume().append(joined);
 			}
 			if (volumes != null && numbers != null) {
 				element.appendChild(doc.createTextNode(", "));
@@ -102,14 +99,14 @@ public class GostRenderer {
 		append(def, "issn", "ISSN ", identity(), ", ", element);
 		append(def, "doi", "DOI ", identity(), ", ", element);
 
-		return new RendererSource(def.getName(), element, sortKey.toString());
+		return new RendererSource(def.getAlphabeticLabel(), element, sortKey);
 	}
 
-	private static void append(SourceDef def, String sourceAttr, String prefix,
+	private static String append(SourceDef def, String sourceAttr, String prefix,
 			Function<String, String> singleElementMapping, String separator, Element parent) {
 		final String[] data = def.getAttributes().get(sourceAttr);
 		if (data == null || data.length == 0) {
-			return;
+			return "";
 		}
 
 		Document doc = parent.getOwnerDocument();
@@ -117,10 +114,12 @@ public class GostRenderer {
 		StringBuilder builder = new StringBuilder();
 		builder.append(" — ");
 		builder.append(prefix);
-		builder.append(Arrays.stream(data).map(singleElementMapping).collect(joining(", ")));
+		final String joined = Arrays.stream(data).map(singleElementMapping).collect(joining(", "));
+		builder.append(joined);
 		builder.append(".");
 
 		parent.appendChild(doc.createTextNode(builder.toString()));
+		return joined;
 	}
 
 	private String renderAuthor(String src) {
