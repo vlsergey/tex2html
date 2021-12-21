@@ -1,5 +1,9 @@
 <!DOCTYPE html SYSTEM "about:legacy-compat">
 <html>
+    <head>
+        <META http-equiv="Content-Type" content="text/html; charset=UTF-8">
+        <meta charset="utf-8">
+    </head>
     <body>
         <h1>Глава 1. Первая</h1>
         <p>Сама по себе боль - это любовь к боли, основные экологические проблемы, но я даю такое время, чтобы упасть, так что некоторая большая боль и боль.</p>
@@ -8,14 +12,20 @@
         <h2>2.1. Dritte</h2>
         <p>Der Schmerz selbst ist die Liebe zum Schmerz, die wichtigsten &ouml;kologischen Probleme, aber ich gebe diese Art von Zeit, um zu fallen, so dass einige gro&szlig;e Schmerzen und Schmerzen entstehen.</p>
         <script>
-MathJax = {
-  tex: {
-    processHtmlClass: 'mathjax', 
-    inlineMath: [['$', '$']]
+window.MathJax = {
+  loader: {
+    load: ['[tex]/tagformat'],
   },
-  svg: {
-    fontCache: 'global'
-  }
-};</script><script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script><script async="yes" id="MathJax-script" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+  options: {
+    processHtmlClass: 'mathjax'
+  },
+  tex: {
+    packages: {
+      '[+]': ['base', 'ams', 'physics', 'textcomp']
+    },
+    inlineMath: [['$', '$']],
+  },
+};
+</script><script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script><script async="yes" id="MathJax-script" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     </body>
 </html>

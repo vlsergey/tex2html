@@ -10,6 +10,9 @@
 
   <xsl:template match="/project">
     <html>
+      <head>
+        <meta charset="utf-8" />
+      </head>
       <xsl:apply-templates select="./file/command[@name='document']" />
     </html>
   </xsl:template>
@@ -26,15 +29,21 @@
       <xsl:apply-templates select="content/node()" />
       <script>
         <xsl:text>
-MathJax = {
-  tex: {
-    processHtmlClass: 'mathjax', 
-    inlineMath: [['$', '$']]
+window.MathJax = {
+  loader: {
+    load: ['[tex]/tagformat'],
   },
-  svg: {
-    fontCache: 'global'
-  }
-};</xsl:text>
+  options: {
+    processHtmlClass: 'mathjax'
+  },
+  tex: {
+    packages: {
+      '[+]': ['base', 'ams', 'physics', 'textcomp']
+    },
+    inlineMath: [['$', '$']],
+  },
+};
+</xsl:text>
       </script>
       <script src="https://polyfill.io/v3/polyfill.min.js?features=es6" />
       <script id="MathJax-script" async="yes" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js" />

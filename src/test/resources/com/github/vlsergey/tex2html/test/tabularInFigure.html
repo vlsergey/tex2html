@@ -1,5 +1,9 @@
 <!DOCTYPE html SYSTEM "about:legacy-compat">
 <html>
+    <head>
+        <META http-equiv="Content-Type" content="text/html; charset=UTF-8">
+        <meta charset="utf-8">
+    </head>
     <body>
         <figure style="margin-left: auto; margin-right: auto; display: flex; flex-wrap: wrap; align-items: baseline; justify-content: center; width: fit-content; height: fit-content;">
             <a name="fig:test-label" style="vertical-align: top;"></a>
@@ -18,14 +22,20 @@
             <figcaption style="flex-basis: 100%; text-align: center;">Рис. 1 &mdash; test-caption</figcaption>
         </figure>
         <script>
-MathJax = {
-  tex: {
-    processHtmlClass: 'mathjax', 
-    inlineMath: [['$', '$']]
+window.MathJax = {
+  loader: {
+    load: ['[tex]/tagformat'],
   },
-  svg: {
-    fontCache: 'global'
-  }
-};</script><script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script><script async="yes" id="MathJax-script" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+  options: {
+    processHtmlClass: 'mathjax'
+  },
+  tex: {
+    packages: {
+      '[+]': ['base', 'ams', 'physics', 'textcomp']
+    },
+    inlineMath: [['$', '$']],
+  },
+};
+</script><script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script><script async="yes" id="MathJax-script" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     </body>
 </html>
