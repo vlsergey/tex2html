@@ -9,6 +9,7 @@ import org.antlr.v4.runtime.tree.RuleNode;
 import org.antlr.v4.runtime.tree.TerminalNode;
 import org.apache.commons.lang3.StringUtils;
 
+import com.github.vlsergey.tex2html.frames.BlockFormulaFrame;
 import com.github.vlsergey.tex2html.frames.CommandArgumentFrame;
 import com.github.vlsergey.tex2html.frames.CommandContentFrame;
 import com.github.vlsergey.tex2html.frames.CommandFrame;
@@ -17,6 +18,7 @@ import com.github.vlsergey.tex2html.frames.FileFrame;
 import com.github.vlsergey.tex2html.frames.InnerFormulaFrame;
 import com.github.vlsergey.tex2html.grammar.LatexLexer;
 import com.github.vlsergey.tex2html.grammar.LatexParser;
+import com.github.vlsergey.tex2html.grammar.LatexParser.BlockFormulaContext;
 import com.github.vlsergey.tex2html.grammar.LatexParser.CommandArgumentsContext;
 import com.github.vlsergey.tex2html.grammar.LatexParser.CommandContext;
 import com.github.vlsergey.tex2html.grammar.LatexParser.InlineFormulaContext;
@@ -59,6 +61,14 @@ class StandardVisitor extends LatexVisitor {
 	public Void visitChildren(RuleNode node) {
 		if (node.getPayload() instanceof RuleContext) {
 			final @NonNull RuleContext ruleContext = (RuleContext) node.getPayload();
+
+			if (ruleContext.getRuleIndex() == LatexParser.RULE_blockFormula) {
+				final BlockFormulaContext blockFormula = (BlockFormulaContext) ruleContext;
+				this.latexContext.withFrame(new BlockFormulaFrame(), () -> {
+					new FormulaVisitor(latexContext).visitChildren(blockFormula.formulaContent());
+				});
+				return null;
+			}
 
 			if (ruleContext.getRuleIndex() == LatexParser.RULE_command) {
 				return visitCommand(ruleContext);

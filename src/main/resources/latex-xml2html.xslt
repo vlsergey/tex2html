@@ -168,6 +168,12 @@ MathJax = {
 
   <xsl:template match="command[@name='sloppy' or @name='usepackage']" />
 
+  <xsl:template match="block-formula">
+    <div class="mathjax" style="text-align: center;">
+      <xsl:value-of select="concat('$', text(), '$')" />
+    </div>
+  </xsl:template>
+
   <xsl:template match="cite">
     <xsl:choose>
       <xsl:when test="count(ref) &lt; 2">
@@ -199,24 +205,18 @@ MathJax = {
               </xsl:otherwise>
             </xsl:choose>
           </a>
-            <xsl:if test="position() != last()">
-              <xsl:text>, </xsl:text>
-            </xsl:if>
+          <xsl:if test="position() != last()">
+            <xsl:text>, </xsl:text>
+          </xsl:if>
         </xsl:for-each>
         <xsl:text>]</xsl:text>
       </xsl:otherwise>
     </xsl:choose>
   </xsl:template>
 
-  <xsl:template match="tilda">
-    <xsl:text>&#160;</xsl:text>
-  </xsl:template>
-
   <xsl:template match="inline-formula">
     <span class="mathjax">
-      <xsl:text>$</xsl:text>
-      <xsl:copy-of select="text()" />
-      <xsl:text>$</xsl:text>
+      <xsl:value-of select="concat('$', text(), '$')" />
     </span>
   </xsl:template>
 
@@ -287,6 +287,10 @@ MathJax = {
         </tr>
       </xsl:for-each>
     </table>
+  </xsl:template>
+
+  <xsl:template match="tilda">
+    <xsl:text>&#160;</xsl:text>
   </xsl:template>
 
   <xsl:template match="text()" mode='language-to-code'>
