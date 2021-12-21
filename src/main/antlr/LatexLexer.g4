@@ -32,12 +32,14 @@ SPACES			: [ ]+	 ;
 
 SUBSTITUTION	:   [#][0-9] ;
 
-ESCAPED_AMPERSAND	: '\\&'	 ;
-ESCAPED_APOSTROPHE	: '\\\'' ;
-ESCAPED_DOLLAR_SIGN : '\\$'	 ;
-ESCAPED_MINUS		: '\\-'	 ;
-ESCAPED_PROCENT		: '\\%'	 ;
-ESCAPED_SPACE		: '\\ '	 ;
+ESCAPED_AMPERSAND			: '\\&'	 ;
+ESCAPED_CURLY_BRACKET_OPEN	: '\\{'	 ;
+ESCAPED_CURLY_BRACKET_CLOSE	: '\\}'	 ;
+ESCAPED_APOSTROPHE			: '\\\'' ;
+ESCAPED_DOLLAR_SIGN			: '\\$'	 ;
+ESCAPED_MINUS				: '\\-'	 ;
+ESCAPED_PROCENT				: '\\%'	 ;
+ESCAPED_SPACE				: '\\ '	 ;
 
 ALPHANUMERIC	: [a-zA-Z0-9]+ ;
 ETC             : ~[a-zA-Z0-9\[\]\{\}\\\$\%\~\&\r\n<> #]+;
