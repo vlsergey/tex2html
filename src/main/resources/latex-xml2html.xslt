@@ -18,6 +18,9 @@ div.mathjax {
   padding-top: .5em;
   padding-bottom: .5em;
 }
+span.nonbreaking-interword-space {
+  white-space: nowrap;
+}
 ]]></xsl:text>
         </style>
       </head>
@@ -318,8 +321,12 @@ window.MathJax = {
     </table>
   </xsl:template>
 
-  <xsl:template match="tilda">
+  <xsl:template match="nonbreaking-fixed-size-space">
     <xsl:text>&#160;</xsl:text>
+  </xsl:template>
+
+  <xsl:template match="nonbreaking-interword-space">
+    <span class="nonbreaking-interword-space"><xsl:text> </xsl:text></span>
   </xsl:template>
 
   <xsl:template match="text()" mode='language-to-code'>

@@ -33,6 +33,7 @@ SPACES			: [ ]+	 ;
 SUBSTITUTION	:   [#][0-9] ;
 
 ESCAPED_AMPERSAND			: '\\&'	 ;
+ESCAPED_COMMA				: '\\,'	 ;
 ESCAPED_CURLY_BRACKET_OPEN	: '\\{'	 ;
 ESCAPED_CURLY_BRACKET_CLOSE	: '\\}'	 ;
 ESCAPED_APOSTROPHE			: '\\\'' ;

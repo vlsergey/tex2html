@@ -222,11 +222,15 @@ class StandardVisitor extends LatexVisitor {
 				break;
 			}
 			case LatexLexer.TILDA: {
-				this.latexContext.getOut().appendElement("tilda");
+				this.latexContext.getOut().appendElement("nonbreaking-interword-space");
 				break;
 			}
 			case LatexLexer.ESCAPED_AMPERSAND: {
 				this.latexContext.getOut().appendTextNode("&");
+				break;
+			}
+			case LatexLexer.ESCAPED_COMMA: {
+				this.latexContext.getOut().appendElement("nonbreaking-fixed-size-space");
 				break;
 			}
 			case LatexLexer.ESCAPED_APOSTROPHE: {
