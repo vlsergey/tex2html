@@ -24,6 +24,7 @@ import org.w3c.dom.Node;
 import com.github.vlsergey.tex2html.grammar.ColumnSpecLexer;
 import com.github.vlsergey.tex2html.grammar.ColumnSpecParser;
 import com.github.vlsergey.tex2html.grammar.ColumnSpecParser.BorderSpecContext;
+import com.github.vlsergey.tex2html.grammar.ColumnSpecParser.ColAlignContext;
 import com.github.vlsergey.tex2html.grammar.ColumnSpecParser.ColumnSpecContext;
 import com.github.vlsergey.tex2html.grammar.ColumnSpecParser.SpecContext;
 import com.github.vlsergey.tex2html.utils.AntlrUtils;
@@ -77,11 +78,18 @@ public class TabularProcessor implements TexXmlProcessor {
 			}
 
 			final ColumnSpecContext columnSpec = (ColumnSpecContext) child;
-			Map<String, String> cellProps = parseCellProps(withoutSpaces, i, columnSpec);
 
-			final int repeat = columnSpec.colSpecMultiplier() != null
-					? Integer.parseInt(columnSpec.colSpecMultiplier().number().getText())
-					: 1;
+			final ColAlignContext colAlign;
+			final int repeat;
+			if (columnSpec.columnSpecMultiplied() != null) {
+				colAlign = columnSpec.columnSpecMultiplied().colAlign();
+				repeat = Integer.parseInt(columnSpec.columnSpecMultiplied().number().getText());
+			} else {
+				colAlign = columnSpec.colAlign();
+				repeat = 1;
+			}
+
+			Map<String, String> cellProps = parseCellProps(withoutSpaces, i, colAlign);
 
 			for (int k = 0; k < repeat; k++) {
 				result.add(cellProps);
@@ -90,7 +98,7 @@ public class TabularProcessor implements TexXmlProcessor {
 		return result;
 	}
 
-	private Map<String, String> parseCellProps(List<ParseTree> withoutSpaces, int i, ColumnSpecContext child) {
+	private Map<String, String> parseCellProps(List<ParseTree> withoutSpaces, int i, ColAlignContext align) {
 		final Function<ParseTree, String> borderWidthF = pt -> {
 			if (!(pt instanceof BorderSpecContext))
 				return null;
@@ -103,7 +111,7 @@ public class TabularProcessor implements TexXmlProcessor {
 
 		final String borderLeft = i == 0 ? null : borderWidthF.apply(withoutSpaces.get(i - 1));
 		final String borderRight = i == withoutSpaces.size() - 1 ? null : borderWidthF.apply(withoutSpaces.get(i + 1));
-		final String textAlign = COLUMN_SPEC_TO_TEXT_ALIGN.get(child.getText());
+		final String textAlign = COLUMN_SPEC_TO_TEXT_ALIGN.get(align.getText());
 
 		final Map<String, String> cellProps = new LinkedHashMap<>();
 		if (borderLeft != null)

@@ -71,4 +71,20 @@ public class AntlrUtils {
 		return parse(lexerProvider, parserProvider, inputStream, errorListener);
 	}
 
+	public static <P extends Parser> @NonNull P getTree(final @NonNull Function<CharStream, Lexer> lexerProvider,
+			final @NonNull Function<TokenStream, P> parserProvider, final @NonNull String src,
+			final @NonNull Logger log) throws IOException {
+
+		final BaseErrorListener errorListener = new BaseErrorListener() {
+			@Override
+			public void syntaxError(Recognizer<?, ?> recognizer, Object offendingSymbol, int line,
+					int charPositionInLine, String msg, RecognitionException e) {
+				log.warn("Problem with parsing '{}' @ {}: {}", src, charPositionInLine, msg);
+			}
+		};
+
+		final ANTLRInputStream inputStream = new ANTLRInputStream(new StringReader(src));
+		return parse(lexerProvider, parserProvider, inputStream, errorListener);
+	}
+
 }
