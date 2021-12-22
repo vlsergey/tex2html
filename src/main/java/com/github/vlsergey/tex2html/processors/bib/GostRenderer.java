@@ -46,7 +46,7 @@ public class GostRenderer {
 		map.put("8", "Авг");
 		map.put("9", "Сен");
 		map.put("10", "Окт");
-		map.put("11", "Нов");
+		map.put("11", "Нояб");
 		map.put("12", "Дек");
 		RENDER_MONTHES = unmodifiableMap(map);
 	}
@@ -137,16 +137,16 @@ public class GostRenderer {
 
 		final @NonNull List<Element> locations = getAttribute(def, "location");
 		final @NonNull List<Element> publishers = getAttribute(def, "publisher");
-		if (!locations.isEmpty() || publishers.isEmpty()) {
+		if (!locations.isEmpty() || !publishers.isEmpty()) {
 			result.appendChild(doc.createTextNode(" — "));
-			if (locations != null) {
+			if (!locations.isEmpty()) {
 				withSeparator(locations, location -> DomUtils.copyChildren(location, result),
 						() -> result.appendChild(doc.createTextNode(", ")));
 			}
-			if (locations != null && publishers != null) {
+			if (!locations.isEmpty() && !publishers.isEmpty()) {
 				result.appendChild(doc.createTextNode(" : "));
 			}
-			if (publishers != null) {
+			if (!publishers.isEmpty()) {
 				withSeparator(publishers, publisher -> DomUtils.copyChildren(publisher, result),
 						() -> result.appendChild(doc.createTextNode(", ")));
 			}
