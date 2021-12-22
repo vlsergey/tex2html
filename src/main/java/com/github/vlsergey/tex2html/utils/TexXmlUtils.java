@@ -32,7 +32,7 @@ public class TexXmlUtils {
 
 	@SneakyThrows
 	public static File findFileBasePath(Node node) {
-		String path = (String) XPathFactory.newInstance().newXPath().evaluate("./ancestor::file/@parent-path", node,
+		String path = (String) XPathFactory.newInstance().newXPath().evaluate("./ancestor::file[1]/@parent-path", node,
 				XPathConstants.STRING);
 		return path == null ? null : new File(path);
 	}
