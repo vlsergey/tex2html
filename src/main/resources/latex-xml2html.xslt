@@ -226,15 +226,18 @@ window.MathJax = {
     </div>
   </xsl:template>
 
+  <xsl:key name="printbibliography" match="//printbibliography/*" use="@name" />
+
   <xsl:template match="cite">
     <xsl:choose>
       <xsl:when test="count(ref) &lt; 2">
         <xsl:variable name="name" select="ref/@name" />
+        <xsl:variable name="referencedItem" select="key('printbibliography', @name)" />
         <a href="#{$name}">
           <xsl:text>[</xsl:text>
           <xsl:choose>
-            <xsl:when test="//printbibliography/*[@name=$name][@index]">
-              <xsl:value-of select="//printbibliography/*[@name=$name]/@index" />
+            <xsl:when test="$referencedItem/@index">
+              <xsl:value-of select="$referencedItem/@index" />
             </xsl:when>
             <xsl:otherwise>
               <xsl:value-of select="$name" />
@@ -246,11 +249,13 @@ window.MathJax = {
       <xsl:otherwise>
         <xsl:text>[</xsl:text>
         <xsl:for-each select="ref">
+          <xsl:sort select="key('printbibliography', @name)/@index" data-type="number" />
           <xsl:variable name="name" select="@name" />
+          <xsl:variable name="referencedItem" select="key('printbibliography', @name)" />
           <a href="#{$name}">
             <xsl:choose>
-              <xsl:when test="//printbibliography/*[@name=$name][@index]">
-                <xsl:value-of select="//printbibliography/*[@name=$name]/@index" />
+              <xsl:when test="$referencedItem/@index">
+                <xsl:value-of select="$referencedItem/@index" />
               </xsl:when>
               <xsl:otherwise>
                 <xsl:value-of select="$name" />

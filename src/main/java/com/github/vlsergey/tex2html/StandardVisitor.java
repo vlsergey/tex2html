@@ -12,8 +12,6 @@ import org.antlr.v4.runtime.tree.ParseTree;
 import org.antlr.v4.runtime.tree.RuleNode;
 import org.antlr.v4.runtime.tree.TerminalNode;
 import org.apache.commons.lang3.StringUtils;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
 
 import com.github.vlsergey.tex2html.frames.BibliographyAttributeFrame;
 import com.github.vlsergey.tex2html.frames.BlockFormulaFrame;
@@ -23,16 +21,15 @@ import com.github.vlsergey.tex2html.frames.CommandFrame;
 import com.github.vlsergey.tex2html.frames.CommandInvocationFrame;
 import com.github.vlsergey.tex2html.frames.FileFrame;
 import com.github.vlsergey.tex2html.frames.InnerFormulaFrame;
-import com.github.vlsergey.tex2html.frames.ProjectFrame;
 import com.github.vlsergey.tex2html.grammar.BibLexer;
 import com.github.vlsergey.tex2html.grammar.BibParser;
-import com.github.vlsergey.tex2html.grammar.LatexLexer;
-import com.github.vlsergey.tex2html.grammar.LatexParser;
 import com.github.vlsergey.tex2html.grammar.BibParser.AttrValueContext;
 import com.github.vlsergey.tex2html.grammar.BibParser.AttrValuesArrayContext;
 import com.github.vlsergey.tex2html.grammar.BibParser.AttributeContext;
 import com.github.vlsergey.tex2html.grammar.BibParser.ContentUnwrappedContext;
 import com.github.vlsergey.tex2html.grammar.BibParser.DefinitionContext;
+import com.github.vlsergey.tex2html.grammar.LatexLexer;
+import com.github.vlsergey.tex2html.grammar.LatexParser;
 import com.github.vlsergey.tex2html.grammar.LatexParser.BlockFormulaContext;
 import com.github.vlsergey.tex2html.grammar.LatexParser.CommandArgumentsContext;
 import com.github.vlsergey.tex2html.grammar.LatexParser.CommandContext;
@@ -49,6 +46,8 @@ import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 class StandardVisitor extends LatexVisitor {
+
+	public static final String ELEMENT_BIBLIOGRAPHY_RESOURCE = "bibliography-resource";
 
 	public StandardVisitor(LatexContext context) {
 		super(context);
@@ -186,51 +185,51 @@ class StandardVisitor extends LatexVisitor {
 
 		final String path = commandContext.commandArguments().getChild(RequiredArgumentContext.class, 0).curlyToken()
 				.content().getText();
-
 		final File base = fileFrame.getFile().getParentFile();
 		final File input = FileUtils.findFile(base, path, "bib").orElseThrow(
 				() -> new FileNotFoundException("Input '" + path + "' not found with base '" + base + "'"));
 
-		final @NonNull BibParser bibParser = AntlrUtils.parse(BibLexer::new, BibParser::new, input, log);
+		this.latexContext.withFrame(new FileFrame(input), () -> {
+			final @NonNull BibParser bibParser = AntlrUtils.parse(BibLexer::new, BibParser::new, input, log);
+			final List<DefinitionContext> defs = bibParser.definitions().definition();
+			log.info("Parsed {} bib definitions from {}", defs.size(), input);
 
-		final List<DefinitionContext> defs = bibParser.definitions().definition();
-		log.info("Parsed {} bib definitions from {}", defs.size(), input);
+			xmlWriter.inElement(ELEMENT_BIBLIOGRAPHY_RESOURCE, () -> {
+				defs.forEach(def -> {
+					final String type = def.defType().getText().trim();
+					final String name = def.defName().getText().trim();
+					final LinkedHashMap<String, String[]> attrs = new LinkedHashMap<>();
 
-		xmlWriter.inElement("bibliography", () -> {
-			defs.forEach(def -> {
-				final String type = def.defType().getText().trim();
-				final String name = def.defName().getText().trim();
-				final LinkedHashMap<String, String[]> attrs = new LinkedHashMap<>();
+					def.attributes().attribute().forEach((AttributeContext attr) -> {
+						final String attrName = attr.attrName().getText().trim();
 
-				def.attributes().attribute().forEach((AttributeContext attr) -> {
-					final String attrName = attr.attrName().getText().trim();
-
-					final AttrValueContext attrValue = attr.attrValue();
-					if (attrValue.contentPlain() != null) {
-						attrs.put(attrName, new String[] { attrValue.getText() });
-						return;
-					}
-
-					final AttrValuesArrayContext valuesArray = attrValue.attrValuesArray();
-					attrs.put(attrName, valuesArray.contentUnwrapped().stream().map(ContentUnwrappedContext::getText)
-							.toArray(String[]::new));
-				});
-
-				xmlWriter.inElement(type, () -> {
-					xmlWriter.setAttribute("name", name);
-					attrs.forEach((attrName, attrValues) -> {
-						for (String attrValue : attrValues) {
-							xmlWriter.inElement("attr", () -> {
-								xmlWriter.setAttribute("name", attrName);
-
-								final @NonNull LatexParser parser = AntlrUtils.parse(LatexLexer::new, LatexParser::new,
-										attrValue, log);
-								final ContentContext contentContext = parser.content();
-								latexContext.withFrame(new BibliographyAttributeFrame(), () -> {
-									this.visit(contentContext);
-								});
-							});
+						final AttrValueContext attrValue = attr.attrValue();
+						if (attrValue.contentPlain() != null) {
+							attrs.put(attrName, new String[] { attrValue.getText() });
+							return;
 						}
+
+						final AttrValuesArrayContext valuesArray = attrValue.attrValuesArray();
+						attrs.put(attrName, valuesArray.contentUnwrapped().stream()
+								.map(ContentUnwrappedContext::getText).toArray(String[]::new));
+					});
+
+					xmlWriter.inElement(type, () -> {
+						xmlWriter.setAttribute("name", name);
+						attrs.forEach((attrName, attrValues) -> {
+							for (String attrValue : attrValues) {
+								xmlWriter.inElement("attr", () -> {
+									xmlWriter.setAttribute("name", attrName);
+
+									final @NonNull LatexParser parser = AntlrUtils.parse(LatexLexer::new,
+											LatexParser::new, attrValue, log);
+									final ContentContext contentContext = parser.content();
+									latexContext.withFrame(new BibliographyAttributeFrame(), () -> {
+										this.visit(contentContext);
+									});
+								});
+							}
+						});
 					});
 				});
 			});
