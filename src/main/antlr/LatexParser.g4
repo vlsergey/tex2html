@@ -36,7 +36,7 @@ formulaContent      : (
 content             : ( formulaContent | blockFormula | inlineFormula )+;
 
 command             : commandStart SPACES? commandArguments;
-commandStart        : SLASH (ALPHANUMERIC | AT)+;
+commandStart        : SLASH (ALPHANUMERIC | ASTERIX | AT)+;
 commandArguments    : (requiredArgument | optionalArgument)*;
 requiredArgument    : curlyToken;
 optionalArgument    : squareToken;

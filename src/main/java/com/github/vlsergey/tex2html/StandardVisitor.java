@@ -97,9 +97,11 @@ class StandardVisitor extends LatexVisitor {
 
 			if (ruleContext.getRuleIndex() == LatexParser.RULE_inlineFormula) {
 				final InlineFormulaContext inlineFormula = (InlineFormulaContext) ruleContext;
-				this.latexContext.withFrame(new InnerFormulaFrame(), () -> {
-					new FormulaVisitor(latexContext).visitChildren(inlineFormula.formulaContent());
-				});
+				if (inlineFormula.formulaContent() != null) {
+					this.latexContext.withFrame(new InnerFormulaFrame(), () -> {
+						new FormulaVisitor(latexContext).visitChildren(inlineFormula.formulaContent());
+					});
+				}
 				return null;
 			}
 		}
@@ -133,6 +135,18 @@ class StandardVisitor extends LatexVisitor {
 
 			final FileProcessor fileProcessor = new FileProcessor(fileFrame.getFile().getParentFile());
 			fileProcessor.processFile(path, this);
+			return null;
+		}
+		case "subimport*": {
+			FileFrame fileFrame = this.latexContext.findFrame(FileFrame.class).get();
+
+			final String folder = commandContext.commandArguments().getChild(RequiredArgumentContext.class, 0)
+					.curlyToken().content().getText();
+			final String file = commandContext.commandArguments().getChild(RequiredArgumentContext.class, 1)
+					.curlyToken().content().getText();
+
+			final FileProcessor fileProcessor = new FileProcessor(fileFrame.getFile().getParentFile());
+			fileProcessor.processFile(folder + "/" + file, this);
 			return null;
 		}
 		case "newcommand": {
@@ -194,45 +208,43 @@ class StandardVisitor extends LatexVisitor {
 			final List<DefinitionContext> defs = bibParser.definitions().definition();
 			log.info("Parsed {} bib definitions from {}", defs.size(), input);
 
-			xmlWriter.inElement(ELEMENT_BIBLIOGRAPHY_RESOURCE, () -> {
-				defs.forEach(def -> {
-					final String type = def.defType().getText().trim();
-					final String name = def.defName().getText().trim();
-					final LinkedHashMap<String, String[]> attrs = new LinkedHashMap<>();
+			xmlWriter.inElement(ELEMENT_BIBLIOGRAPHY_RESOURCE, () -> defs.forEach(def -> {
+				final String type = def.defType().getText().trim();
+				final String name = def.defName().getText().trim();
+				final LinkedHashMap<String, String[]> attrs = new LinkedHashMap<>();
 
-					def.attributes().attribute().forEach((AttributeContext attr) -> {
-						final String attrName = attr.attrName().getText().trim();
+				def.attributes().attribute().forEach((AttributeContext attr) -> {
+					final String attrName = attr.attrName().getText().trim();
 
-						final AttrValueContext attrValue = attr.attrValue();
-						if (attrValue.contentPlain() != null) {
-							attrs.put(attrName, new String[] { attrValue.getText() });
-							return;
-						}
+					final AttrValueContext attrValue = attr.attrValue();
+					if (attrValue.contentPlain() != null) {
+						attrs.put(attrName, new String[] { attrValue.getText() });
+						return;
+					}
 
-						final AttrValuesArrayContext valuesArray = attrValue.attrValuesArray();
-						attrs.put(attrName, valuesArray.contentUnwrapped().stream()
-								.map(ContentUnwrappedContext::getText).toArray(String[]::new));
-					});
+					final AttrValuesArrayContext valuesArray = attrValue.attrValuesArray();
+					attrs.put(attrName, valuesArray.contentUnwrapped().stream().map(ContentUnwrappedContext::getText)
+							.toArray(String[]::new));
+				});
 
-					xmlWriter.inElement(type, () -> {
-						xmlWriter.setAttribute("name", name);
-						attrs.forEach((attrName, attrValues) -> {
-							for (String attrValue : attrValues) {
-								xmlWriter.inElement("attr", () -> {
-									xmlWriter.setAttribute("name", attrName);
+				xmlWriter.inElement(type, () -> {
+					xmlWriter.setAttribute("name", name);
+					attrs.forEach((attrName, attrValues) -> {
+						for (String attrValue : attrValues) {
+							xmlWriter.inElement("attr", () -> {
+								xmlWriter.setAttribute("name", attrName);
 
-									final @NonNull LatexParser parser = AntlrUtils.parse(LatexLexer::new,
-											LatexParser::new, attrValue, log);
-									final ContentContext contentContext = parser.content();
-									latexContext.withFrame(new BibliographyAttributeFrame(), () -> {
-										this.visit(contentContext);
-									});
+								final @NonNull LatexParser parser = AntlrUtils.parse(LatexLexer::new, LatexParser::new,
+										attrValue, log);
+								final ContentContext contentContext = parser.content();
+								latexContext.withFrame(new BibliographyAttributeFrame(), () -> {
+									this.visit(contentContext);
 								});
-							}
-						});
+							});
+						}
 					});
 				});
-			});
+			}));
 		});
 	}
 

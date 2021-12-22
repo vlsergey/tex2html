@@ -28,7 +28,7 @@ final class FormulaVisitor extends LatexVisitor {
 
 	@Override
 	@SneakyThrows
-	public Void visitChildren(RuleNode node) {
+	public Void visitChildren(final @NonNull RuleNode node) {
 		if (node.getPayload() instanceof RuleContext) {
 			final @NonNull RuleContext ruleContext = (RuleContext) node.getPayload();
 
