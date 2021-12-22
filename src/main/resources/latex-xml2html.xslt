@@ -232,7 +232,7 @@ window.MathJax = {
     <xsl:choose>
       <xsl:when test="count(ref) &lt; 2">
         <xsl:variable name="name" select="ref/@name" />
-        <xsl:variable name="referencedItem" select="key('printbibliography', @name)" />
+        <xsl:variable name="referencedItem" select="key('printbibliography', $name)" />
         <a href="#{$name}">
           <xsl:text>[</xsl:text>
           <xsl:choose>
