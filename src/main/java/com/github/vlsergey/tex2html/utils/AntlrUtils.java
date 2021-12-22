@@ -1,7 +1,6 @@
 package com.github.vlsergey.tex2html.utils;
 
 import java.io.File;
-import java.io.IOException;
 import java.io.StringReader;
 import java.util.function.Function;
 
@@ -18,14 +17,16 @@ import org.antlr.v4.runtime.TokenStream;
 import org.slf4j.Logger;
 
 import lombok.NonNull;
+import lombok.SneakyThrows;
 import lombok.experimental.UtilityClass;
 
 @UtilityClass
 public class AntlrUtils {
 
+	@SneakyThrows
 	public static <P extends Parser> @NonNull P parse(final @NonNull Function<CharStream, Lexer> lexerProvider,
 			final @NonNull Function<TokenStream, P> parserProvider, final @NonNull CharStream src,
-			final BaseErrorListener errorListener) throws IOException {
+			final BaseErrorListener errorListener) {
 		final Lexer lexer = lexerProvider.apply(src);
 
 		lexer.removeErrorListeners();
@@ -40,9 +41,10 @@ public class AntlrUtils {
 		return parser;
 	}
 
+	@SneakyThrows
 	public static <P extends Parser> @NonNull P parse(final @NonNull Function<CharStream, Lexer> lexerProvider,
-			final @NonNull Function<TokenStream, P> parserProvider, final @NonNull File src, final @NonNull Logger log)
-			throws IOException {
+			final @NonNull Function<TokenStream, P> parserProvider, final @NonNull File src,
+			final @NonNull Logger log) {
 		final BaseErrorListener errorListener = new BaseErrorListener() {
 			@Override
 			public void syntaxError(Recognizer<?, ?> recognizer, Object offendingSymbol, int line,
@@ -55,9 +57,10 @@ public class AntlrUtils {
 		return parse(lexerProvider, parserProvider, inputStream, errorListener);
 	}
 
+	@SneakyThrows
 	public static <P extends Parser> @NonNull P parse(final @NonNull Function<CharStream, Lexer> lexerProvider,
 			final @NonNull Function<TokenStream, P> parserProvider, final @NonNull String src,
-			final @NonNull Logger log) throws IOException {
+			final @NonNull Logger log) {
 
 		final BaseErrorListener errorListener = new BaseErrorListener() {
 			@Override
@@ -71,9 +74,10 @@ public class AntlrUtils {
 		return parse(lexerProvider, parserProvider, inputStream, errorListener);
 	}
 
+	@SneakyThrows
 	public static <P extends Parser> @NonNull P getTree(final @NonNull Function<CharStream, Lexer> lexerProvider,
 			final @NonNull Function<TokenStream, P> parserProvider, final @NonNull String src,
-			final @NonNull Logger log) throws IOException {
+			final @NonNull Logger log) {
 
 		final BaseErrorListener errorListener = new BaseErrorListener() {
 			@Override

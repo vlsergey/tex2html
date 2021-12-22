@@ -11,6 +11,8 @@ import org.apache.commons.lang3.StringUtils;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
+import com.github.vlsergey.tex2html.utils.ThrowingRunnable;
+
 import lombok.Getter;
 
 public class XmlWriter {
@@ -18,7 +20,7 @@ public class XmlWriter {
 	@Getter
 	private final Document doc;
 
-	private Deque<Element> stack = new LinkedList<>();
+	private final Deque<Element> stack = new LinkedList<>();
 
 	public XmlWriter() throws ParserConfigurationException {
 		final DocumentBuilder documentBuilder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
@@ -49,6 +51,21 @@ public class XmlWriter {
 		final Element toClose = stack.poll();
 		if (!StringUtils.equals(toClose.getTagName(), tagName)) {
 			throw new IllegalStateException("Closing wront tag: " + toClose.getTagName() + ", but assumed " + tagName);
+		}
+	}
+
+	public <E extends Throwable> void inElement(String tagName, ThrowingRunnable<E> runnable) throws E {
+		final Element newElement = doc.createElement(tagName);
+		stack.peek().appendChild(newElement);
+		stack.push(newElement);
+		try {
+			runnable.run();
+		} finally {
+			final Element toClose = stack.poll();
+			if (!StringUtils.equals(toClose.getTagName(), tagName)) {
+				throw new IllegalStateException(
+						"Closing wront tag: " + toClose.getTagName() + ", but assumed " + tagName);
+			}
 		}
 	}
 
