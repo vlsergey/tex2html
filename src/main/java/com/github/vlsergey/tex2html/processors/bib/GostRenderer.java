@@ -113,6 +113,25 @@ public class GostRenderer {
 				.map(node -> (Element) node).collect(toList());
 	}
 
+	private static void withSeparator(final @NonNull Element target, final @NonNull String prefix, boolean firstPresent,
+			final @NonNull Runnable first, final @NonNull String separator, boolean secondPresent,
+			final @NonNull Runnable second, final @NonNull String suffix) {
+		final @NonNull Document doc = target.getOwnerDocument();
+		if (firstPresent || secondPresent) {
+			target.appendChild(doc.createTextNode(prefix));
+			if (firstPresent) {
+				first.run();
+			}
+			if (firstPresent && secondPresent) {
+				target.appendChild(doc.createTextNode(separator));
+			}
+			if (secondPresent) {
+				second.run();
+			}
+			target.appendChild(doc.createTextNode(suffix));
+		}
+	}
+
 	public RendererSource render(Element def) {
 		final Document doc = def.getOwnerDocument();
 		final Element result = doc.createElement(def.getNodeName());
@@ -132,28 +151,38 @@ public class GostRenderer {
 			result.appendChild(doc.createTextNode(" "));
 		}
 
+		final @NonNull List<Element> booktitles = getAttribute(def, "booktitle");
+
 		append(def, "title", "", DomUtils::copyChildren, ", ", "", sortKey.getTitle()::append, result);
 		append(def, "journal", " // ", DomUtils::copyChildren, ", ", ".", emptyConsumer, result);
+		if (!booktitles.isEmpty()) {
+			append(def, "booktitle", " // ", DomUtils::copyChildren, ", ", ".", emptyConsumer, result);
+			append(def, "volume", " Т. ", DomUtils::copyChildren, ", ", ".", emptyConsumer, result);
+		}
+		append(def, "editor", " / под. ред. ", DomUtils::copyChildren, ", ", ".", emptyConsumer, result);
 
 		final @NonNull List<Element> locations = getAttribute(def, "location");
 		final @NonNull List<Element> publishers = getAttribute(def, "publisher");
-		if (!locations.isEmpty() || !publishers.isEmpty()) {
-			result.appendChild(doc.createTextNode(" — "));
-			if (!locations.isEmpty()) {
-				withSeparator(locations, location -> DomUtils.copyChildren(location, result),
-						() -> result.appendChild(doc.createTextNode(", ")));
-			}
-			if (!locations.isEmpty() && !publishers.isEmpty()) {
-				result.appendChild(doc.createTextNode(" : "));
-			}
-			if (!publishers.isEmpty()) {
-				withSeparator(publishers, publisher -> DomUtils.copyChildren(publisher, result),
-						() -> result.appendChild(doc.createTextNode(", ")));
-			}
-			result.appendChild(doc.createTextNode("."));
-		}
+		final @NonNull List<Element> years = getAttribute(def, "year");
 
-		append(def, "year", " — ", DomUtils::copyChildren, ", ", ".", sortKey.getYear()::append, result);
+		withSeparator(result, " — ", //
+				!locations.isEmpty(),
+				() -> withSeparator(locations, location -> DomUtils.copyChildren(location, result),
+						() -> result.appendChild(doc.createTextNode(", "))),
+				" : ", //
+				!publishers.isEmpty() || !years.isEmpty(), () -> withSeparator(result, "", //
+						!publishers.isEmpty(),
+						() -> withSeparator(publishers, publisher -> DomUtils.copyChildren(publisher, result),
+								() -> result.appendChild(doc.createTextNode(", "))),
+						", ", //
+						!years.isEmpty(), () -> withSeparator(years, year -> {
+							DomUtils.copyChildren(year, result);
+							sortKey.getYear().append(year.getTextContent());
+						}, () -> {
+							result.appendChild(doc.createTextNode(", "));
+							sortKey.getYear().append(", ");
+						}), ""),
+				".");
 
 		append(def, "month", " — ",
 				(month, monthesContainer) -> Optional.ofNullable(RENDER_MONTHES.get(month.getTextContent()))
@@ -161,20 +190,21 @@ public class GostRenderer {
 								() -> DomUtils.copyChildren(month, monthesContainer)),
 				", ", ".", emptyConsumer, result);
 
-		final @NonNull List<Element> volumes = getAttribute(def, "volume");
-		final @NonNull List<Element> numbers = getAttribute(def, "number");
-		if (!volumes.isEmpty() || !numbers.isEmpty()) {
-			result.appendChild(doc.createTextNode(" — "));
-			append(def, "volume", "Т. ", DomUtils::copyChildren, ", ", "", emptyConsumer, result);
-			if (!volumes.isEmpty() && !numbers.isEmpty()) {
-				result.appendChild(doc.createTextNode(", "));
-			}
-			append(def, "number", "№ ", DomUtils::copyChildren, ", ", "", emptyConsumer, result);
-			result.appendChild(doc.createTextNode("."));
+		if (booktitles.isEmpty()) {
+			final @NonNull List<Element> volumes = getAttribute(def, "volume");
+			final @NonNull List<Element> numbers = getAttribute(def, "number");
+			withSeparator(result, " — ", //
+					!volumes.isEmpty(),
+					() -> append(def, "volume", "Т. ", DomUtils::copyChildren, ", ", "", emptyConsumer, result), ", ",
+					!numbers.isEmpty(),
+					() -> append(def, "number", "№ ", DomUtils::copyChildren, ", ", "", emptyConsumer, result), ".");
 		}
 
-		append(def, "pages", " — С. ", DomUtils::copyChildren, ", ", ". ", emptyConsumer, result);
-		append(def, "issn", " — ISSN ", DomUtils::copyChildren, ", ", ". ", emptyConsumer, result);
+		append(def, "pages", " — С. ", DomUtils::copyChildren, ", ", ".", emptyConsumer, result);
+		append(def, "pagetotal", " — с. ", DomUtils::copyChildren, ", ", ".", emptyConsumer, result);
+		append(def, "series", " — (", DomUtils::copyChildren, ", ", ") ", emptyConsumer, result);
+		append(def, "isbn", " — ISBN ", DomUtils::copyChildren, ", ", ".", emptyConsumer, result);
+		append(def, "issn", " — ISSN ", DomUtils::copyChildren, ", ", ".", emptyConsumer, result);
 
 		append(def, "doi", " — DOI ", (doiSrc, doiContainer) -> {
 			final Element a = doc.createElement("a");
@@ -182,7 +212,15 @@ public class GostRenderer {
 			a.setAttribute("style", "font-family: monospace;");
 			DomUtils.copyChildren(doiSrc, a);
 			doiContainer.appendChild(a);
-		}, ", ", ". ", emptyConsumer, result);
+		}, ", ", ".", emptyConsumer, result);
+
+		append(def, "url", " — URL: ", (urlSrc, urlContainer) -> {
+			final Element a = doc.createElement("a");
+			a.setAttribute("href", urlSrc.getTextContent());
+			a.setAttribute("style", "font-family: monospace;");
+			DomUtils.copyChildren(urlSrc, a);
+			urlContainer.appendChild(a);
+		}, ", ", ".", emptyConsumer, result);
 
 		return new RendererSource(def.getAttribute("name"), result, sortKey);
 	}

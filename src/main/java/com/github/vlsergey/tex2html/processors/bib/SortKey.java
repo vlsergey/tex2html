@@ -6,6 +6,7 @@ import java.util.Map;
 import java.util.function.Function;
 
 import lombok.Data;
+import lombok.NonNull;
 
 @Data
 public class SortKey {
@@ -26,26 +27,7 @@ public class SortKey {
 	}
 
 	public static Comparator<SortKey> comparator(String sortingOptions) {
-		Comparator<SortKey> comparator = null;
-
-		for (char c : sortingOptions.toCharArray()) {
-			Function<SortKey, StringBuilder> func = char2func.get(c);
-			if (func == null) {
-				continue;
-			}
-
-			if (comparator == null) {
-				comparator = Comparator.comparing(func);
-			} else {
-				comparator = comparator.thenComparing(Comparator.comparing(func));
-			}
-		}
-
-		if (comparator == null) {
-			return comparator(DEFAULT_SORTING);
-		}
-
-		return comparator;
+		return Comparator.comparing((SortKey s) -> s.toString(sortingOptions));
 	}
 
 	private final StringBuilder alphabeticLabel = new StringBuilder();
@@ -57,5 +39,21 @@ public class SortKey {
 	private final StringBuilder volume = new StringBuilder();
 
 	private final StringBuilder year = new StringBuilder();
+
+	public String toString(final @NonNull String sortingOptions) {
+		if (char2func.keySet().stream().allMatch(c -> sortingOptions.indexOf(c) == -1)) {
+			return toString(DEFAULT_SORTING);
+		}
+
+		StringBuilder builder = new StringBuilder();
+		for (char c : sortingOptions.toCharArray()) {
+			Function<SortKey, StringBuilder> func = char2func.get(c);
+			if (func == null) {
+				continue;
+			}
+			builder.append(func.apply(this));
+		}
+		return builder.toString();
+	}
 
 }
