@@ -25,6 +25,7 @@ limitedContent      : (
     GTGT |
     HASH |
     LINE_BREAK |
+    LT |
     LTLT |
     DOUBLE_MINUS | TRIPLE_MINUS |
     PIPE |
