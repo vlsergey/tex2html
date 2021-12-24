@@ -1,9 +1,9 @@
 package com.github.vlsergey.tex2html;
 
+import static com.github.vlsergey.tex2html.FileTestUtils.withTempFile;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.nio.charset.StandardCharsets;
@@ -31,7 +31,6 @@ import org.w3c.dom.Document;
 import com.github.vlsergey.tex2html.grammar.LatexLexer;
 import com.github.vlsergey.tex2html.grammar.LatexParser;
 import com.github.vlsergey.tex2html.grammar.LatexParser.ContentContext;
-import com.github.vlsergey.tex2html.utils.ThrowingConsumer;
 
 import lombok.NonNull;
 
@@ -47,18 +46,6 @@ class MainTest {
 	private static String readAndNormalize(String resourcePath) throws IOException {
 		return IOUtils.toString(MainTest.class.getResource(resourcePath), StandardCharsets.UTF_8).replace("\r\n", "\n")
 				.trim();
-	}
-
-	private static <E extends Throwable> void withTempFile(String prefix, String suffix,
-			ThrowingConsumer<File, E> consumer) throws E, IOException {
-		final File in = File.createTempFile(prefix, suffix);
-		try {
-			consumer.accept(in);
-		} finally {
-			if (!in.delete()) {
-				in.deleteOnExit();
-			}
-		}
 	}
 
 	@Autowired

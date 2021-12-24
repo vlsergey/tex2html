@@ -27,7 +27,7 @@ public class SortKey {
 	}
 
 	public static Comparator<SortKey> comparator(String sortingOptions) {
-		return Comparator.comparing((SortKey s) -> s.toString(sortingOptions));
+		return Comparator.comparing((SortKey s) -> s.toString(sortingOptions).toLowerCase());
 	}
 
 	private final StringBuilder alphabeticLabel = new StringBuilder();

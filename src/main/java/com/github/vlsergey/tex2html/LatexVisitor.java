@@ -8,7 +8,7 @@ import lombok.Getter;
 import lombok.NonNull;
 
 @AllArgsConstructor(access = AccessLevel.PROTECTED)
-abstract class LatexVisitor extends AbstractParseTreeVisitor<Void> {
+public abstract class LatexVisitor extends AbstractParseTreeVisitor<Void> {
 
 	@Getter
 	protected final @NonNull LatexContext latexContext;
