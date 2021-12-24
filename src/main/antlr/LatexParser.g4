@@ -7,7 +7,7 @@ parser grammar LatexParser;
 options { tokenVocab=LatexLexer; }
 
 formulaContent      : (
-    ALPHANUMERIC |
+    ALPHA |
     AMPERSAND |
     ASTERIX |
     ESCAPED_AMPERSAND |
@@ -38,7 +38,7 @@ formulaContent      : (
 content             : ( formulaContent | blockFormula | inlineFormula )+;
 
 command             : commandStart SPACES? commandArguments;
-commandStart        : SLASH (ALPHANUMERIC | ASTERIX | AT)+;
+commandStart        : SLASH (ALPHA | ASTERIX | AT)+;
 commandArguments    : (requiredArgument | optionalArgument)*;
 requiredArgument    : curlyToken;
 optionalArgument    : squareToken;

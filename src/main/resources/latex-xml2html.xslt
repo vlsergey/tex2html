@@ -153,6 +153,10 @@ window.MathJax = {
     </a>
   </xsl:template>
 
+  <xsl:template match="command[@name='No']">
+    <xsl:text>№</xsl:text>
+  </xsl:template>
+
   <xsl:template match="command[@name='quote']">
     <blockquote>
       <xsl:apply-templates select="content/node()" />

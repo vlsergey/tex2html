@@ -168,7 +168,7 @@ public class TextMode extends Mode {
 			Token token = (Token) node.getPayload();
 
 			switch (token.getType()) {
-			case LatexLexer.ALPHANUMERIC:
+			case LatexLexer.ALPHA:
 			case LatexLexer.ASTERIX:
 			case LatexLexer.AT:
 			case LatexLexer.DOLLAR_SIGN:

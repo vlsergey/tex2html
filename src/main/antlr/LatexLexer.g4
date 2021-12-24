@@ -44,8 +44,8 @@ ESCAPED_PIPE				: '\\|'	 ;
 ESCAPED_PROCENT				: '\\%'	 ;
 ESCAPED_SPACE				: '\\ '	 ;
 
-ALPHANUMERIC	: [a-zA-Z0-9]+ ;
-ETC             : ~[a-zA-Z0-9\[\]\{\}\\\$\%\~\&\r\n<> #]+;
+ALPHA	        : [a-zA-Z]+ ;
+ETC             : ~[a-zA-Z\[\]\{\}\\\$\%\~\&\r\n<> #]+;
 
 PROCENT : '%' -> pushMode(COMMENT) ;
 
