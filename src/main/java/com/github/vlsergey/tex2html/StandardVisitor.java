@@ -212,7 +212,9 @@ public class StandardVisitor extends LatexVisitor {
 			case LatexLexer.ASTERIX:
 			case LatexLexer.AT:
 			case LatexLexer.DOLLAR_SIGN:
+			case LatexLexer.ESCAPED_PIPE:
 			case LatexLexer.ETC:
+			case LatexLexer.PIPE:
 			case LatexLexer.SPACES: {
 				this.latexContext.getOut().appendTextNode(token.getText());
 				break;

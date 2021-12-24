@@ -25,6 +25,7 @@ LT				: '<'	 ;
 LTLT			: '<<'	 ;
 DOUBLE_MINUS	: '--'	 ;
 TRIPLE_MINUS	: '---'	 ;
+PIPE			: '|'	 ;
 SLASH			: '\\'	 ;
 DOUBLE_SLASH	: '\\\\' ;
 TILDA			: '~'	 ;
@@ -39,6 +40,7 @@ ESCAPED_CURLY_BRACKET_CLOSE	: '\\}'	 ;
 ESCAPED_APOSTROPHE			: '\\\'' ;
 ESCAPED_DOLLAR_SIGN			: '\\$'	 ;
 ESCAPED_MINUS				: '\\-'	 ;
+ESCAPED_PIPE				: '\\|'	 ;
 ESCAPED_PROCENT				: '\\%'	 ;
 ESCAPED_SPACE				: '\\ '	 ;
 

@@ -17,6 +17,7 @@ formulaContent      : (
     ESCAPED_CURLY_BRACKET_CLOSE |
     ESCAPED_DOLLAR_SIGN |
     ESCAPED_MINUS |
+    ESCAPED_PIPE |
     ESCAPED_SPACE |
     ETC |
     GT |
@@ -24,6 +25,7 @@ formulaContent      : (
     LINE_BREAK |
     LTLT |
     DOUBLE_MINUS | TRIPLE_MINUS |
+    PIPE |
     SHARP |
     DOUBLE_SLASH |
     SPACES |
