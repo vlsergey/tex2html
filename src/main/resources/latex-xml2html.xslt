@@ -220,14 +220,7 @@ window.MathJax = {
     <xsl:apply-templates select="content/node()" />
   </xsl:template>
 
-  <xsl:template match="block-formula">
-    <div class="mathjax" style="text-align: center;">
-      <xsl:value-of select="concat('$', text(), '$')" />
-    </div>
-  </xsl:template>
-
   <xsl:key name="printbibliography" match="//printbibliography/*" use="@name" />
-
   <xsl:template match="cite">
     <xsl:choose>
       <xsl:when test="count(ref) &lt; 2">
@@ -271,12 +264,6 @@ window.MathJax = {
     </xsl:choose>
   </xsl:template>
 
-  <xsl:template match="inline-formula">
-    <span class="mathjax">
-      <xsl:value-of select="concat('$', text(), '$')" />
-    </span>
-  </xsl:template>
-
   <xsl:template match="item">
     <li>
       <xsl:apply-templates />
@@ -287,6 +274,16 @@ window.MathJax = {
     <ul>
       <xsl:apply-templates />
     </ul>
+  </xsl:template>
+
+  <xsl:template match="nonbreaking-fixed-size-space">
+    <xsl:text>&#160;</xsl:text>
+  </xsl:template>
+
+  <xsl:template match="nonbreaking-interword-space">
+    <span class="nonbreaking-interword-space">
+      <xsl:text> </xsl:text>
+    </span>
   </xsl:template>
 
   <xsl:template match="printbibliography">
@@ -347,14 +344,26 @@ window.MathJax = {
     </table>
   </xsl:template>
 
-  <xsl:template match="nonbreaking-fixed-size-space">
-    <xsl:text>&#160;</xsl:text>
+  <xsl:template match="tex-formula-block">
+    <div class="mathjax" style="text-align: center;">
+      <xsl:text>$$</xsl:text>
+      <xsl:apply-templates select="." mode="string-join-mode" />
+      <xsl:text>$$</xsl:text>
+    </div>
   </xsl:template>
 
-  <xsl:template match="nonbreaking-interword-space">
-    <span class="nonbreaking-interword-space">
-      <xsl:text> </xsl:text>
+  <xsl:template match="tex-formula-inline">
+    <span class="mathjax">
+      <xsl:value-of select="concat('$', text(), '$')" />
     </span>
+  </xsl:template>
+
+  <xsl:template match="tex-formula-multline">
+    <div class="mathjax" style="text-align: center;">
+      <xsl:text>$$\begin{eqnarray}</xsl:text>
+      <xsl:apply-templates select="." mode="string-join-mode" />
+      <xsl:text>\end{eqnarray}$$</xsl:text>
+    </div>
   </xsl:template>
 
   <xsl:template match="text()" mode='language-to-code'>
@@ -372,4 +381,10 @@ window.MathJax = {
     <a name="{.}" style="vertical-align: top;" />
   </xsl:template>
 
+  <xsl:template match="*" mode="string-join-mode">
+    <xsl:apply-templates select="child::node()" mode="string-join-mode" />
+  </xsl:template>
+  <xsl:template match="text()" mode="string-join-mode">
+    <xsl:value-of select="." />
+  </xsl:template>
 </xsl:stylesheet>

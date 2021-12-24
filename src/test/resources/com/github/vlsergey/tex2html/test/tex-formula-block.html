@@ -1,0 +1,44 @@
+<!DOCTYPE html SYSTEM "about:legacy-compat">
+<html>
+    <head>
+        <META http-equiv="Content-Type" content="text/html; charset=UTF-8">
+        <meta charset="utf-8">
+        <style type="text/css">
+div.mathjax {
+  padding-top: .5em;
+  padding-bottom: .5em;
+}
+span.nonbreaking-interword-space {
+  white-space: nowrap;
+}
+</style>
+    </head>
+    <body>
+        <p>При расшифровании используется та же схема, только левая и правая части меняются местами перед началом итераций, а ключи раунда подаются в обратном порядке:</p>
+        <div class="mathjax" style="text-align: center;">$$ R_i = L_{i-1} \oplus F(R_{i-1}, K_{n+1-i}), $$</div>
+        <div class="mathjax" style="text-align: center;">$$ \begin{array}{l}
+    L_0^* = R_n = L_{n-1} \oplus F(R_{n-1}, K_n), \\
+    R_0^* = L_n = R_{n-1}, \\
+    \\
+    L_1^* = R_{n-1}, \\
+    R_1^* = L_{n-1} \oplus F(R_{n-1}, K_n) \oplus F(R_{n-1}, K_n) = L_{n-1}, \\
+    \dots.
+\end{array} $$</div>
+        <script>
+window.MathJax = {
+  loader: {
+    load: ['[tex]/tagformat'],
+  },
+  options: {
+    processHtmlClass: 'mathjax'
+  },
+  tex: {
+    packages: {
+      '[+]': ['base', 'ams', 'physics', 'textcomp']
+    },
+    inlineMath: [['$', '$']],
+  },
+};
+</script><script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script><script async="yes" id="MathJax-script" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    </body>
+</html>

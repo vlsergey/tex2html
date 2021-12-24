@@ -8,9 +8,9 @@
         <argument required="true">document</argument>
         <content>
               Hello, 
-            <inline-formula>42</inline-formula>
+            <tex-formula-inline>42</tex-formula-inline>
              and 
-            <inline-formula>84</inline-formula>
+            <tex-formula-inline>84</tex-formula-inline>
             !
 
         </content>

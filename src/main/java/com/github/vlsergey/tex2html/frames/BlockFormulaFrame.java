@@ -13,13 +13,13 @@ public class BlockFormulaFrame extends MathMode {
 	}
 
 	@Override
-	public @NonNull Frame onEnter(@NonNull XmlWriter out) {
-		out.beginElement("block-formula");
+	public @NonNull BlockFormulaFrame onEnter(@NonNull XmlWriter out) {
+		out.beginElement("tex-formula-block");
 		return this;
 	}
 
 	@Override
 	public void onExit(@NonNull XmlWriter out) {
-		out.endElement("block-formula");
+		out.endElement("tex-formula-block");
 	}
 }

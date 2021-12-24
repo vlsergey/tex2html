@@ -99,6 +99,10 @@ public class LatexVisitor extends AbstractParseTreeVisitor<Void> {
 			}
 		}
 
+		return visitChildrenSuper(node);
+	}
+
+	public Void visitChildrenSuper(RuleNode node) {
 		return super.visitChildren(node);
 	}
 

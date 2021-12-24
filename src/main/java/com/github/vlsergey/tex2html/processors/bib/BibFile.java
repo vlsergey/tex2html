@@ -15,6 +15,7 @@ import com.github.vlsergey.tex2html.Mode;
 import com.github.vlsergey.tex2html.XmlWriter;
 import com.github.vlsergey.tex2html.frames.BibliographyAttributeFrame;
 import com.github.vlsergey.tex2html.frames.FileFrame;
+import com.github.vlsergey.tex2html.frames.Frame;
 import com.github.vlsergey.tex2html.grammar.BibLexer;
 import com.github.vlsergey.tex2html.grammar.BibParser;
 import com.github.vlsergey.tex2html.grammar.BibParser.AttrValueContext;
@@ -44,6 +45,20 @@ public class BibFile extends Mode implements FileFrame {
 		final File currentFolder = latexVisitor.getCurrentFolder().orElse(new File("."));
 		this.file = FileUtils.findFile(currentFolder, path, "bib").orElseThrow(
 				() -> new FileNotFoundException("Input '" + path + "' not found with base '" + currentFolder + "'"));
+	}
+
+	@Override
+	public @NonNull Frame onEnter(@NonNull XmlWriter out) {
+		FileFrame.super.onEnter(out);
+		out.beginElement("bibliography-resource");
+		return this;
+	}
+
+	@Override
+	public void onExit(@NonNull XmlWriter out) {
+		out.endElement("bibliography-resource");
+		FileFrame.super.onExit(out);
+		return;
 	}
 
 	@Override
@@ -81,7 +96,7 @@ public class BibFile extends Mode implements FileFrame {
 					final @NonNull LatexParser parser = AntlrUtils.parse(LatexLexer::new, LatexParser::new, attrValue,
 							log);
 					final ContentContext contentContext = parser.content();
-					latexVisitor.with(new BibliographyAttributeFrame(), () -> {
+					latexVisitor.with(new BibliographyAttributeFrame(latexVisitor), () -> {
 						latexVisitor.visit(contentContext);
 					});
 				});

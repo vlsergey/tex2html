@@ -14,12 +14,12 @@ public class InnerFormulaFrame extends MathMode {
 
 	@Override
 	public @NonNull Frame onEnter(@NonNull XmlWriter out) {
-		out.beginElement("inline-formula");
+		out.beginElement("tex-formula-inline");
 		return this;
 	}
 
 	@Override
 	public void onExit(@NonNull XmlWriter out) {
-		out.endElement("inline-formula");
+		out.endElement("tex-formula-inline");
 	}
 }

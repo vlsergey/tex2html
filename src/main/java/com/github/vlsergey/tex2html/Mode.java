@@ -7,8 +7,8 @@ import org.apache.commons.lang3.StringUtils;
 
 import com.github.vlsergey.tex2html.frames.CommandInvocationFrame;
 import com.github.vlsergey.tex2html.frames.Frame;
-import com.github.vlsergey.tex2html.grammar.LatexLexer;
 import com.github.vlsergey.tex2html.grammar.BibParser.DefinitionContext;
+import com.github.vlsergey.tex2html.grammar.LatexLexer;
 import com.github.vlsergey.tex2html.grammar.LatexParser.BlockFormulaContext;
 import com.github.vlsergey.tex2html.grammar.LatexParser.CommandContext;
 import com.github.vlsergey.tex2html.grammar.LatexParser.CommentContext;
@@ -73,14 +73,18 @@ public abstract class Mode implements Frame {
 
 	public void visitTerminal(final @NonNull TerminalNode node) {
 		if (node.getPayload() instanceof Token) {
-			Token token = (Token) node.getPayload();
+			final @NonNull XmlWriter xmlWriter = latexVisitor.getOut();
+			final @NonNull Token token = (Token) node.getPayload();
 
 			switch (token.getType()) {
+			case LatexLexer.LINE_BREAK:
+				xmlWriter.appendTextNode("\n");
+				break;
 			case LatexLexer.SUBSTITUTION:
 				visitSubstitution(node, token);
 				break;
 			default:
-				latexVisitor.getOut().appendTextNode(token.getText());
+				xmlWriter.appendTextNode(token.getText());
 				break;
 			}
 		}

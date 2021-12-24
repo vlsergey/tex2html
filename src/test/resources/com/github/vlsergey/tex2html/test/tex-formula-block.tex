@@ -1,0 +1,15 @@
+\documentclass{article}
+\begin{document}
+При расшифровании используется та же схема, только левая и правая части меняются местами перед началом итераций, а ключи раунда подаются в обратном порядке:
+    \[ R_i = L_{i-1} \oplus F(R_{i-1}, K_{n+1-i}), \]
+\[ \begin{array}{l}
+    L_0^* = R_n = L_{n-1} \oplus F(R_{n-1}, K_n), \\
+    R_0^* = L_n = R_{n-1}, \\
+    \\
+%\end{array} \]
+%\[ \begin{array}{l}
+    L_1^* = R_{n-1}, \\
+    R_1^* = L_{n-1} \oplus F(R_{n-1}, K_n) \oplus F(R_{n-1}, K_n) = L_{n-1}, \\
+    \dots.
+\end{array} \]
+\end{document}

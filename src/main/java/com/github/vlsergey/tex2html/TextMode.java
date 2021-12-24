@@ -12,6 +12,7 @@ import com.github.vlsergey.tex2html.frames.CommandArgumentFrame;
 import com.github.vlsergey.tex2html.frames.CommandContentFrame;
 import com.github.vlsergey.tex2html.frames.CommandFrame;
 import com.github.vlsergey.tex2html.frames.InnerFormulaFrame;
+import com.github.vlsergey.tex2html.frames.MultlineFormulaFrame;
 import com.github.vlsergey.tex2html.frames.TexFile;
 import com.github.vlsergey.tex2html.grammar.LatexLexer;
 import com.github.vlsergey.tex2html.grammar.LatexParser;
@@ -78,10 +79,18 @@ public class TextMode extends Mode {
 			final String innerCommandName = commandContext.commandArguments().getChild(RequiredArgumentContext.class, 0)
 					.curlyToken().content().getText();
 
-			latexVisitor.push(new CommandFrame(innerCommandName));
-			appendCommandArguments(commandContext);
-			latexVisitor.push(new CommandContentFrame());
-			return null;
+			switch (innerCommandName) {
+			case "multline*": {
+				latexVisitor.push(new MultlineFormulaFrame(latexVisitor));
+				return null;
+			}
+			default: {
+				latexVisitor.push(new CommandFrame(innerCommandName));
+				appendCommandArguments(commandContext);
+				latexVisitor.push(new CommandContentFrame());
+				return null;
+			}
+			}
 		}
 		case "addbibresource": {
 			visitAddBibResourceCommand(commandContext);
@@ -172,7 +181,13 @@ public class TextMode extends Mode {
 			}
 
 			case LatexLexer.AMPERSAND:
-				xmlWriter.appendElement("ampersand");
+				if (latexVisitor.findFrame(frame -> frame instanceof CommandFrame
+						&& ((CommandFrame) frame).getCommandName().equals("tabular")).isPresent()) {
+					xmlWriter.appendElement("ampersand");
+				} else {
+					xmlWriter.appendTextNode("&");
+				}
+
 				break;
 			case LatexLexer.GTGT:
 				xmlWriter.appendTextNode("»");
