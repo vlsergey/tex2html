@@ -10,6 +10,7 @@ import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 import org.w3c.dom.Document;
 
+import com.github.vlsergey.tex2html.Tex2HtmlOptions;
 import com.github.vlsergey.tex2html.XmlWriter;
 
 import lombok.SneakyThrows;
@@ -20,7 +21,7 @@ public class XsltProcessor implements TexXmlProcessor {
 
 	@Override
 	@SneakyThrows
-	public Document process(Document xmlDoc) {
+	public Document process(Tex2HtmlOptions command, Document xmlDoc) {
 		Transformer transformer = TransformerFactory.newInstance()
 				.newTransformer(new StreamSource(XmlWriter.class.getResourceAsStream("/latex-xml2html.xslt")));
 		final DOMResult outputTarget = new DOMResult();

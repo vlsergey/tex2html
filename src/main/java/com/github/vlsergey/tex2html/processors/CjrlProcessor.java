@@ -15,6 +15,7 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 
+import com.github.vlsergey.tex2html.Tex2HtmlOptions;
 import com.github.vlsergey.tex2html.grammar.CjrlLexer;
 import com.github.vlsergey.tex2html.utils.TexXmlUtils;
 
@@ -65,7 +66,7 @@ public class CjrlProcessor implements TexXmlProcessor {
 	}
 
 	@Override
-	public Document process(Document xmlDoc) {
+	public Document process(Tex2HtmlOptions command, Document xmlDoc) {
 		return TexXmlUtils.visitCommandNodes(xmlDoc, "cjRL", this::processImpl);
 	}
 

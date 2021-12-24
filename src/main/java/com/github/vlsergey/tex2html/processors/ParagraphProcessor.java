@@ -15,6 +15,7 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.Text;
 
+import com.github.vlsergey.tex2html.Tex2HtmlOptions;
 import com.github.vlsergey.tex2html.utils.DomUtils;
 import com.github.vlsergey.tex2html.utils.StreamUtils;
 
@@ -33,7 +34,7 @@ public class ParagraphProcessor implements TexXmlProcessor {
 
 	@Override
 	@SneakyThrows
-	public Document process(Document xhtmlDoc) {
+	public Document process(Tex2HtmlOptions command, Document xhtmlDoc) {
 		DomUtils.concatenateTextNodes(xhtmlDoc);
 
 		DomUtils.visit(xhtmlDoc, node -> {

@@ -13,6 +13,7 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.Text;
 
+import com.github.vlsergey.tex2html.Tex2HtmlOptions;
 import com.github.vlsergey.tex2html.utils.DomUtils;
 import com.github.vlsergey.tex2html.utils.StreamUtils;
 import com.github.vlsergey.tex2html.utils.TexXmlUtils;
@@ -26,7 +27,7 @@ public class ItemizeProcessor implements TexXmlProcessor {
 	private final XPathFactory xPathFactory = XPathFactory.newInstance();
 
 	@Override
-	public Document process(Document xmlDoc) {
+	public Document process(Tex2HtmlOptions command, Document xmlDoc) {
 		return TexXmlUtils.visitCommandNodes(xmlDoc, "itemize", this::processImpl);
 	}
 

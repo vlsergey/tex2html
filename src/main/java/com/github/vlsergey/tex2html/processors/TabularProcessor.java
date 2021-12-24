@@ -24,6 +24,8 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
+import com.github.vlsergey.tex2html.Tex2HtmlCommand;
+import com.github.vlsergey.tex2html.Tex2HtmlOptions;
 import com.github.vlsergey.tex2html.grammar.ColumnSpecLexer;
 import com.github.vlsergey.tex2html.grammar.ColumnSpecParser;
 import com.github.vlsergey.tex2html.grammar.ColumnSpecParser.BorderSpecContext;
@@ -131,7 +133,7 @@ public class TabularProcessor implements TexXmlProcessor {
 	}
 
 	@Override
-	public Document process(Document xmlDoc) {
+	public Document process(Tex2HtmlOptions command, Document xmlDoc) {
 		return TexXmlUtils.visitCommandNodes(xmlDoc, "tabular", this::processImpl);
 	}
 

@@ -20,10 +20,12 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 
+import com.github.vlsergey.tex2html.Tex2HtmlOptions;
 import com.github.vlsergey.tex2html.processors.TexXmlProcessor;
 import com.github.vlsergey.tex2html.utils.DomUtils;
 import com.github.vlsergey.tex2html.utils.TexXmlUtils;
 
+import lombok.NonNull;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 
@@ -39,7 +41,7 @@ public class BibliographyProcessor implements TexXmlProcessor {
 
 	@Override
 	@SneakyThrows
-	public Document process(Document xmlDoc) {
+	public @NonNull Document process(final @NonNull Tex2HtmlOptions options, final @NonNull Document xmlDoc) {
 		Map<String, Element> bibliographyElements = new LinkedHashMap<>();
 
 		DomUtils.stream((NodeList) xPathFactory.newXPath().evaluate("/project//bibliography-resource/*", xmlDoc,

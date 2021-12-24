@@ -44,6 +44,7 @@ dependencies {
 	implementation group: 'commons-io', name: 'commons-io', version: '2.11.0'
 	implementation group: 'info.picocli', name:'picocli-spring-boot-starter', version: '4.6.2'
 	implementation group: 'org.apache.commons', name: 'commons-lang3', version: '3.12.0'
+	implementation group: 'org.apache.pdfbox', name: 'pdfbox', version: '2.0.25'
 	implementation group: 'org.springframework.boot', name: 'spring-boot-starter', version: '2.5.6'
 
 	testAnnotationProcessor group: 'org.projectlombok', name: 'lombok', version: lombokVersion

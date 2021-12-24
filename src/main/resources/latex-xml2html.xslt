@@ -264,6 +264,10 @@ window.MathJax = {
     </xsl:choose>
   </xsl:template>
 
+  <xsl:template match="include-graphics">
+    <img src="{@src}" style="width: 100%" />
+  </xsl:template>
+
   <xsl:template match="item">
     <li>
       <xsl:apply-templates />

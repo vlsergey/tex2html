@@ -10,6 +10,7 @@ import org.springframework.stereotype.Component;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
+import com.github.vlsergey.tex2html.Tex2HtmlOptions;
 import com.github.vlsergey.tex2html.utils.TexXmlUtils;
 
 import lombok.SneakyThrows;
@@ -22,7 +23,7 @@ public class LabelProcessor implements TexXmlProcessor {
 
 	@Override
 	@SneakyThrows
-	public Document process(Document xmlDoc) {
+	public Document process(Tex2HtmlOptions command, Document xmlDoc) {
 		return TexXmlUtils.visitCommandNodes(xmlDoc, "label", labelCommand -> {
 			final String labelName = TexXmlUtils.findRequiredArgument(labelCommand, 1);
 			if (labelName == null) {

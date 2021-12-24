@@ -1,4 +1,4 @@
-package com.github.vlsergey.tex2html.processors;
+package com.github.vlsergey.tex2html.processors.graphics;
 
 import static java.util.Collections.emptyMap;
 import static java.util.stream.Collectors.toMap;
@@ -6,28 +6,38 @@ import static java.util.stream.Collectors.toMap;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
 import java.math.BigDecimal;
+import java.nio.file.Files;
 import java.util.Map;
 
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.tree.ParseTree;
+import org.apache.pdfbox.util.Hex;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
+import org.springframework.util.DigestUtils;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.Text;
 
+import com.github.vlsergey.tex2html.Tex2HtmlCommand;
+import com.github.vlsergey.tex2html.Tex2HtmlOptions;
 import com.github.vlsergey.tex2html.grammar.AttributesLexer;
 import com.github.vlsergey.tex2html.grammar.AttributesParser;
 import com.github.vlsergey.tex2html.grammar.AttributesParser.AttributeContext;
 import com.github.vlsergey.tex2html.grammar.AttributesParser.AttributesContext;
 import com.github.vlsergey.tex2html.grammar.AttributesParser.TextWidthRelativeContext;
+import com.github.vlsergey.tex2html.processors.TexXmlProcessor;
 import com.github.vlsergey.tex2html.utils.AntlrUtils;
 import com.github.vlsergey.tex2html.utils.DomUtils;
 import com.github.vlsergey.tex2html.utils.FileUtils;
 import com.github.vlsergey.tex2html.utils.TexXmlUtils;
 
+import lombok.NonNull;
+import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 
 @Component
@@ -77,31 +87,48 @@ public class IncludeGraphicsProcessor implements TexXmlProcessor {
 	}
 
 	@Override
-	public Document process(Document xmlDoc) {
-		return TexXmlUtils.visitCommandNodes(xmlDoc, "includegraphics", this::processImpl);
+	public Document process(final @NonNull Tex2HtmlOptions options, final @NonNull Document xmlDoc) {
+		return TexXmlUtils.visitCommandNodes(xmlDoc, "includegraphics", command -> processImpl(options, command));
 	}
 
-	private void processImpl(Node node) {
-		final String filePath = TexXmlUtils.findRequiredArgument(node, 1);
-		final Node imageAttributesNode = TexXmlUtils.findOptionalArgumentNode(node, 1);
+	@SneakyThrows
+	private static String md5(File file) {
+		try (InputStream is = Files.newInputStream(file.toPath())) {
+			return Hex.getString(DigestUtils.md5Digest(is));
+		}
+	}
+
+	@Autowired
+	private Pdf2PngConverter pdf2PngConverter;
+
+	private void processImpl(final @NonNull Tex2HtmlOptions options, Element command) {
+		final String filePath = TexXmlUtils.findRequiredArgument(command, 1);
+		final Node imageAttributesNode = TexXmlUtils.findOptionalArgumentNode(command, 1);
 
 		if (filePath != null) {
 			try {
-				final File basePath = TexXmlUtils.findFileBasePath(node);
+				final File basePath = TexXmlUtils.findFileBasePath(command);
 
-				final File input = FileUtils.findFile(basePath, filePath, SUPPORTED_IMAGE_EXTENSIONS)
+				File input = FileUtils.findFile(basePath, filePath, SUPPORTED_IMAGE_EXTENSIONS)
 						.orElseThrow(() -> new FileNotFoundException(
 								"Image " + filePath + "' not found with base '" + basePath.getPath()
 										+ "' and one of possible extensions: " + SUPPORTED_IMAGE_EXTENSIONS));
 
-				final Element img = node.getOwnerDocument().createElement("include-graphics");
+				if (input.getPath().endsWith(".pdf") && options.getImagesFolder() != null) {
+					File updated = new File(options.getImagesFolder(), md5(input) + ".png");
+					pdf2PngConverter.convert(input, updated);
+					log.info("Converted {} to {}", input, updated);
+					input = updated;
+				}
+
+				final Element img = command.getOwnerDocument().createElement("include-graphics");
 				img.setAttribute("src", input.toURI().toASCIIString());
 
 				final Map<String, String> imageAttributes = imageAttributesNode == null ? emptyMap()
 						: parseAttributes(attributesToString(imageAttributesNode));
 				imageAttributes.forEach(img::setAttribute);
 
-				node.getParentNode().replaceChild(img, node);
+				command.getParentNode().replaceChild(img, command);
 
 			} catch (Exception exc) {
 				log.error("Unable to process includegraphics with path " + filePath + ": " + exc.getMessage(), exc);

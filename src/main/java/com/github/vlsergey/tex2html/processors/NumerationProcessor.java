@@ -10,6 +10,7 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 
+import com.github.vlsergey.tex2html.Tex2HtmlOptions;
 import com.github.vlsergey.tex2html.utils.DomUtils;
 import com.github.vlsergey.tex2html.utils.TexXmlUtils;
 
@@ -23,7 +24,7 @@ public class NumerationProcessor implements TexXmlProcessor {
 
 	@Override
 	@SneakyThrows
-	public Document process(Document xmlDoc) {
+	public Document process(Tex2HtmlOptions command, Document xmlDoc) {
 		final boolean haveChapters = (Boolean) xPathFactory.newXPath().evaluate("count(//command[@name='chapter']) > 0",
 				xmlDoc, XPathConstants.BOOLEAN);
 		final MutableInt chapterCounter = new MutableInt(0);

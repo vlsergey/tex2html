@@ -30,6 +30,10 @@ public class Tex2HtmlCommand implements Callable<Integer> {
 	@Setter(AccessLevel.PACKAGE)
 	private boolean debugXml;
 
+	@Option(names = "--images-folder", description = "Destination folder for converted and formulas.", required = false)
+	@Setter(AccessLevel.PACKAGE)
+	private File imagesFolder;
+
 	@Option(names = "--in", description = "Source TeX file.", required = true)
 	@Setter(AccessLevel.PACKAGE)
 	private File in;
@@ -48,6 +52,9 @@ public class Tex2HtmlCommand implements Callable<Integer> {
 	@Override
 	@SneakyThrows
 	public Integer call() {
+		final Tex2HtmlOptions options = new Tex2HtmlOptions();
+		options.setImagesFolder(imagesFolder);
+
 		final XmlWriter xmlWriter = new XmlWriter();
 		final LatexVisitor visitor = new LatexVisitor(xmlWriter);
 
@@ -59,7 +66,7 @@ public class Tex2HtmlCommand implements Callable<Integer> {
 		}
 
 		for (TexXmlProcessor texXmlProcessor : texXmlProcessors) {
-			doc = texXmlProcessor.process(doc);
+			doc = texXmlProcessor.process(options, doc);
 
 			if (this.debugXml) {
 				log.info("XML after parsing TEX after {} processor:\n{}", texXmlProcessor,
