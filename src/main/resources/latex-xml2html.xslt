@@ -83,7 +83,7 @@ window.MathJax = {
   </xsl:template>
   <xsl:template match="command[@name='subsubsection']">
     <h4>
-      <xsl:apply-templates select="." mode="section-header-content" />
+      <xsl:apply-templates select="./argument[@required='true']/node()" />
     </h4>
   </xsl:template>
 
