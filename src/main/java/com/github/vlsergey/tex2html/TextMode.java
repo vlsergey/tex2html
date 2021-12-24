@@ -213,34 +213,30 @@ public class TextMode extends Mode {
 			case LatexLexer.SUBSTITUTION:
 				visitSubstitution(node, token);
 				break;
-			case LatexLexer.TILDA: {
+			case LatexLexer.TILDA:
 				xmlWriter.appendElement("nonbreaking-interword-space");
 				break;
-			}
-			case LatexLexer.ESCAPED_AMPERSAND: {
+			case LatexLexer.ESCAPED_AMPERSAND:
 				xmlWriter.appendTextNode("&");
 				break;
-			}
-			case LatexLexer.ESCAPED_COMMA: {
+			case LatexLexer.ESCAPED_COMMA:
 				xmlWriter.appendElement("nonbreaking-fixed-size-space");
 				break;
-			}
-			case LatexLexer.ESCAPED_APOSTROPHE: {
+			case LatexLexer.ESCAPED_APOSTROPHE:
 				xmlWriter.appendTextNode("\u0301");
 				break;
-			}
-			case LatexLexer.ESCAPED_HASH: {
+			case LatexLexer.ESCAPED_HASH:
 				xmlWriter.appendTextNode("#");
 				break;
-			}
-			case LatexLexer.ESCAPED_DOLLAR_SIGN: {
+			case LatexLexer.ESCAPED_DOLLAR_SIGN:
 				xmlWriter.appendTextNode("$");
 				break;
-			}
-			case LatexLexer.ESCAPED_MINUS: {
+			case LatexLexer.ESCAPED_MINUS:
 				xmlWriter.appendElement("wbr");
 				break;
-			}
+			case LatexLexer.ESCAPED_UNDERSCORE:
+				xmlWriter.appendElement("_");
+				break;
 			}
 		}
 	}

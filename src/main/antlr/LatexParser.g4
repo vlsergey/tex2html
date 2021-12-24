@@ -20,6 +20,7 @@ limitedContent      : (
     ESCAPED_MINUS |
     ESCAPED_PIPE |
     ESCAPED_SPACE |
+    ESCAPED_UNDERSCORE |
     ETC |
     GT |
     GTGT |
@@ -34,6 +35,7 @@ limitedContent      : (
     SPACES |
     SUBSTITUTION |
     TILDA |
+    UNDERSCORE |
     comment |
     command |
     curlyToken

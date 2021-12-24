@@ -31,6 +31,7 @@ SLASH			: '\\'	 ;
 DOUBLE_SLASH	: '\\\\' ;
 TILDA			: '~'	 ;
 SPACES			: [ ]+	 ;
+UNDERSCORE		: '_'	 ;
 
 SUBSTITUTION	:   [#][0-9] ;
 
@@ -45,9 +46,10 @@ ESCAPED_MINUS				: '\\-'	 ;
 ESCAPED_PIPE				: '\\|'	 ;
 ESCAPED_PROCENT				: '\\%'	 ;
 ESCAPED_SPACE				: '\\ '	 ;
+ESCAPED_UNDERSCORE			: '\\_'	 ;
 
 ALPHA	: [a-zA-Z]+ ;
-ETC             : ~[a-zA-Z\[\]\{\}\\#\$%~&\r\n<> #]+;
+ETC             : ~[a-zA-Z\[\]\{\}\\#\$%~&_\r\n<> #]+;
 
 PROCENT : '%' -> pushMode(COMMENT) ;
 
