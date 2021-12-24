@@ -3,10 +3,12 @@ package com.github.vlsergey.tex2html.frames;
 import com.github.vlsergey.tex2html.XmlWriter;
 
 import lombok.AllArgsConstructor;
+import lombok.Data;
 import lombok.Getter;
 import lombok.NonNull;
 
 @AllArgsConstructor
+@Data
 public class CommandArgumentFrame implements Frame {
 
 	@Getter

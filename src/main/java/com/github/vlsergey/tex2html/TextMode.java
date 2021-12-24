@@ -85,7 +85,7 @@ public class TextMode extends Mode {
 				return null;
 			}
 			default: {
-				latexVisitor.push(new CommandFrame(innerCommandName));
+				latexVisitor.push(new CommandFrame(commandContext, innerCommandName));
 				appendCommandArguments(commandContext);
 				latexVisitor.push(new CommandContentFrame());
 				return null;
@@ -140,7 +140,7 @@ public class TextMode extends Mode {
 				return visitUserDefinedCommand(commandContext, commandName, userDefinition);
 			}
 
-			latexVisitor.with(new CommandFrame(commandName), () -> {
+			latexVisitor.with(new CommandFrame(commandContext, commandName), () -> {
 				appendCommandArguments(commandContext);
 			});
 			return null;

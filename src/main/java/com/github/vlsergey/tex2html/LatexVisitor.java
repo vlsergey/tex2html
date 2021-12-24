@@ -25,8 +25,10 @@ import com.github.vlsergey.tex2html.grammar.LatexParser.InlineFormulaContext;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.SneakyThrows;
+import lombok.extern.slf4j.Slf4j;
 
 @Getter
+@Slf4j
 public class LatexVisitor extends AbstractParseTreeVisitor<Void> {
 
 	private final Map<String, CommandContext> commandDefinitions = new LinkedHashMap<>();
@@ -57,6 +59,7 @@ public class LatexVisitor extends AbstractParseTreeVisitor<Void> {
 
 	public void poll(final Predicate<Frame> predicate, final Object expected) {
 		final Frame frame = stack.poll();
+		log.debug("Polled from stack: {}", frame);
 		if (!predicate.test(frame)) {
 			throw new IllegalStateException("Found '" + frame + "', but another is expected (" + expected + ")");
 		}
@@ -64,6 +67,7 @@ public class LatexVisitor extends AbstractParseTreeVisitor<Void> {
 	}
 
 	public void push(final @NonNull Frame frame) {
+		log.debug("Push to stack: {}", frame);
 		this.stack.push(frame.onEnter(this.out));
 	}
 
@@ -113,12 +117,16 @@ public class LatexVisitor extends AbstractParseTreeVisitor<Void> {
 	}
 
 	public void with(Frame frame, Runnable runnable) {
+		log.debug("Push to stack: {}", frame);
+
 		this.stack.push(frame);
 		frame.onEnter(out);
 
 		runnable.run();
 
 		final Frame polled = this.stack.poll();
+		log.debug("Poll from stack: {}", polled);
+
 		if (polled != frame) {
 			throw new IllegalStateException("Wrong frame state, expected " + frame + ", but actual is " + polled);
 		}

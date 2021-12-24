@@ -6,7 +6,7 @@ parser grammar LatexParser;
 
 options { tokenVocab=LatexLexer; }
 
-formulaContent      : (
+limitedContent      : (
     ALPHA |
     AMPERSAND |
     ASTERIX |
@@ -35,19 +35,19 @@ formulaContent      : (
     command |
     curlyToken
 )+;
+
+formulaContent      : ( limitedContent | SQUARE_BRACKET_OPEN | SQUARE_BRACKET_CLOSE )+;
 content             : ( formulaContent | blockFormula | inlineFormula )+;
 
 command             : commandStart SPACES? commandArguments;
 commandStart        : SLASH (ALPHA | ASTERIX | AT)+;
 commandArguments    : (requiredArgument | optionalArgument)*;
 requiredArgument    : curlyToken;
-optionalArgument    : squareToken;
+optionalArgument    : SQUARE_BRACKET_OPEN limitedContent? SQUARE_BRACKET_CLOSE;
 
 comment         : PROCENT COMMENT_TEXT? (COMMENT_LINE_BREAK | EOF);
 
 blockFormula    : SLASH_SQUARE_BRACKET_OPEN formulaContent? SLASH_SQUARE_BRACKET_CLOSE;
-
-squareToken     : SQUARE_BRACKET_OPEN content? SQUARE_BRACKET_CLOSE;
 
 curlyToken      : CURLY_BRACKET_OPEN content? CURLY_BRACKET_CLOSE;
 

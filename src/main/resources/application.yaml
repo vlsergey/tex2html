@@ -21,3 +21,4 @@ app:
         section: Section
         figure: Fig.
         table: Table
+#logging.level.com.github.vlsergey: DEBUG

@@ -61,7 +61,7 @@ public abstract class Mode implements Frame {
 			int index = Integer.parseInt(token.getText().substring(1)) - 1;
 			final ParseTree arg = frame.getInvocation().commandArguments().getChild(index);
 			if (arg instanceof OptionalArgumentContext) {
-				latexVisitor.visit(((OptionalArgumentContext) arg).squareToken().content());
+				latexVisitor.visit(((OptionalArgumentContext) arg).limitedContent());
 			}
 			if (arg instanceof RequiredArgumentContext) {
 				latexVisitor.visit(((RequiredArgumentContext) arg).curlyToken().content());
