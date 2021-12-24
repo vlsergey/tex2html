@@ -192,6 +192,9 @@ public class TextMode extends Mode {
 			case LatexLexer.GTGT:
 				xmlWriter.appendTextNode("»");
 				break;
+			case LatexLexer.HASH:
+				xmlWriter.appendTextNode("#");
+				break;
 			case LatexLexer.LINE_BREAK:
 				xmlWriter.appendTextNode("\n");
 				break;
@@ -224,6 +227,10 @@ public class TextMode extends Mode {
 			}
 			case LatexLexer.ESCAPED_APOSTROPHE: {
 				xmlWriter.appendTextNode("\u0301");
+				break;
+			}
+			case LatexLexer.ESCAPED_HASH: {
+				xmlWriter.appendTextNode("#");
 				break;
 			}
 			case LatexLexer.ESCAPED_DOLLAR_SIGN: {

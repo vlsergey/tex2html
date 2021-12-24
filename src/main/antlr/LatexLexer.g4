@@ -20,6 +20,7 @@ SHARP			: '#'	 ;
 DOLLAR_SIGN		: '$'	 ;
 GT				: '>'	 ;
 GTGT			: '>>'	 ;
+HASH			: '#'	 ;
 LINE_BREAK		: '\r\n' | '\r' | '\n' ;
 LT				: '<'	 ;
 LTLT			: '<<'	 ;
@@ -39,13 +40,14 @@ ESCAPED_CURLY_BRACKET_OPEN	: '\\{'	 ;
 ESCAPED_CURLY_BRACKET_CLOSE	: '\\}'	 ;
 ESCAPED_APOSTROPHE			: '\\\'' ;
 ESCAPED_DOLLAR_SIGN			: '\\$'	 ;
+ESCAPED_HASH				: '\\#'	 ;
 ESCAPED_MINUS				: '\\-'	 ;
 ESCAPED_PIPE				: '\\|'	 ;
 ESCAPED_PROCENT				: '\\%'	 ;
 ESCAPED_SPACE				: '\\ '	 ;
 
-ALPHA	        : [a-zA-Z]+ ;
-ETC             : ~[a-zA-Z\[\]\{\}\\\$\%\~\&\r\n<> #]+;
+ALPHA	: [a-zA-Z]+ ;
+ETC             : ~[a-zA-Z\[\]\{\}\\#\$%~&\r\n<> #]+;
 
 PROCENT : '%' -> pushMode(COMMENT) ;
 
