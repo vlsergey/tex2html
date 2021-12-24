@@ -4,10 +4,14 @@ import static java.util.Collections.singletonList;
 import static java.util.stream.Collectors.toList;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.util.LinkedHashMap;
 import java.util.List;
 
+import org.antlr.v4.runtime.tree.ParseTree;
+
 import com.github.vlsergey.tex2html.LatexVisitor;
+import com.github.vlsergey.tex2html.Mode;
 import com.github.vlsergey.tex2html.XmlWriter;
 import com.github.vlsergey.tex2html.frames.BibliographyAttributeFrame;
 import com.github.vlsergey.tex2html.frames.FileFrame;
@@ -22,27 +26,33 @@ import com.github.vlsergey.tex2html.grammar.LatexLexer;
 import com.github.vlsergey.tex2html.grammar.LatexParser;
 import com.github.vlsergey.tex2html.grammar.LatexParser.ContentContext;
 import com.github.vlsergey.tex2html.utils.AntlrUtils;
+import com.github.vlsergey.tex2html.utils.FileUtils;
 
+import lombok.Getter;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-public class BibliographyResourceFactory {
+public class BibFile extends Mode implements FileFrame {
 
-	public static final String ELEMENT_BIBLIOGRAPHY_RESOURCE = "bibliography-resource";
+	@Getter
+	private final File file;
 
-	public void visitBibFile(final @NonNull LatexVisitor latexVisitor, final @NonNull File input) {
-		latexVisitor.with(new FileFrame(input), () -> {
-			final @NonNull BibParser bibParser = AntlrUtils.parse(BibLexer::new, BibParser::new, input, log);
-			final List<DefinitionContext> defs = bibParser.definitions().definition();
-			log.info("Parsed {} bib definitions from {}", defs.size(), input);
+	public BibFile(final @NonNull LatexVisitor latexVisitor, final String path) throws FileNotFoundException {
+		super(latexVisitor);
 
-			latexVisitor.getOut().inElement(ELEMENT_BIBLIOGRAPHY_RESOURCE,
-					() -> defs.forEach(def -> build(latexVisitor, def)));
-		});
+		final File currentFolder = latexVisitor.getCurrentFolder().orElse(new File("."));
+		this.file = FileUtils.findFile(currentFolder, path, "bib").orElseThrow(
+				() -> new FileNotFoundException("Input '" + path + "' not found with base '" + currentFolder + "'"));
 	}
 
-	void build(final @NonNull LatexVisitor latexVisitor, final @NonNull DefinitionContext def) {
+	@Override
+	public ParseTree parseFile() {
+		return AntlrUtils.parse(BibLexer::new, BibParser::new, getFile(), log).definitions();
+	}
+
+	@Override
+	public void visitBibDefinition(@NonNull DefinitionContext def) {
 		final String type = def.defType().getText().trim();
 		final String name = def.defName().getText().trim();
 		final LinkedHashMap<String, List<String>> attrs = new LinkedHashMap<>();
@@ -77,7 +87,6 @@ public class BibliographyResourceFactory {
 				});
 			}));
 		});
-
 	}
 
 }

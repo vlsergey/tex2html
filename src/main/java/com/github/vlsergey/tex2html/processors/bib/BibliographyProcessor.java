@@ -32,6 +32,9 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class BibliographyProcessor implements TexXmlProcessor {
 
+	@Autowired
+	private GostRenderer gostRenderer;
+
 	private final XPathFactory xPathFactory = XPathFactory.newInstance();
 
 	@Override
@@ -95,8 +98,5 @@ public class BibliographyProcessor implements TexXmlProcessor {
 
 		return xmlDoc;
 	}
-
-	@Autowired
-	private GostRenderer gostRenderer;
 
 }

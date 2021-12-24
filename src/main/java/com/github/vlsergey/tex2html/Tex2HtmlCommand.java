@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.w3c.dom.Document;
 
+import com.github.vlsergey.tex2html.frames.TexFile;
 import com.github.vlsergey.tex2html.processors.TexXmlProcessor;
 import com.github.vlsergey.tex2html.utils.XmlUtils;
 
@@ -50,8 +51,7 @@ public class Tex2HtmlCommand implements Callable<Integer> {
 		final XmlWriter xmlWriter = new XmlWriter();
 		final LatexVisitor visitor = new LatexVisitor(xmlWriter);
 
-		final FileProcessor fileProcessor = new FileProcessor(new File("."));
-		fileProcessor.processFile(visitor, this.in.getPath());
+		visitor.visit(new TexFile(visitor, this.in.getPath()));
 
 		Document doc = xmlWriter.getDoc();
 		if (this.debugXml) {

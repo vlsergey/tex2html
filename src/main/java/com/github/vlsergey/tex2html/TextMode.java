@@ -1,6 +1,5 @@
 package com.github.vlsergey.tex2html;
 
-import java.io.File;
 import java.io.FileNotFoundException;
 
 import org.antlr.v4.runtime.RuleContext;
@@ -12,8 +11,8 @@ import com.github.vlsergey.tex2html.frames.BlockFormulaFrame;
 import com.github.vlsergey.tex2html.frames.CommandArgumentFrame;
 import com.github.vlsergey.tex2html.frames.CommandContentFrame;
 import com.github.vlsergey.tex2html.frames.CommandFrame;
-import com.github.vlsergey.tex2html.frames.FileFrame;
 import com.github.vlsergey.tex2html.frames.InnerFormulaFrame;
+import com.github.vlsergey.tex2html.frames.TexFile;
 import com.github.vlsergey.tex2html.grammar.LatexLexer;
 import com.github.vlsergey.tex2html.grammar.LatexParser;
 import com.github.vlsergey.tex2html.grammar.LatexParser.BlockFormulaContext;
@@ -21,8 +20,7 @@ import com.github.vlsergey.tex2html.grammar.LatexParser.CommandArgumentsContext;
 import com.github.vlsergey.tex2html.grammar.LatexParser.CommandContext;
 import com.github.vlsergey.tex2html.grammar.LatexParser.InlineFormulaContext;
 import com.github.vlsergey.tex2html.grammar.LatexParser.RequiredArgumentContext;
-import com.github.vlsergey.tex2html.processors.bib.BibliographyResourceFactory;
-import com.github.vlsergey.tex2html.utils.FileUtils;
+import com.github.vlsergey.tex2html.processors.bib.BibFile;
 
 import lombok.NonNull;
 import lombok.SneakyThrows;
@@ -30,8 +28,6 @@ import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 public class TextMode extends Mode {
-
-	private final BibliographyResourceFactory bibliographyResourceFactory = new BibliographyResourceFactory();
 
 	public TextMode(final @NonNull LatexVisitor latexVisitor) {
 		super(latexVisitor);
@@ -58,15 +54,10 @@ public class TextMode extends Mode {
 	}
 
 	private void visitAddBibResourceCommand(final CommandContext commandContext) throws FileNotFoundException {
-		final @NonNull FileFrame fileFrame = latexVisitor.findFrame(FileFrame.class).get();
-
 		final String path = commandContext.commandArguments().getChild(RequiredArgumentContext.class, 0).curlyToken()
 				.content().getText();
-		final File base = fileFrame.getFile().getParentFile();
-		final File input = FileUtils.findFile(base, path, "bib").orElseThrow(
-				() -> new FileNotFoundException("Input '" + path + "' not found with base '" + base + "'"));
-
-		bibliographyResourceFactory.visitBibFile(latexVisitor, input);
+		final BibFile bibFile = new BibFile(latexVisitor, path);
+		latexVisitor.visit(bibFile);
 	}
 
 	@Override
@@ -74,19 +65,6 @@ public class TextMode extends Mode {
 		latexVisitor.with(new BlockFormulaFrame(latexVisitor), () -> {
 			latexVisitor.visitChildren(blockFormulaContext.formulaContent());
 		});
-		return null;
-	}
-
-	@Override
-	public Void visitInlineFormula(@NonNull InlineFormulaContext inlineFormulaContext) {
-		if (inlineFormulaContext.formulaContent() == null) {
-			return null;
-		}
-
-		latexVisitor.with(new InnerFormulaFrame(latexVisitor), () -> {
-			latexVisitor.visitChildren(inlineFormulaContext.formulaContent());
-		});
-
 		return null;
 	}
 
@@ -110,13 +88,10 @@ public class TextMode extends Mode {
 			return null;
 		}
 		case "input": {
-			FileFrame fileFrame = latexVisitor.findFrame(FileFrame.class).get();
-
 			final String path = commandContext.commandArguments().getChild(RequiredArgumentContext.class, 0)
 					.curlyToken().content().getText();
 
-			final FileProcessor fileProcessor = new FileProcessor(fileFrame.getFile().getParentFile());
-			fileProcessor.processFile(latexVisitor, path);
+			latexVisitor.visit(new TexFile(latexVisitor, path));
 			return null;
 		}
 		case "newcommand": {
@@ -127,15 +102,13 @@ public class TextMode extends Mode {
 			return null;
 		}
 		case "subimport*": {
-			FileFrame fileFrame = latexVisitor.findFrame(FileFrame.class).get();
-
 			final String folder = commandContext.commandArguments().getChild(RequiredArgumentContext.class, 0)
 					.curlyToken().content().getText();
 			final String file = commandContext.commandArguments().getChild(RequiredArgumentContext.class, 1)
 					.curlyToken().content().getText();
 
-			final FileProcessor fileProcessor = new FileProcessor(fileFrame.getFile().getParentFile());
-			fileProcessor.processFile(latexVisitor, folder + "/" + file);
+			final TexFile texFile = new TexFile(latexVisitor, folder + "/" + file);
+			latexVisitor.visit(texFile);
 			return null;
 		}
 		case "end": {
@@ -163,6 +136,19 @@ public class TextMode extends Mode {
 			});
 			return null;
 		}
+	}
+
+	@Override
+	public Void visitInlineFormula(@NonNull InlineFormulaContext inlineFormulaContext) {
+		if (inlineFormulaContext.formulaContent() == null) {
+			return null;
+		}
+
+		latexVisitor.with(new InnerFormulaFrame(latexVisitor), () -> {
+			latexVisitor.visitChildren(inlineFormulaContext.formulaContent());
+		});
+
+		return null;
 	}
 
 	@Override

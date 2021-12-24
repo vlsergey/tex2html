@@ -1,5 +1,6 @@
 package com.github.vlsergey.tex2html;
 
+import java.io.File;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.Map;
@@ -11,8 +12,10 @@ import org.antlr.v4.runtime.tree.AbstractParseTreeVisitor;
 import org.antlr.v4.runtime.tree.RuleNode;
 import org.antlr.v4.runtime.tree.TerminalNode;
 
+import com.github.vlsergey.tex2html.frames.FileFrame;
 import com.github.vlsergey.tex2html.frames.Frame;
 import com.github.vlsergey.tex2html.frames.ProjectFrame;
+import com.github.vlsergey.tex2html.grammar.BibParser.DefinitionContext;
 import com.github.vlsergey.tex2html.grammar.LatexParser;
 import com.github.vlsergey.tex2html.grammar.LatexParser.BlockFormulaContext;
 import com.github.vlsergey.tex2html.grammar.LatexParser.CommandContext;
@@ -27,8 +30,8 @@ import lombok.SneakyThrows;
 public class LatexVisitor extends AbstractParseTreeVisitor<Void> {
 
 	private final Map<String, CommandContext> commandDefinitions = new LinkedHashMap<>();
-	private final @NonNull LinkedList<Frame> stack = new LinkedList<>();
 	private final @NonNull XmlWriter out;
+	private final @NonNull LinkedList<Frame> stack = new LinkedList<>();
 
 	public LatexVisitor(final @NonNull XmlWriter xmlWriter) {
 		this.out = xmlWriter;
@@ -42,6 +45,10 @@ public class LatexVisitor extends AbstractParseTreeVisitor<Void> {
 
 	public Optional<Frame> findFrame(Predicate<Frame> predicate) {
 		return this.stack.stream().filter(predicate).findFirst();
+	}
+
+	public Optional<File> getCurrentFolder() {
+		return findFrame(FileFrame.class).map(FileFrame::getFile).map(File::getParentFile);
 	}
 
 	public @NonNull Mode getMode() {
@@ -60,9 +67,18 @@ public class LatexVisitor extends AbstractParseTreeVisitor<Void> {
 		this.stack.push(frame.onEnter(this.out));
 	}
 
+	public void visit(FileFrame fileFrame) {
+		with(fileFrame, () -> visit(fileFrame.parseFile()));
+	}
+
 	@Override
 	@SneakyThrows
 	public Void visitChildren(RuleNode node) {
+		if (node.getPayload() instanceof DefinitionContext) {
+			getMode().visitBibDefinition((DefinitionContext) node.getPayload());
+			return null;
+		}
+
 		if (node.getPayload() instanceof RuleContext) {
 			final @NonNull RuleContext ruleContext = (RuleContext) node.getPayload();
 

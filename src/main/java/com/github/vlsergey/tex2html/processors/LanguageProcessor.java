@@ -29,15 +29,15 @@ public class LanguageProcessor implements TexXmlProcessor {
 
 	@Getter
 	@Setter
+	private String fallback;
+
+	@Getter
+	@Setter
 	private Map<String, String> langToCode = emptyMap();
 
 	@Getter
 	@Setter
 	private Map<String, Map<String, String>> langToLabels = emptyMap();
-
-	@Getter
-	@Setter
-	private String fallback;
 
 	private Optional<String> findLanguage(Node node) {
 		Node candidate = node;

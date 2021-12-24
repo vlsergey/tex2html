@@ -43,6 +43,17 @@ public class TexXmlUtils {
 				.evaluate("./argument[@required='false'][" + oneBasedIndex + "]", commandNode, XPathConstants.NODE);
 	}
 
+	public static Optional<Element> findPreviousStructuralSibling(Node node) {
+		Node candidate = node.getPreviousSibling();
+		while (candidate != null) {
+			if (isStructuralCommandElement(candidate)) {
+				return Optional.of((Element) candidate);
+			}
+			candidate = candidate.getPreviousSibling();
+		}
+		return Optional.empty();
+	}
+
 	@SneakyThrows
 	public static String findRequiredArgument(Node commandNode, int oneBasedIndex) {
 		return (String) XPathFactory.newInstance().newXPath().evaluate(
@@ -61,17 +72,6 @@ public class TexXmlUtils {
 		return Optional.empty();
 	}
 
-	public static Optional<Element> findPreviousStructuralSibling(Node node) {
-		Node candidate = node.getPreviousSibling();
-		while (candidate != null) {
-			if (isStructuralCommandElement(candidate)) {
-				return Optional.of((Element) candidate);
-			}
-			candidate = candidate.getPreviousSibling();
-		}
-		return Optional.empty();
-	}
-
 	public static boolean isCommandElement(Node node, String commandName) {
 		return node instanceof Element && node.getNodeName().equals("command")
 				&& node.getAttributes().getNamedItem("name") != null
@@ -82,17 +82,6 @@ public class TexXmlUtils {
 		return node instanceof Element && node.getNodeName().equals("command")
 				&& node.getAttributes().getNamedItem("name") != null
 				&& STRUCTURAL_COMMANDS_SET.contains(node.getAttributes().getNamedItem("name").getNodeValue());
-	}
-
-	public static <N extends Node, E extends Exception> N visitNodes(N root, Predicate<Node> predicate,
-			ThrowingConsumer<Node, E> consumer) throws E {
-		DomUtils.visit(root, node -> {
-			if (predicate.test(node)) {
-				consumer.accept(node);
-			}
-			return true;
-		});
-		return root;
 	}
 
 	public static <N extends Node, E extends Exception> N visitCommandNodes(N root, String commandName,
@@ -106,6 +95,17 @@ public class TexXmlUtils {
 				}
 			}
 
+			return true;
+		});
+		return root;
+	}
+
+	public static <N extends Node, E extends Exception> N visitNodes(N root, Predicate<Node> predicate,
+			ThrowingConsumer<Node, E> consumer) throws E {
+		DomUtils.visit(root, node -> {
+			if (predicate.test(node)) {
+				consumer.accept(node);
+			}
 			return true;
 		});
 		return root;

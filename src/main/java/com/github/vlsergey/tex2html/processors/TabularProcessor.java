@@ -61,6 +61,10 @@ public class TabularProcessor implements TexXmlProcessor {
 
 	private final XPathFactory xPathFactory = XPathFactory.newInstance();
 
+	private boolean isAmpersand(Node node) {
+		return node instanceof Element && "ampersand".equals(node.getNodeName());
+	}
+
 	private List<Map<String, String>> parseCellProps(Element command) throws IOException, XPathExpressionException {
 		final String columnsSpecStr = (String) xPathFactory.newXPath().evaluate("./argument[@required='true'][2]",
 				command, XPathConstants.STRING);
@@ -121,10 +125,6 @@ public class TabularProcessor implements TexXmlProcessor {
 		if (textAlign != null)
 			cellProps.put("text-align", textAlign);
 		return cellProps;
-	}
-
-	private boolean isAmpersand(Node node) {
-		return node instanceof Element && "ampersand".equals(node.getNodeName());
 	}
 
 	@Override

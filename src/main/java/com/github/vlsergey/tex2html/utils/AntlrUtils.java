@@ -24,6 +24,23 @@ import lombok.experimental.UtilityClass;
 public class AntlrUtils {
 
 	@SneakyThrows
+	public static <P extends Parser> @NonNull P getTree(final @NonNull Function<CharStream, Lexer> lexerProvider,
+			final @NonNull Function<TokenStream, P> parserProvider, final @NonNull String src,
+			final @NonNull Logger log) {
+
+		final BaseErrorListener errorListener = new BaseErrorListener() {
+			@Override
+			public void syntaxError(Recognizer<?, ?> recognizer, Object offendingSymbol, int line,
+					int charPositionInLine, String msg, RecognitionException e) {
+				log.warn("Problem with parsing '{}' @ {}: {}", src, charPositionInLine, msg);
+			}
+		};
+
+		final ANTLRInputStream inputStream = new ANTLRInputStream(new StringReader(src));
+		return parse(lexerProvider, parserProvider, inputStream, errorListener);
+	}
+
+	@SneakyThrows
 	public static <P extends Parser> @NonNull P parse(final @NonNull Function<CharStream, Lexer> lexerProvider,
 			final @NonNull Function<TokenStream, P> parserProvider, final @NonNull CharStream src,
 			final BaseErrorListener errorListener) {
@@ -59,23 +76,6 @@ public class AntlrUtils {
 
 	@SneakyThrows
 	public static <P extends Parser> @NonNull P parse(final @NonNull Function<CharStream, Lexer> lexerProvider,
-			final @NonNull Function<TokenStream, P> parserProvider, final @NonNull String src,
-			final @NonNull Logger log) {
-
-		final BaseErrorListener errorListener = new BaseErrorListener() {
-			@Override
-			public void syntaxError(Recognizer<?, ?> recognizer, Object offendingSymbol, int line,
-					int charPositionInLine, String msg, RecognitionException e) {
-				log.warn("Problem with parsing '{}' @ {}: {}", src, charPositionInLine, msg);
-			}
-		};
-
-		final ANTLRInputStream inputStream = new ANTLRInputStream(new StringReader(src));
-		return parse(lexerProvider, parserProvider, inputStream, errorListener);
-	}
-
-	@SneakyThrows
-	public static <P extends Parser> @NonNull P getTree(final @NonNull Function<CharStream, Lexer> lexerProvider,
 			final @NonNull Function<TokenStream, P> parserProvider, final @NonNull String src,
 			final @NonNull Logger log) {
 
