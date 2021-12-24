@@ -327,6 +327,16 @@ window.MathJax = {
           <xsl:for-each select="./cell">
             <td>
               <xsl:variable name="cellPos" select="position()" />
+              <xsl:if test="@colspan">
+                <xsl:attribute name="colspan">
+                  <xsl:value-of select="@colspan" />
+                </xsl:attribute>
+              </xsl:if>
+              <xsl:if test="@rowspan">
+                <xsl:attribute name="rowspan">
+                  <xsl:value-of select="@rowspan" />
+                </xsl:attribute>
+              </xsl:if>
               <xsl:attribute name="style">
                 <xsl:value-of select="$paddingLeftStyle" />
                 <xsl:value-of select="$paddingRightStyle" />

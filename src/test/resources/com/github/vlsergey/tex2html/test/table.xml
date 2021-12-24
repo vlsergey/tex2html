@@ -1,0 +1,600 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<project>
+    <command name="documentclass">
+        <argument required="true">article</argument>
+    </command>
+    
+    <command name="document">
+        <argument required="true">document</argument>
+        <content>
+            
+            <command name="table">
+                <argument required="true">table</argument>
+                <argument required="false">!ht</argument>
+                <content>
+                        
+                    <command name="centering"/>
+                        
+                    <command name="caption">
+                        <argument required="true">
+                            Распространение влияния 1 бита левой части в DES
+                            <command name="label">
+                                <argument required="true">tab-DES-avalance-effect</argument>
+                            </command>
+                        </argument>
+                    </command>
+                        
+                    <command name="tabular">
+                        <argument required="true">tabular</argument>
+                        <argument required="true">||c||c||c|c|c||</argument>
+                        <content>
+                                    
+                            <command name="hline"/>
+                                    
+                            <command name="multirow">
+                                <argument required="true">3</argument>
+                                <argument required="true">*</argument>
+                                <argument required="true">Раунд</argument>
+                            </command>
+                             
+                            <ampersand/>
+                             
+                            <tex-formula-inline>L_i</tex-formula-inline>
+                             
+                            <ampersand/>
+                             
+                            <command name="multicolumn">
+                                <argument required="true">3</argument>
+                                <argument required="true">|c||</argument>
+                                <argument required="true">
+                                    <tex-formula-inline>R_i</tex-formula-inline>
+                                </argument>
+                            </command>
+                             
+                            <line-break/>
+                                    
+                            <command name="cline">
+                                <argument required="true">2-5</argument>
+                            </command>
+                                    
+                            <ampersand/>
+                             
+                            <ampersand/>
+                             Расширение 
+                            <ampersand/>
+                             s-блоки 
+                            <ampersand/>
+                             
+                            <tex-formula-inline>R_{i+1} = f(R_i) \oplus L_i</tex-formula-inline>
+                             
+                            <line-break/>
+                                    
+                            <ampersand/>
+                             
+                            <tex-formula-inline>l</tex-formula-inline>
+                             
+                            <ampersand/>
+                             
+                            <tex-formula-inline>r \rightarrow n_1</tex-formula-inline>
+                             
+                            <ampersand/>
+                             
+                            <tex-formula-inline>n_1 \rightarrow n_2</tex-formula-inline>
+                             
+                            <ampersand/>
+                             
+                            <tex-formula-inline>(n_2, l) \rightarrow n_3</tex-formula-inline>
+                             
+                            <line-break/>
+                                    
+                            <command name="hline"/>
+                            <command name="hline"/>
+                                    0 
+                            <ampersand/>
+                             1 
+                            <ampersand/>
+                             0 
+                            <ampersand/>
+                             0 
+                            <ampersand/>
+                             0 
+                            <line-break/>
+                                    1 
+                            <ampersand/>
+                             0 
+                            <ampersand/>
+                             0 
+                            <ampersand/>
+                             0 
+                            <ampersand/>
+                             
+                            <tex-formula-inline>(0,1) \rightarrow 1</tex-formula-inline>
+                             
+                            <line-break/>
+                                    2 
+                            <ampersand/>
+                             1 
+                            <ampersand/>
+                             
+                            <tex-formula-inline>1 \rightarrow 1.5</tex-formula-inline>
+                             
+                            <ampersand/>
+                             
+                            <tex-formula-inline>1.5 \rightarrow 5.5</tex-formula-inline>
+                             
+                            <ampersand/>
+                             
+                            <tex-formula-inline>(5.5, 0) \rightarrow 5.5</tex-formula-inline>
+                             
+                            <line-break/>
+                                    3 
+                            <ampersand/>
+                             5.5 
+                            <ampersand/>
+                             
+                            <tex-formula-inline>5.5 \rightarrow 8.2</tex-formula-inline>
+                             
+                            <ampersand/>
+                             
+                            <tex-formula-inline>8.2 \rightarrow 20.5</tex-formula-inline>
+                             
+                            <ampersand/>
+                             
+                            <tex-formula-inline>(20.5, 1) \rightarrow 20.9</tex-formula-inline>
+                             
+                            <line-break/>
+                                    4 
+                            <ampersand/>
+                             20.9 
+                            <ampersand/>
+                             
+                            <tex-formula-inline>20.9 \rightarrow 31.3</tex-formula-inline>
+                             
+                            <ampersand/>
+                             
+                            <tex-formula-inline>31.3 \rightarrow 32</tex-formula-inline>
+                             
+                            <ampersand/>
+                             
+                            <tex-formula-inline>(32, 20.9) \rightarrow 32</tex-formula-inline>
+                             
+                            <line-break/>
+                                    5 
+                            <ampersand/>
+                             32 
+                            <ampersand/>
+                             32 
+                            <ampersand/>
+                             32 
+                            <ampersand/>
+                             32 
+                            <line-break/>
+                                  
+                            <command name="hline"/>
+                                
+                        </content>
+                    </command>
+                    
+                </content>
+            </command>
+            
+            <command name="table">
+                <argument required="true">table</argument>
+                <argument required="false">!ht</argument>
+                <content>
+                        
+                    <command name="centering"/>
+                        
+                    <command name="caption">
+                        <argument required="true">
+                            Распространение влияния 1 бита левой части в ГОСТ 28147-89
+                            <command name="label">
+                                <argument required="true">tab:GOST-avalance-effect</argument>
+                            </command>
+                        </argument>
+                    </command>
+                        
+                    <command name="resizebox">
+                        <argument required="true">
+                            <command name="textwidth"/>
+                        </argument>
+                        <argument required="true">!</argument>
+                        <argument required="true">
+                             
+                            <command name="tabular">
+                                <argument required="true">tabular</argument>
+                                <argument required="true">||c||c|c|c|c|c|c|c|c||c|c|c|c|c|c|c|c||</argument>
+                                <content>
+                                            
+                                    <command name="hline"/>
+                                            
+                                    <command name="multirow">
+                                        <argument required="true">2</argument>
+                                        <argument required="true">*</argument>
+                                        <argument required="true">Раунд</argument>
+                                    </command>
+                                     
+                                    <ampersand/>
+                                     
+                                    <command name="multicolumn">
+                                        <argument required="true">8</argument>
+                                        <argument required="true">|c||</argument>
+                                        <argument required="true">
+                                            <tex-formula-inline>L_i</tex-formula-inline>
+                                        </argument>
+                                    </command>
+                                     
+                                    <ampersand/>
+                                     
+                                    <command name="multicolumn">
+                                        <argument required="true">8</argument>
+                                        <argument required="true">|c||</argument>
+                                        <argument required="true">
+                                            <tex-formula-inline>R_i</tex-formula-inline>
+                                        </argument>
+                                    </command>
+                                     
+                                    <line-break/>
+                                            
+                                    <command name="cline">
+                                        <argument required="true">2-17</argument>
+                                    </command>
+                                                  
+                                    <ampersand/>
+                                     1 
+                                    <ampersand/>
+                                     2 
+                                    <ampersand/>
+                                     3 
+                                    <ampersand/>
+                                     4 
+                                    <ampersand/>
+                                     5 
+                                    <ampersand/>
+                                     6 
+                                    <ampersand/>
+                                     7 
+                                    <ampersand/>
+                                     8   
+                                    <ampersand/>
+                                       1 
+                                    <ampersand/>
+                                     2 
+                                    <ampersand/>
+                                     3 
+                                    <ampersand/>
+                                     4 
+                                    <ampersand/>
+                                     5 
+                                    <ampersand/>
+                                     6 
+                                    <ampersand/>
+                                     7 
+                                    <ampersand/>
+                                     8 
+                                    <line-break/>
+                                            
+                                    <command name="hline"/>
+                                    <command name="hline"/>
+                                            0     
+                                    <ampersand/>
+                                       
+                                    <ampersand/>
+                                       
+                                    <ampersand/>
+                                       
+                                    <ampersand/>
+                                       
+                                    <ampersand/>
+                                       
+                                    <ampersand/>
+                                       
+                                    <ampersand/>
+                                       
+                                    <ampersand/>
+                                     1   
+                                    <ampersand/>
+                                         
+                                    <ampersand/>
+                                       
+                                    <ampersand/>
+                                       
+                                    <ampersand/>
+                                       
+                                    <ampersand/>
+                                       
+                                    <ampersand/>
+                                       
+                                    <ampersand/>
+                                       
+                                    <ampersand/>
+                                       
+                                    <line-break/>
+                                            1     
+                                    <ampersand/>
+                                       
+                                    <ampersand/>
+                                       
+                                    <ampersand/>
+                                       
+                                    <ampersand/>
+                                       
+                                    <ampersand/>
+                                       
+                                    <ampersand/>
+                                       
+                                    <ampersand/>
+                                       
+                                    <ampersand/>
+                                         
+                                    <ampersand/>
+                                         
+                                    <ampersand/>
+                                       
+                                    <ampersand/>
+                                       
+                                    <ampersand/>
+                                       
+                                    <ampersand/>
+                                       
+                                    <ampersand/>
+                                       
+                                    <ampersand/>
+                                       
+                                    <ampersand/>
+                                     1 
+                                    <line-break/>
+                                            2     
+                                    <ampersand/>
+                                       
+                                    <ampersand/>
+                                       
+                                    <ampersand/>
+                                       
+                                    <ampersand/>
+                                       
+                                    <ampersand/>
+                                       
+                                    <ampersand/>
+                                       
+                                    <ampersand/>
+                                       
+                                    <ampersand/>
+                                     1   
+                                    <ampersand/>
+                                         
+                                    <ampersand/>
+                                       
+                                    <ampersand/>
+                                       
+                                    <ampersand/>
+                                       
+                                    <ampersand/>
+                                     3 
+                                    <ampersand/>
+                                     1 
+                                    <ampersand/>
+                                       
+                                    <ampersand/>
+                                       
+                                    <line-break/>
+                                            3     
+                                    <ampersand/>
+                                       
+                                    <ampersand/>
+                                       
+                                    <ampersand/>
+                                       
+                                    <ampersand/>
+                                       
+                                    <ampersand/>
+                                     3 
+                                    <ampersand/>
+                                     1 
+                                    <ampersand/>
+                                       
+                                    <ampersand/>
+                                         
+                                    <ampersand/>
+                                         
+                                    <ampersand/>
+                                     3 
+                                    <ampersand/>
+                                     4 
+                                    <ampersand/>
+                                     1 
+                                    <ampersand/>
+                                       
+                                    <ampersand/>
+                                       
+                                    <ampersand/>
+                                       
+                                    <ampersand/>
+                                     1 
+                                    <line-break/>
+                                            4     
+                                    <ampersand/>
+                                       
+                                    <ampersand/>
+                                     3 
+                                    <ampersand/>
+                                     4 
+                                    <ampersand/>
+                                     1 
+                                    <ampersand/>
+                                       
+                                    <ampersand/>
+                                       
+                                    <ampersand/>
+                                       
+                                    <ampersand/>
+                                     1   
+                                    <ampersand/>
+                                       4 
+                                    <ampersand/>
+                                     1 
+                                    <ampersand/>
+                                       
+                                    <ampersand/>
+                                       
+                                    <ampersand/>
+                                     3 
+                                    <ampersand/>
+                                     1 
+                                    <ampersand/>
+                                     3 
+                                    <ampersand/>
+                                     4 
+                                    <line-break/>
+                                            5     
+                                    <ampersand/>
+                                     4 
+                                    <ampersand/>
+                                     1 
+                                    <ampersand/>
+                                       
+                                    <ampersand/>
+                                       
+                                    <ampersand/>
+                                     3 
+                                    <ampersand/>
+                                     1 
+                                    <ampersand/>
+                                     3 
+                                    <ampersand/>
+                                     4   
+                                    <ampersand/>
+                                         
+                                    <ampersand/>
+                                     3 
+                                    <ampersand/>
+                                     4 
+                                    <ampersand/>
+                                     4 
+                                    <ampersand/>
+                                     4 
+                                    <ampersand/>
+                                     4 
+                                    <ampersand/>
+                                     4 
+                                    <ampersand/>
+                                     1 
+                                    <line-break/>
+                                            6     
+                                    <ampersand/>
+                                       
+                                    <ampersand/>
+                                     3 
+                                    <ampersand/>
+                                     4 
+                                    <ampersand/>
+                                     4 
+                                    <ampersand/>
+                                     4 
+                                    <ampersand/>
+                                     4 
+                                    <ampersand/>
+                                     4 
+                                    <ampersand/>
+                                     1   
+                                    <ampersand/>
+                                       4 
+                                    <ampersand/>
+                                     4 
+                                    <ampersand/>
+                                     4 
+                                    <ampersand/>
+                                     4 
+                                    <ampersand/>
+                                     4 
+                                    <ampersand/>
+                                     3 
+                                    <ampersand/>
+                                     3 
+                                    <ampersand/>
+                                     4 
+                                    <line-break/>
+                                            7     
+                                    <ampersand/>
+                                     4 
+                                    <ampersand/>
+                                     4 
+                                    <ampersand/>
+                                     4 
+                                    <ampersand/>
+                                     4 
+                                    <ampersand/>
+                                     4 
+                                    <ampersand/>
+                                     3 
+                                    <ampersand/>
+                                     3 
+                                    <ampersand/>
+                                     4   
+                                    <ampersand/>
+                                       4 
+                                    <ampersand/>
+                                     4 
+                                    <ampersand/>
+                                     4 
+                                    <ampersand/>
+                                     4 
+                                    <ampersand/>
+                                     4 
+                                    <ampersand/>
+                                     4 
+                                    <ampersand/>
+                                     4 
+                                    <ampersand/>
+                                     4 
+                                    <line-break/>
+                                            8     
+                                    <ampersand/>
+                                     4 
+                                    <ampersand/>
+                                     4 
+                                    <ampersand/>
+                                     4 
+                                    <ampersand/>
+                                     4 
+                                    <ampersand/>
+                                     4 
+                                    <ampersand/>
+                                     4 
+                                    <ampersand/>
+                                     4 
+                                    <ampersand/>
+                                     4   
+                                    <ampersand/>
+                                       4 
+                                    <ampersand/>
+                                     4 
+                                    <ampersand/>
+                                     4 
+                                    <ampersand/>
+                                     4 
+                                    <ampersand/>
+                                     4 
+                                    <ampersand/>
+                                     4 
+                                    <ampersand/>
+                                     4 
+                                    <ampersand/>
+                                     4 
+                                    <line-break/>
+                                          
+                                    <command name="hline"/>
+                                        
+                                </content>
+                            </command>
+                             
+                        </argument>
+                    </command>
+                    
+                </content>
+            </command>
+            
+        </content>
+    </command>
+    
+</project>

@@ -5,6 +5,7 @@ import static java.util.stream.Collectors.toList;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.BitSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -15,11 +16,13 @@ import javax.xml.xpath.XPathExpressionException;
 import javax.xml.xpath.XPathFactory;
 
 import org.antlr.v4.runtime.tree.ParseTree;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 
 import com.github.vlsergey.tex2html.grammar.ColumnSpecLexer;
 import com.github.vlsergey.tex2html.grammar.ColumnSpecParser;
@@ -51,8 +54,8 @@ public class TabularProcessor implements TexXmlProcessor {
 		COLUMN_SPEC_TO_TEXT_ALIGN = unmodifiableMap(map);
 	}
 
-	private static boolean isHLine(Node node) {
-		return TexXmlUtils.isCommandElement(node, "hline");
+	private static boolean isLine(Node node) {
+		return TexXmlUtils.isCommandElement(node, "hline") || TexXmlUtils.isCommandElement(node, "cline");
 	}
 
 	private static boolean isLineBreak(Node node) {
@@ -145,8 +148,8 @@ public class TabularProcessor implements TexXmlProcessor {
 		List<List<Node>> rowsAndBorders = StreamUtils.group((nextGroup, flush) -> {
 			DomUtils.stream(contentElement.getChildNodes()).forEach(child -> {
 
-				if (isHLine(child)) {
-					if (!nextGroup.isEmpty() && !isHLine(nextGroup.get(0))) {
+				if (isLine(child)) {
+					if (!nextGroup.isEmpty() && !isLine(nextGroup.get(0))) {
 						flush.run();
 					}
 					nextGroup.add(child);
@@ -160,7 +163,7 @@ public class TabularProcessor implements TexXmlProcessor {
 					return;
 				}
 
-				if (!nextGroup.isEmpty() && isHLine(nextGroup.get(0))) {
+				if (!nextGroup.isEmpty() && isLine(nextGroup.get(0))) {
 					flush.run();
 				}
 
@@ -173,7 +176,7 @@ public class TabularProcessor implements TexXmlProcessor {
 			List<Node> first = rowsAndBorders.get(i - 1);
 			List<Node> second = rowsAndBorders.get(i);
 
-			if (isHLine(first.get(0)) && isHLine(second.get(0))) {
+			if (isLine(first.get(0)) && isLine(second.get(0))) {
 				first.addAll(second);
 				rowsAndBorders.remove(i);
 			}
@@ -191,18 +194,19 @@ public class TabularProcessor implements TexXmlProcessor {
 			columns.appendChild(column);
 		});
 
+		List<Element> rows = new ArrayList<>();
 		for (int i = 0; i < rowsAndBorders.size(); i++) {
 			List<Node> rowNodes = rowsAndBorders.get(i);
-			if (isHLine(rowNodes.get(0))) {
+			if (isLine(rowNodes.get(0))) {
 				continue;
 			}
 
 			final String borderTop = i == 0 ? null
-					: isHLine(rowsAndBorders.get(i - 1).get(0))
+					: isLine(rowsAndBorders.get(i - 1).get(0))
 							? rowsAndBorders.get(i - 1).size() == 1 ? "solid thin" : "double"
 							: null;
 			final String borderBottom = i == rowsAndBorders.size() - 1 ? null
-					: isHLine(rowsAndBorders.get(i + 1).get(0))
+					: isLine(rowsAndBorders.get(i + 1).get(0))
 							? rowsAndBorders.get(i + 1).size() == 1 ? "solid thin" : "double"
 							: null;
 
@@ -212,10 +216,43 @@ public class TabularProcessor implements TexXmlProcessor {
 			if (borderBottom != null)
 				row.setAttribute("border-bottom", borderBottom);
 			tabular.appendChild(row);
+			rows.add(row);
 
 			processRow(rowNodes, row);
 		}
 
+		/*
+		 * There is difference between rowspan behavior in LaTeX and HTML. In HTML we
+		 * assume that "spanned" cell shall not present (like with multicolumn), but in
+		 * LaTeX multirow bottom cell is still present. It need to be removed from HTML
+		 */
+		final @NonNull BitSet[] toRemove = new BitSet[rows.size()];
+		for (int r = 0; r < rows.size(); r++) {
+			toRemove[r] = new BitSet();
+		}
+		for (int r = 0; r < rows.size(); r++) {
+			NodeList cells = rows.get(r).getChildNodes();
+			for (int c = 0; c < cells.getLength(); c++) {
+				final Element cell = (Element) cells.item(c);
+				final String rowSpanStr = cell.getAttribute("rowspan");
+				if (StringUtils.isNotBlank(rowSpanStr)) {
+					int rowSpan = Integer.parseInt(rowSpanStr);
+					for (int r2 = r + 1; r2 < Math.min(rows.size(), r + rowSpan); r2++) {
+						toRemove[r2].set(c);
+					}
+				}
+			}
+		}
+
+		for (int r = 0; r < rows.size(); r++) {
+			final Element row = rows.get(r);
+			final NodeList cells = row.getChildNodes();
+			for (int c = cells.getLength() - 1; c >= 0; c--) {
+				if (toRemove[r].get(c)) {
+					row.removeChild(row.getChildNodes().item(c));
+				}
+			}
+		}
 	}
 
 	private void processRow(final @NonNull List<Node> rowNodes, final @NonNull Element row) {
@@ -236,10 +273,51 @@ public class TabularProcessor implements TexXmlProcessor {
 		});
 
 		cells.forEach(cellContent -> {
+			DomUtils.trim(cellContent);
+
 			final Element cell = doc.createElement("cell");
 			cellContent.forEach(cell::appendChild);
 			row.appendChild(cell);
+
+			processSpans(cell);
 		});
+	}
+
+	@SneakyThrows
+	private void processSpans(Element cell) {
+		boolean check = true;
+		while (check) {
+			check = false;
+
+			if (cell.getChildNodes().getLength() == 1) {
+				final Node singleChild = cell.getChildNodes().item(0);
+				if (TexXmlUtils.isCommandElement(singleChild, "multicolumn")) {
+					final String colspan = (String) xPathFactory.newXPath()
+							.evaluate("./argument[@required='true'][1]/text()", singleChild, XPathConstants.STRING);
+					final Node contentContainer = (Node) xPathFactory.newXPath()
+							.evaluate("./argument[@required='true'][3]", singleChild, XPathConstants.NODE);
+					cell.setAttribute("colspan", colspan);
+
+					cell.removeChild(singleChild);
+					DomUtils.childrenStream(contentContainer).forEach(node -> cell.appendChild(node.cloneNode(true)));
+					check = true;
+					continue;
+				}
+
+				if (TexXmlUtils.isCommandElement(singleChild, "multirow")) {
+					final String rowspan = (String) xPathFactory.newXPath()
+							.evaluate("./argument[@required='true'][1]/text()", singleChild, XPathConstants.STRING);
+					final Node contentContainer = (Node) xPathFactory.newXPath()
+							.evaluate("./argument[@required='true'][3]", singleChild, XPathConstants.NODE);
+					cell.setAttribute("rowspan", rowspan);
+
+					cell.removeChild(singleChild);
+					DomUtils.childrenStream(contentContainer).forEach(node -> cell.appendChild(node.cloneNode(true)));
+					check = true;
+					continue;
+				}
+			}
+		}
 	}
 
 }
