@@ -78,7 +78,8 @@ public class LanguageProcessor implements TexXmlProcessor {
 		TexXmlUtils.visitNodes(xmlDoc,
 				node -> node instanceof Element
 						&& (TexXmlUtils.STRUCTURAL_COMMANDS_SET.contains(((Element) node).getAttribute("name"))
-								|| "figure".equals(((Element) node).getAttribute("name"))),
+								|| "figure".equals(((Element) node).getAttribute("name"))
+								|| "table".equals(((Element) node).getAttribute("name"))),
 				node -> {
 					final Element command = (Element) node;
 					final String language = findLanguage(command).orElse(fallback);

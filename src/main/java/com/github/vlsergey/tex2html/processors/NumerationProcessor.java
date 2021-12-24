@@ -31,6 +31,7 @@ public class NumerationProcessor implements TexXmlProcessor {
 		final MutableInt subsectionCounter = new MutableInt(0);
 
 		final MutableInt figureCounter = new MutableInt(0);
+		final MutableInt tableCounter = new MutableInt(0);
 
 		final Element documentNode = (Element) xPathFactory.newXPath().evaluate("//command[@name='document']", xmlDoc,
 				XPathConstants.NODE);
@@ -45,6 +46,9 @@ public class NumerationProcessor implements TexXmlProcessor {
 				chapterCounter.increment();
 				sectionCounter.setValue(0);
 				subsectionCounter.setValue(0);
+
+				figureCounter.setValue(0);
+				tableCounter.setValue(0);
 
 				final Element chapter = (Element) node;
 				chapter.setAttribute("chapter-index", chapterCounter.toString());
@@ -87,6 +91,19 @@ public class NumerationProcessor implements TexXmlProcessor {
 					figure.setAttribute("index", chapterCounter.toString() + "." + figureCounter.toString());
 				} else {
 					figure.setAttribute("index", figureCounter.toString());
+				}
+			}
+
+			if (TexXmlUtils.isCommandElement(node, "table")) {
+				String tableIndex = String.valueOf(tableCounter.incrementAndGet());
+
+				final Element table = (Element) node;
+				table.setAttribute("table-index", tableIndex);
+				if (haveChapters) {
+					table.setAttribute("chapter-index", chapterCounter.toString());
+					table.setAttribute("index", chapterCounter.toString() + "." + tableIndex);
+				} else {
+					table.setAttribute("index", tableIndex);
 				}
 			}
 

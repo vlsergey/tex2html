@@ -9,11 +9,15 @@ app:
       german:
         chapter: Kapitel
         section: Abschnitt
+        figure: Figur
+        table: Tabelle
       russian:
         chapter: Глава
         section: Раздел
         figure: Рис.
+        table: Таблица
       english:
         chapter: Chapter
         section: Section
         figure: Fig.
+        table: Table

@@ -98,7 +98,7 @@ window.MathJax = {
     </div>
   </xsl:template>
 
-  <xsl:template match="command[@name='figure']">
+  <xsl:template match="command[@name='figure' or @name='table']">
     <figure
       style="margin-left: auto; margin-right: auto; display: flex; flex-wrap: wrap; align-items: baseline; justify-content: center; width: fit-content; height: fit-content;">
       <xsl:apply-templates select="@label" mode="own-label" />
