@@ -5,6 +5,7 @@ lexer grammar ColumnSpecLexer ;
 }
 
 NUMERIC	: [0-9]+ ;
+DOT		: '.'	 ;
 SPACES	: [ ]+	 ;
 
 CURLY_BRACKET_OPEN	: '{' ;
@@ -13,7 +14,9 @@ CURLY_BRACKET_CLOSE : '}' ;
 ASTERIX			: '*'  ;
 DOUBLE_BORDER	: '||' ;
 SINGLE_BORDER	: '|'  ;
+L				: 'l' | 'L' ;
+C				: 'c' | 'C' ;
+R				: 'r' | 'R' ;
 
-L	: 'l' ;
-C	: 'c' ;
-R	: 'r' ;
+LINEWIDTH	: '\\linewidth' ;
+TEXTWIDTH	: '\\textwidth' ;
