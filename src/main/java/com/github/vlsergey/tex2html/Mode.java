@@ -1,0 +1,86 @@
+package com.github.vlsergey.tex2html;
+
+import org.antlr.v4.runtime.Token;
+import org.antlr.v4.runtime.tree.ParseTree;
+import org.antlr.v4.runtime.tree.TerminalNode;
+import org.apache.commons.lang3.StringUtils;
+
+import com.github.vlsergey.tex2html.frames.CommandInvocationFrame;
+import com.github.vlsergey.tex2html.grammar.LatexParser.BlockFormulaContext;
+import com.github.vlsergey.tex2html.grammar.LatexParser.CommandContext;
+import com.github.vlsergey.tex2html.grammar.LatexParser.CommentContext;
+import com.github.vlsergey.tex2html.grammar.LatexParser.InlineFormulaContext;
+import com.github.vlsergey.tex2html.grammar.LatexParser.OptionalArgumentContext;
+import com.github.vlsergey.tex2html.grammar.LatexParser.RequiredArgumentContext;
+
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NonNull;
+import lombok.extern.slf4j.Slf4j;
+
+@AllArgsConstructor
+@Slf4j
+public abstract class Mode {
+
+	@Getter
+	protected final @NonNull LatexVisitor latexVisitor;
+
+	public Void visitBlockFormula(final @NonNull BlockFormulaContext blockFormulaContext) {
+		throw new UnsupportedOperationException("This type of child shall not appear in " + this);
+	}
+
+	public Void visitCommand(final @NonNull CommandContext commandContext) {
+		throw new UnsupportedOperationException("This type of child shall not appear in " + this);
+	}
+
+	public Void visitComment(final @NonNull CommentContext ruleContext) {
+		final String commentText = StringUtils.trimToNull(ruleContext.getText());
+		if (commentText != null) {
+			latexVisitor.getOut().appendComment(commentText);
+		}
+		return null;
+	}
+
+	public Void visitInlineFormula(final @NonNull InlineFormulaContext inlineFormulaContext) {
+		throw new UnsupportedOperationException("This type of child shall not appear in " + this);
+	}
+
+	protected Void visitSubstitution(final @NonNull TerminalNode node, final @NonNull Token token) {
+		latexVisitor.findFrame(CommandInvocationFrame.class).ifPresent(frame -> {
+
+			// XXX: in future here we also need to "cut" current stack until frame
+			// (included) and restore after processing
+
+			int index = Integer.parseInt(token.getText().substring(1)) - 1;
+			final ParseTree arg = frame.getInvocation().commandArguments().getChild(index);
+			if (arg instanceof OptionalArgumentContext) {
+				latexVisitor.visit(((OptionalArgumentContext) arg).squareToken().content());
+			}
+			if (arg instanceof RequiredArgumentContext) {
+				latexVisitor.visit(((RequiredArgumentContext) arg).curlyToken().content());
+			}
+		});
+
+		return null;
+	}
+
+	public void visitTerminal(final @NonNull TerminalNode node) {
+		throw new UnsupportedOperationException("This type of child shall not appear in " + this);
+	}
+
+	protected Void visitUserDefinedCommand(final CommandContext invocationContext, final String commandName,
+			final CommandContext definition) {
+		log.info("Found invocation of previously defined command '{}'", commandName);
+
+		CommandInvocationFrame invocationFrame = new CommandInvocationFrame(definition, invocationContext);
+		latexVisitor.withFrame(invocationFrame, () -> {
+			final RequiredArgumentContext contentToVisit = definition.commandArguments()
+					.getChild(RequiredArgumentContext.class, 1);
+			if (contentToVisit != null) {
+				latexVisitor.visit(contentToVisit);
+			}
+		});
+		return null;
+	}
+
+}

@@ -21,14 +21,14 @@ public class FileProcessor {
 
 	private final File base;
 
-	public void processFile(String path, LatexVisitor latexVisitor) throws IOException {
+	public void processFile(final LatexVisitor latexVisitor, String path) throws IOException {
 		final File input = FileUtils.findFile(base, path, "tex").orElseThrow(
 				() -> new FileNotFoundException("Input '" + path + "' not found with base '" + base.getPath() + "'"));
 
 		final @NonNull LatexParser parser = AntlrUtils.parse(LatexLexer::new, LatexParser::new, input, log);
 		final ContentContext contentContext = parser.content();
 
-		latexVisitor.getLatexContext().withFrame(new FileFrame(input), () -> {
+		latexVisitor.withFrame(new FileFrame(input), () -> {
 			latexVisitor.visit(contentContext);
 		});
 	}

@@ -84,7 +84,7 @@ class MainTest {
 		assertNotNull(contentContext);
 
 		final XmlWriter xmlWriter = new XmlWriter();
-		new StandardVisitor(new LatexContext(xmlWriter)).visit(contentContext);
+		new LatexVisitor(xmlWriter).visit(contentContext);
 		String actual = toXml(xmlWriter.getDoc());
 		String expected = readAndNormalize("test/" + code + ".xml");
 		assertEquals(expected, actual);

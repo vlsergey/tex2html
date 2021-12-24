@@ -48,10 +48,10 @@ public class Tex2HtmlCommand implements Callable<Integer> {
 	@SneakyThrows
 	public Integer call() {
 		final XmlWriter xmlWriter = new XmlWriter();
-		final StandardVisitor visitor = new StandardVisitor(new LatexContext(xmlWriter));
+		final LatexVisitor visitor = new LatexVisitor(xmlWriter);
 
 		final FileProcessor fileProcessor = new FileProcessor(new File("."));
-		fileProcessor.processFile(this.in.getPath(), visitor);
+		fileProcessor.processFile(visitor, this.in.getPath());
 
 		Document doc = xmlWriter.getDoc();
 		if (this.debugXml) {
