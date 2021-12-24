@@ -27,14 +27,12 @@ import lombok.SneakyThrows;
 public class LatexVisitor extends AbstractParseTreeVisitor<Void> {
 
 	private final Map<String, CommandContext> commandDefinitions = new LinkedHashMap<>();
-	private final @NonNull LinkedList<Frame> framesStack = new LinkedList<>();
-	private final @NonNull LinkedList<Mode> modesStack = new LinkedList<>();
+	private final @NonNull LinkedList<Frame> stack = new LinkedList<>();
 	private final @NonNull XmlWriter out;
 
 	public LatexVisitor(final @NonNull XmlWriter xmlWriter) {
 		this.out = xmlWriter;
-		this.framesStack.push(new ProjectFrame());
-		this.modesStack.push(new TextMode(this));
+		this.stack.push(new ProjectFrame(this));
 	}
 
 	@SuppressWarnings("unchecked")
@@ -43,15 +41,15 @@ public class LatexVisitor extends AbstractParseTreeVisitor<Void> {
 	}
 
 	public Optional<Frame> findFrame(Predicate<Frame> predicate) {
-		return this.framesStack.stream().filter(predicate).findFirst();
+		return this.stack.stream().filter(predicate).findFirst();
 	}
 
 	public @NonNull Mode getMode() {
-		return modesStack.peek();
+		return findFrame(Mode.class).get();
 	}
 
 	public void poll(final Predicate<Frame> predicate, final Object expected) {
-		final Frame frame = framesStack.poll();
+		final Frame frame = stack.poll();
 		if (!predicate.test(frame)) {
 			throw new IllegalStateException("Found '" + frame + "', but another is expected (" + expected + ")");
 		}
@@ -59,7 +57,7 @@ public class LatexVisitor extends AbstractParseTreeVisitor<Void> {
 	}
 
 	public void push(final @NonNull Frame frame) {
-		this.framesStack.push(frame.onEnter(this.out));
+		this.stack.push(frame.onEnter(this.out));
 	}
 
 	@Override
@@ -94,28 +92,17 @@ public class LatexVisitor extends AbstractParseTreeVisitor<Void> {
 		return null;
 	}
 
-	public void withFrame(Frame frame, Runnable runnable) {
-		this.framesStack.push(frame);
+	public void with(Frame frame, Runnable runnable) {
+		this.stack.push(frame);
 		frame.onEnter(out);
 
 		runnable.run();
 
-		final Frame polled = this.framesStack.poll();
+		final Frame polled = this.stack.poll();
 		if (polled != frame) {
 			throw new IllegalStateException("Wrong frame state, expected " + frame + ", but actual is " + polled);
 		}
 		frame.onExit(out);
-	}
-
-	public void withMode(Mode mode, Runnable runnable) {
-		this.modesStack.push(mode);
-
-		runnable.run();
-
-		final Mode polled = this.modesStack.poll();
-		if (polled != mode) {
-			throw new IllegalStateException("Wrong mode state, expected " + mode + ", but actual is " + polled);
-		}
 	}
 
 }

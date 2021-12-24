@@ -6,6 +6,7 @@ import org.antlr.v4.runtime.tree.TerminalNode;
 import org.apache.commons.lang3.StringUtils;
 
 import com.github.vlsergey.tex2html.frames.CommandInvocationFrame;
+import com.github.vlsergey.tex2html.frames.Frame;
 import com.github.vlsergey.tex2html.grammar.LatexParser.BlockFormulaContext;
 import com.github.vlsergey.tex2html.grammar.LatexParser.CommandContext;
 import com.github.vlsergey.tex2html.grammar.LatexParser.CommentContext;
@@ -20,7 +21,7 @@ import lombok.extern.slf4j.Slf4j;
 
 @AllArgsConstructor
 @Slf4j
-public abstract class Mode {
+public abstract class Mode implements Frame {
 
 	@Getter
 	protected final @NonNull LatexVisitor latexVisitor;
@@ -73,7 +74,7 @@ public abstract class Mode {
 		log.info("Found invocation of previously defined command '{}'", commandName);
 
 		CommandInvocationFrame invocationFrame = new CommandInvocationFrame(definition, invocationContext);
-		latexVisitor.withFrame(invocationFrame, () -> {
+		latexVisitor.with(invocationFrame, () -> {
 			final RequiredArgumentContext contentToVisit = definition.commandArguments()
 					.getChild(RequiredArgumentContext.class, 1);
 			if (contentToVisit != null) {

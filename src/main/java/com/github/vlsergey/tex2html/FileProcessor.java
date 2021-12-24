@@ -28,7 +28,7 @@ public class FileProcessor {
 		final @NonNull LatexParser parser = AntlrUtils.parse(LatexLexer::new, LatexParser::new, input, log);
 		final ContentContext contentContext = parser.content();
 
-		latexVisitor.withFrame(new FileFrame(input), () -> {
+		latexVisitor.with(new FileFrame(input), () -> {
 			latexVisitor.visit(contentContext);
 		});
 	}

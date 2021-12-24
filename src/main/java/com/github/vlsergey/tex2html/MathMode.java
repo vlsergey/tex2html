@@ -8,9 +8,9 @@ import com.github.vlsergey.tex2html.grammar.LatexParser.CommandContext;
 
 import lombok.NonNull;
 
-class MathMode extends Mode {
+public abstract class MathMode extends Mode {
 
-	public MathMode(final @NonNull LatexVisitor latexVisitor) {
+	protected MathMode(final @NonNull LatexVisitor latexVisitor) {
 		super(latexVisitor);
 	}
 

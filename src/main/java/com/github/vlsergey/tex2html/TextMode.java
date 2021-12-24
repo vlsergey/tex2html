@@ -48,7 +48,7 @@ public class TextMode extends Mode {
 				RuleContext argRuleContext = (RuleContext) child;
 				if (argRuleContext.getRuleIndex() == LatexParser.RULE_optionalArgument
 						|| argRuleContext.getRuleIndex() == LatexParser.RULE_requiredArgument) {
-					latexVisitor.withFrame(
+					latexVisitor.with(
 							new CommandArgumentFrame(
 									argRuleContext.getRuleIndex() == LatexParser.RULE_requiredArgument),
 							() -> latexVisitor.visitChildren(argRuleContext));
@@ -71,10 +71,8 @@ public class TextMode extends Mode {
 
 	@Override
 	public Void visitBlockFormula(final @NonNull BlockFormulaContext blockFormulaContext) {
-		latexVisitor.withFrame(new BlockFormulaFrame(), () -> {
-			latexVisitor.withMode(new MathMode(latexVisitor), () -> {
-				latexVisitor.visitChildren(blockFormulaContext.formulaContent());
-			});
+		latexVisitor.with(new BlockFormulaFrame(latexVisitor), () -> {
+			latexVisitor.visitChildren(blockFormulaContext.formulaContent());
 		});
 		return null;
 	}
@@ -85,10 +83,8 @@ public class TextMode extends Mode {
 			return null;
 		}
 
-		latexVisitor.withFrame(new InnerFormulaFrame(), () -> {
-			latexVisitor.withMode(new MathMode(latexVisitor), () -> {
-				latexVisitor.visitChildren(inlineFormulaContext.formulaContent());
-			});
+		latexVisitor.with(new InnerFormulaFrame(latexVisitor), () -> {
+			latexVisitor.visitChildren(inlineFormulaContext.formulaContent());
 		});
 
 		return null;
@@ -162,7 +158,7 @@ public class TextMode extends Mode {
 				return visitUserDefinedCommand(commandContext, commandName, userDefinition);
 			}
 
-			latexVisitor.withFrame(new CommandFrame(commandName), () -> {
+			latexVisitor.with(new CommandFrame(commandName), () -> {
 				appendCommandArguments(commandContext);
 			});
 			return null;

@@ -32,7 +32,7 @@ public class BibliographyResourceFactory {
 	public static final String ELEMENT_BIBLIOGRAPHY_RESOURCE = "bibliography-resource";
 
 	public void visitBibFile(final @NonNull LatexVisitor latexVisitor, final @NonNull File input) {
-		latexVisitor.withFrame(new FileFrame(input), () -> {
+		latexVisitor.with(new FileFrame(input), () -> {
 			final @NonNull BibParser bibParser = AntlrUtils.parse(BibLexer::new, BibParser::new, input, log);
 			final List<DefinitionContext> defs = bibParser.definitions().definition();
 			log.info("Parsed {} bib definitions from {}", defs.size(), input);
@@ -71,7 +71,7 @@ public class BibliographyResourceFactory {
 					final @NonNull LatexParser parser = AntlrUtils.parse(LatexLexer::new, LatexParser::new, attrValue,
 							log);
 					final ContentContext contentContext = parser.content();
-					latexVisitor.withFrame(new BibliographyAttributeFrame(), () -> {
+					latexVisitor.with(new BibliographyAttributeFrame(), () -> {
 						latexVisitor.visit(contentContext);
 					});
 				});
