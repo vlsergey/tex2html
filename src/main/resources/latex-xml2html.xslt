@@ -99,8 +99,15 @@ window.MathJax = {
   </xsl:template>
 
   <xsl:template match="command[@name='figure' or @name='table']">
-    <figure
-      style="margin-left: auto; margin-right: auto; display: flex; flex-wrap: wrap; align-items: baseline; justify-content: center; width: fit-content; height: fit-content;">
+    <figure>
+      <xsl:attribute name="style">
+        <xsl:text>margin-left: auto; margin-right: auto; display: flex; flex-wrap: wrap; align-items: baseline; justify-content: center; width: fit-content; height: fit-content; </xsl:text>
+        <xsl:if test="content/include-graphics/@width">
+          <xsl:text>width: </xsl:text>
+          <xsl:value-of select="content/include-graphics/@width" />
+          <xsl:text>;</xsl:text>
+        </xsl:if>
+      </xsl:attribute>
       <xsl:apply-templates select="@label" mode="own-label" />
       <xsl:apply-templates
         select="./content/*[not( name()='command' and (@name='caption' or @name='centering' or @name='label') )]" />
@@ -392,7 +399,7 @@ window.MathJax = {
   </xsl:template>
 
   <xsl:template match="@label" mode="own-label">
-    <a name="{.}" style="vertical-align: top;" />
+    <a name="{.}" style="vertical-align: top; align-self: start;" />
   </xsl:template>
 
   <xsl:template match="*" mode="string-join-mode">

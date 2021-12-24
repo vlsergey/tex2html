@@ -23,7 +23,6 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.Text;
 
-import com.github.vlsergey.tex2html.Tex2HtmlCommand;
 import com.github.vlsergey.tex2html.Tex2HtmlOptions;
 import com.github.vlsergey.tex2html.grammar.AttributesLexer;
 import com.github.vlsergey.tex2html.grammar.AttributesParser;
@@ -116,8 +115,10 @@ public class IncludeGraphicsProcessor implements TexXmlProcessor {
 
 				if (input.getPath().endsWith(".pdf") && options.getImagesFolder() != null) {
 					File updated = new File(options.getImagesFolder(), md5(input) + ".png");
-					pdf2PngConverter.convert(input, updated);
-					log.info("Converted {} to {}", input, updated);
+					if (!updated.exists() || updated.lastModified() < input.lastModified()) {
+						pdf2PngConverter.convert(input, updated);
+						log.info("Converted {} to {}", input, updated);
+					}
 					input = updated;
 				}
 

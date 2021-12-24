@@ -1,6 +1,6 @@
 package com.github.vlsergey.tex2html.grammar;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.io.IOException;
 import java.util.Arrays;

@@ -38,7 +38,8 @@ public class LabelProcessor implements TexXmlProcessor {
 				return;
 			}
 
-			Element candidate = (Element) xPathFactory.newXPath().evaluate("ancestor::command[@name='figure' or @name='subcaptionbox'][1]", labelCommand, XPathConstants.NODE);
+			Element candidate = (Element) xPathFactory.newXPath().evaluate(
+					"ancestor::command[@name='figure' or @name='subcaptionbox'][1]", labelCommand, XPathConstants.NODE);
 			if (candidate != null) {
 				candidate.setAttribute("label", labelName);
 				labelCommand.getParentNode().removeChild(labelCommand);
