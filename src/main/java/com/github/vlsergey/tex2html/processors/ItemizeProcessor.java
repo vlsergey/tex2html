@@ -28,7 +28,9 @@ public class ItemizeProcessor implements TexXmlProcessor {
 
 	@Override
 	public Document process(Tex2HtmlOptions command, Document xmlDoc) {
-		return TexXmlUtils.visitCommandNodes(xmlDoc, "itemize", this::processImpl);
+		TexXmlUtils.visitCommandNodes(xmlDoc, "enumerate", this::processImpl);
+		TexXmlUtils.visitCommandNodes(xmlDoc, "itemize", this::processImpl);
+		return xmlDoc;
 	}
 
 	@SneakyThrows
@@ -57,7 +59,7 @@ public class ItemizeProcessor implements TexXmlProcessor {
 		grouped.forEach(DomUtils::trim);
 
 		final Document doc = command.getOwnerDocument();
-		final Element itemize = doc.createElement("itemize");
+		final Element itemize = doc.createElement(command.getAttribute("name"));
 		grouped.forEach(group -> {
 			final Element item = doc.createElement("item");
 			group.forEach(item::appendChild);

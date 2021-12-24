@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<project>
+    <command name="documentclass">
+        <argument required="true">article</argument>
+    </command>
+    
+    <command name="document">
+        <argument required="true">document</argument>
+        <content>
+            
+            <command name="enumerate">
+                <argument required="true">enumerate</argument>
+                <content>
+                        
+                    <command name="item"/>
+                    <command name="textbf">
+                        <argument required="true">42</argument>
+                    </command>
+                            
+                    <command name="enumerate">
+                        <argument required="true">enumerate</argument>
+                        <content>
+                                        
+                            <command name="item"/>
+                            <tex-formula-inline>[42]</tex-formula-inline>
+                                    
+                        </content>
+                    </command>
+                    
+                </content>
+            </command>
+            
+        </content>
+    </command>
+    
+</project>

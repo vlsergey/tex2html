@@ -52,7 +52,7 @@ class MainTest {
 	private Tex2HtmlCommand tex2HtmlCommand;
 
 	@ParameterizedTest
-	@CsvSource({ "chapter", "helloWorld", "innerFormula", "itemize", "languages", "multline", "table",
+	@CsvSource({ "chapter", "helloWorld", "enumerate", "innerFormula", "itemize", "languages", "multline", "table",
 			"tabularInFigure", "tex-formula-block" })
 	void testToHtml(String code) throws Exception {
 		withTempFile(code, ".tex", in -> {
@@ -74,7 +74,7 @@ class MainTest {
 	}
 
 	@ParameterizedTest
-	@CsvSource({ "chapter", "helloWorld", "innerFormula", "itemize", "languages", "multline", "table",
+	@CsvSource({ "chapter", "helloWorld", "enumerate", "innerFormula", "itemize", "languages", "multline", "table",
 			"tabularInFigure", "tex-formula-block" })
 	void testToXml(String code) throws Exception {
 		final String src = IOUtils.toString(MainTest.class.getResource("test/" + code + ".tex"),

@@ -153,6 +153,9 @@ public class DomUtils {
 		for (int i = 0; i < list.getLength(); i++) {
 			Node childNode = list.item(i);
 			visit(childNode, consumer);
+			if (list.item(i) != childNode) {
+				i--;
+			}
 		}
 	}
 
