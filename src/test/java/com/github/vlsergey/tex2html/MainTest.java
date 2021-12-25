@@ -53,7 +53,7 @@ class MainTest {
 
 	@ParameterizedTest
 	@CsvSource({ "chapter", "helloWorld", "enumerate", "innerFormula", "itemize", "languages", "multline",
-			"newenvironment", "table", "tabularInFigure", "tex-formula-block" })
+			"newenvironment", "table", "tabularInFigure", "tex-formula-block", "verbatim" })
 	void testToHtml(String code) throws Exception {
 		withTempFile(code, ".tex", in -> {
 			withTempFile(code, ".html", out -> {
@@ -75,7 +75,7 @@ class MainTest {
 
 	@ParameterizedTest
 	@CsvSource({ "chapter", "helloWorld", "enumerate", "innerFormula", "itemize", "languages", "multline",
-			"newenvironment", "table", "tabularInFigure", "tex-formula-block" })
+			"newenvironment", "table", "tabularInFigure", "tex-formula-block", "verbatim" })
 	void testToXml(String code) throws Exception {
 		final String src = IOUtils.toString(MainTest.class.getResource("test/" + code + ".tex"),
 				StandardCharsets.UTF_8);

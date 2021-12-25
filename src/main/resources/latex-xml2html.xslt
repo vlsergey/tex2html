@@ -397,6 +397,12 @@ window.MathJax = {
     </div>
   </xsl:template>
 
+  <xsl:template match="verbatim">
+    <pre>
+      <xsl:value-of select="text()" />
+    </pre>
+  </xsl:template>
+
   <xsl:template match="text()" mode='language-to-code'>
     <xsl:choose>
       <xsl:when test=".='english'">

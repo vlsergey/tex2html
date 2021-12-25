@@ -4,6 +4,8 @@ lexer grammar LatexLexer ;
    package com.github.vlsergey.tex2html.grammar;
 }
 
+BEGIN_VERBATIM  : '\\begin{verbatim}' -> pushMode(VERBATIM) ;
+
 CURLY_BRACKET_OPEN	: '{' ;
 CURLY_BRACKET_CLOSE : '}' ;
 
@@ -51,9 +53,14 @@ ESCAPED_UNDERSCORE			: '\\_'	 ;
 ALPHA	: [a-zA-Z]+ ;
 ETC             : ~[a-zA-Z\[\]\{\}\\#\$%~&_\r\n<> #]+;
 
-PROCENT : '%' -> pushMode(COMMENT) ;
+PROCENT			: '%' -> pushMode(COMMENT)					;
 
 mode COMMENT;
 COMMENT_TEXT	: ~[\r\n]+ ;
 COMMENT_LINE_BREAK
 	: ('\r\n' | '\r' | '\n' ) -> popMode ;
+
+mode VERBATIM;
+VERBATIM_END		: '\\end{verbatim}' -> popMode ;
+VERBATIM_CONTENT    : .+?;
+VERBATIM_NEWLINE    : '\r\n' | '\r' | '\n' ;

@@ -6,6 +6,8 @@ parser grammar LatexParser;
 
 options { tokenVocab=LatexLexer; }
 
+content             : ( formulaContent | blockFormula | inlineFormula | verbatimEnv )+;
+
 limitedContent      : (
     ALPHA |
     AMPERSAND |
@@ -42,7 +44,6 @@ limitedContent      : (
 )+;
 
 formulaContent      : ( limitedContent | SQUARE_BRACKET_OPEN | SQUARE_BRACKET_CLOSE )+;
-content             : ( formulaContent | blockFormula | inlineFormula )+;
 
 command             : commandStart SPACES? commandArguments;
 commandStart        : SLASH (ALPHA | ASTERIX | AT)+;
@@ -57,3 +58,6 @@ blockFormula    : SLASH_SQUARE_BRACKET_OPEN formulaContent? SLASH_SQUARE_BRACKET
 curlyToken      : CURLY_BRACKET_OPEN content? CURLY_BRACKET_CLOSE;
 
 inlineFormula   : DOLLAR_SIGN formulaContent? DOLLAR_SIGN;
+
+verbatimEnv : BEGIN_VERBATIM verbatimContent VERBATIM_END;
+verbatimContent : (VERBATIM_CONTENT | VERBATIM_NEWLINE)*;

@@ -21,6 +21,7 @@ import com.github.vlsergey.tex2html.grammar.LatexParser.BlockFormulaContext;
 import com.github.vlsergey.tex2html.grammar.LatexParser.CommandContext;
 import com.github.vlsergey.tex2html.grammar.LatexParser.CommentContext;
 import com.github.vlsergey.tex2html.grammar.LatexParser.InlineFormulaContext;
+import com.github.vlsergey.tex2html.grammar.LatexParser.VerbatimEnvContext;
 
 import lombok.Getter;
 import lombok.NonNull;
@@ -74,7 +75,7 @@ public class LatexVisitor extends AbstractParseTreeVisitor<Void> {
 
 	@Override
 	@SneakyThrows
-	public Void visitChildren(RuleNode node) {
+	public Void visitChildren(final @NonNull RuleNode node) {
 		if (node.getPayload() instanceof DefinitionContext) {
 			getMode().visitBibDefinition((DefinitionContext) node.getPayload());
 			return null;
@@ -89,6 +90,11 @@ public class LatexVisitor extends AbstractParseTreeVisitor<Void> {
 
 			if (ruleContext.getRuleIndex() == LatexParser.RULE_command) {
 				return getMode().visitCommand((CommandContext) ruleContext);
+			}
+
+			if (ruleContext.getRuleIndex() == LatexParser.RULE_verbatimEnv) {
+				getMode().visitVerbatimEnvironment((VerbatimEnvContext) ruleContext);
+				return null;
 			}
 
 			if (ruleContext.getRuleIndex() == LatexParser.RULE_comment) {

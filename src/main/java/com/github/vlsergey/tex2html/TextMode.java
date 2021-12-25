@@ -21,6 +21,7 @@ import com.github.vlsergey.tex2html.grammar.LatexParser.CommandArgumentsContext;
 import com.github.vlsergey.tex2html.grammar.LatexParser.CommandContext;
 import com.github.vlsergey.tex2html.grammar.LatexParser.InlineFormulaContext;
 import com.github.vlsergey.tex2html.grammar.LatexParser.RequiredArgumentContext;
+import com.github.vlsergey.tex2html.grammar.LatexParser.VerbatimEnvContext;
 import com.github.vlsergey.tex2html.processors.bib.BibFile;
 
 import lombok.NonNull;
@@ -87,9 +88,11 @@ public class TextMode extends Mode {
 
 	@Override
 	public Void visitBlockFormula(final @NonNull BlockFormulaContext blockFormulaContext) {
-		latexVisitor.with(new BlockFormulaFrame(latexVisitor), () -> {
-			latexVisitor.visitChildren(blockFormulaContext.formulaContent());
-		});
+		if (blockFormulaContext.formulaContent() != null) {
+			latexVisitor.with(new BlockFormulaFrame(latexVisitor), () -> {
+				latexVisitor.visitChildren(blockFormulaContext.formulaContent());
+			});
+		}
 		return null;
 	}
 
@@ -282,6 +285,14 @@ public class TextMode extends Mode {
 				break;
 			}
 		}
+	}
+
+	@Override
+	public void visitVerbatimEnvironment(VerbatimEnvContext ruleContext) {
+		final @NonNull XmlWriter xmlWrriter = latexVisitor.getOut();
+		xmlWrriter.inElement("verbatim", () -> {
+			xmlWrriter.appendTextNode(ruleContext.verbatimContent().getText().trim());
+		});
 	}
 
 }

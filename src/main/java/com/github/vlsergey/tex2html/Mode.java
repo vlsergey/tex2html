@@ -15,6 +15,7 @@ import com.github.vlsergey.tex2html.grammar.LatexParser.CommentContext;
 import com.github.vlsergey.tex2html.grammar.LatexParser.InlineFormulaContext;
 import com.github.vlsergey.tex2html.grammar.LatexParser.OptionalArgumentContext;
 import com.github.vlsergey.tex2html.grammar.LatexParser.RequiredArgumentContext;
+import com.github.vlsergey.tex2html.grammar.LatexParser.VerbatimEnvContext;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -124,6 +125,10 @@ public abstract class Mode implements Frame {
 		visitRequiredArgument(definition, 2);
 		latexVisitor.poll(CommandInvocationFrame.class::isInstance,
 				"CommandInvocationFrame for user defined environment " + environmentName);
+	}
+
+	public void visitVerbatimEnvironment(VerbatimEnvContext ruleContext) {
+		throw new UnsupportedOperationException("This type of child shall not appear in " + this);
 	}
 
 }
