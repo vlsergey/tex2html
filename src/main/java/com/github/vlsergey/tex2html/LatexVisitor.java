@@ -72,10 +72,6 @@ public class LatexVisitor extends AbstractParseTreeVisitor<Void> {
 		this.stack.push(frame.onEnter(this.out));
 	}
 
-	public void visit(FileFrame fileFrame) {
-		with(fileFrame, () -> visit(fileFrame.parseFile()));
-	}
-
 	@Override
 	@SneakyThrows
 	public Void visitChildren(RuleNode node) {
@@ -109,6 +105,10 @@ public class LatexVisitor extends AbstractParseTreeVisitor<Void> {
 
 	public Void visitChildrenSuper(RuleNode node) {
 		return super.visitChildren(node);
+	}
+
+	public void visitFile(FileFrame fileFrame) {
+		with(fileFrame, () -> visit(fileFrame.parseFile()));
 	}
 
 	@Override

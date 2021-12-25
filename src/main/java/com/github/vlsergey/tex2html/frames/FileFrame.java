@@ -3,6 +3,7 @@ package com.github.vlsergey.tex2html.frames;
 import java.io.File;
 
 import org.antlr.v4.runtime.tree.ParseTree;
+import org.slf4j.LoggerFactory;
 
 import com.github.vlsergey.tex2html.XmlWriter;
 
@@ -16,6 +17,7 @@ public interface FileFrame extends Frame {
 	@Override
 	@SneakyThrows
 	public default @NonNull Frame onEnter(@NonNull XmlWriter out) {
+		LoggerFactory.getLogger(FileFrame.class).info("Begin processing file {}", getFile());
 		out.beginElement("file");
 		out.setAttribute("path", getFile().getCanonicalPath().toString());
 		out.setAttribute("parent-path", getFile().getParentFile().getCanonicalPath().toString());
@@ -24,6 +26,7 @@ public interface FileFrame extends Frame {
 
 	@Override
 	public default void onExit(@NonNull XmlWriter out) {
+		LoggerFactory.getLogger(FileFrame.class).info("End processing file {}", getFile());
 		out.endElement("file");
 	}
 

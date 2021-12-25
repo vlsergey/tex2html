@@ -40,7 +40,7 @@ class GostRendererTest {
 			final LatexVisitor visitor = new LatexVisitor(xmlWriter);
 
 			BibFile bibFile = new BibFile(visitor, file.getAbsolutePath());
-			visitor.visit(bibFile);
+			visitor.visitFile(bibFile);
 
 			assertEquals(
 					"Biryukov A., Perrin L., Udovenko A. "

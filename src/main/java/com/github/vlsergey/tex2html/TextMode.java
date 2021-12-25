@@ -58,7 +58,31 @@ public class TextMode extends Mode {
 		final String path = commandContext.commandArguments().getChild(RequiredArgumentContext.class, 0).curlyToken()
 				.content().getText();
 		final BibFile bibFile = new BibFile(latexVisitor, path);
-		latexVisitor.visit(bibFile);
+		latexVisitor.visitFile(bibFile);
+	}
+
+	private void visitBeginCommand(final CommandContext commandContext) {
+		final String innerCommandName = commandContext.commandArguments().getChild(RequiredArgumentContext.class, 0)
+				.curlyToken().content().getText();
+
+		switch (innerCommandName) {
+		case "multline*": {
+			latexVisitor.push(new MultlineFormulaFrame(latexVisitor));
+			return;
+		}
+		default: {
+			final CommandContext envDef = latexVisitor.getEnvironmentDefinition().get(innerCommandName);
+			if (envDef != null) {
+				visitUserDefinedEnvironmentBegin(commandContext, innerCommandName, envDef);
+				return;
+			}
+
+			latexVisitor.push(new CommandFrame(commandContext, innerCommandName));
+			appendCommandArguments(commandContext);
+			latexVisitor.push(new CommandContentFrame());
+			return;
+		}
+		}
 	}
 
 	@Override
@@ -75,90 +99,36 @@ public class TextMode extends Mode {
 		final String commandName = commandContext.commandStart().getText().substring(1);
 
 		switch (commandName) {
-		case "begin": {
-			final String innerCommandName = commandContext.commandArguments().getChild(RequiredArgumentContext.class, 0)
-					.curlyToken().content().getText();
-
-			switch (innerCommandName) {
-			case "multline*": {
-				latexVisitor.push(new MultlineFormulaFrame(latexVisitor));
-				return null;
-			}
-			default: {
-				final CommandContext envDef = latexVisitor.getEnvironmentDefinition().get(innerCommandName);
-				if (envDef != null) {
-					return visitUserDefinedEnvironmentBegin(commandContext, innerCommandName, envDef);
-				}
-
-				latexVisitor.push(new CommandFrame(commandContext, innerCommandName));
-				appendCommandArguments(commandContext);
-				latexVisitor.push(new CommandContentFrame());
-				return null;
-			}
-			}
-		}
-		case "addbibresource": {
+		case "begin":
+			visitBeginCommand(commandContext);
+			return null;
+		case "addbibresource":
 			visitAddBibResourceCommand(commandContext);
 			return null;
-		}
-		case "end": {
-			final String innerCommandName = commandContext.commandArguments().getChild(RequiredArgumentContext.class, 0)
-					.curlyToken().content().getText();
-
-			final CommandContext envDef = latexVisitor.getEnvironmentDefinition().get(innerCommandName);
-			if (envDef != null) {
-				return visitUserDefinedEnvironmentEnd(commandContext, innerCommandName, envDef);
-			}
-
-			latexVisitor.poll(CommandContentFrame.class::isInstance,
-					"command '" + innerCommandName + "' content frame");
-
-			latexVisitor.poll(
-					frame -> frame instanceof CommandFrame
-							&& innerCommandName.equals(((CommandFrame) frame).getCommandName()),
-					"command '" + innerCommandName + "' frame");
-
+		case "end":
+			visitEndCommand(commandContext);
 			return null;
-		}
-		case "input": {
-			final String path = commandContext.commandArguments().getChild(RequiredArgumentContext.class, 0)
-					.curlyToken().content().getText();
-
-			latexVisitor.visit(new TexFile(latexVisitor, path));
+		case "input":
+			visitInputCommand(commandContext);
 			return null;
-		}
 		case "makeatletter":
 			return null;
 		case "makeatother":
 			return null;
-		case "newcommand": {
-			final String definedCommandName = commandContext.commandArguments()
-					.getChild(RequiredArgumentContext.class, 0).curlyToken().content().getText();
-			latexVisitor.getCommandDefinitions().put(definedCommandName.substring(1), commandContext);
-			log.info("Found '{}' command definition", definedCommandName);
+		case "newcommand":
+			visitNewCommandCommand(commandContext);
 			return null;
-		}
-		case "newenvironment": {
-			final String definedEnvironmentName = commandContext.commandArguments()
-					.getChild(RequiredArgumentContext.class, 0).curlyToken().content().getText();
-			latexVisitor.getEnvironmentDefinition().put(definedEnvironmentName, commandContext);
-			log.info("Found '{}' environment definition", definedEnvironmentName);
+		case "newenvironment":
+			visitNewEnvironmentCommand(commandContext);
 			return null;
-		}
-		case "subimport*": {
-			final String folder = commandContext.commandArguments().getChild(RequiredArgumentContext.class, 0)
-					.curlyToken().content().getText();
-			final String file = commandContext.commandArguments().getChild(RequiredArgumentContext.class, 1)
-					.curlyToken().content().getText();
-
-			final TexFile texFile = new TexFile(latexVisitor, folder + "/" + file);
-			latexVisitor.visit(texFile);
+		case "subimport*":
+			visitSubImportCommand(commandContext);
 			return null;
-		}
 		default:
 			final CommandContext userDefinition = latexVisitor.getCommandDefinitions().get(commandName);
 			if (userDefinition != null) {
-				return visitUserDefinedCommand(commandContext, commandName, userDefinition);
+				visitUserDefinedCommand(commandContext, commandName, userDefinition);
+				return null;
 			}
 
 			latexVisitor.with(new CommandFrame(commandContext, commandName), () -> {
@@ -166,6 +136,24 @@ public class TextMode extends Mode {
 			});
 			return null;
 		}
+	}
+
+	private void visitEndCommand(final CommandContext commandContext) {
+		final String innerCommandName = commandContext.commandArguments().getChild(RequiredArgumentContext.class, 0)
+				.curlyToken().content().getText();
+
+		final CommandContext envDef = latexVisitor.getEnvironmentDefinition().get(innerCommandName);
+		if (envDef != null) {
+			visitUserDefinedEnvironmentEnd(commandContext, innerCommandName, envDef);
+			return;
+		}
+
+		latexVisitor.poll(CommandContentFrame.class::isInstance, "command '" + innerCommandName + "' content frame");
+
+		latexVisitor.poll(
+				frame -> frame instanceof CommandFrame
+						&& innerCommandName.equals(((CommandFrame) frame).getCommandName()),
+				"command '" + innerCommandName + "' frame");
 	}
 
 	@Override
@@ -179,6 +167,37 @@ public class TextMode extends Mode {
 		});
 
 		return null;
+	}
+
+	private void visitInputCommand(final CommandContext commandContext) throws FileNotFoundException {
+		final String path = commandContext.commandArguments().getChild(RequiredArgumentContext.class, 0).curlyToken()
+				.content().getText();
+
+		latexVisitor.visitFile(new TexFile(latexVisitor, path));
+	}
+
+	private void visitNewCommandCommand(final CommandContext commandContext) {
+		final String definedCommandName = commandContext.commandArguments().getChild(RequiredArgumentContext.class, 0)
+				.curlyToken().content().getText();
+		latexVisitor.getCommandDefinitions().put(definedCommandName.substring(1), commandContext);
+		log.info("Found '{}' command definition", definedCommandName);
+	}
+
+	private void visitNewEnvironmentCommand(final CommandContext commandContext) {
+		final String definedEnvironmentName = commandContext.commandArguments()
+				.getChild(RequiredArgumentContext.class, 0).curlyToken().content().getText();
+		latexVisitor.getEnvironmentDefinition().put(definedEnvironmentName, commandContext);
+		log.info("Found '{}' environment definition", definedEnvironmentName);
+	}
+
+	private void visitSubImportCommand(final CommandContext commandContext) throws FileNotFoundException {
+		final String folder = commandContext.commandArguments().getChild(RequiredArgumentContext.class, 0).curlyToken()
+				.content().getText();
+		final String file = commandContext.commandArguments().getChild(RequiredArgumentContext.class, 1).curlyToken()
+				.content().getText();
+
+		final TexFile texFile = new TexFile(latexVisitor, folder + "/" + file);
+		latexVisitor.visitFile(texFile);
 	}
 
 	@Override

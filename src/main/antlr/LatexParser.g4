@@ -46,7 +46,7 @@ content             : ( formulaContent | blockFormula | inlineFormula )+;
 
 command             : commandStart SPACES? commandArguments;
 commandStart        : SLASH (ALPHA | ASTERIX | AT)+;
-commandArguments    : (requiredArgument | optionalArgument)*;
+commandArguments    : (requiredArgument | optionalArgument)? (LINE_BREAK? ( requiredArgument | optionalArgument))*;
 requiredArgument    : curlyToken;
 optionalArgument    : SQUARE_BRACKET_OPEN limitedContent? SQUARE_BRACKET_CLOSE;
 

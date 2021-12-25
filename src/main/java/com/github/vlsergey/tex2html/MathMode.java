@@ -18,7 +18,8 @@ public abstract class MathMode extends Mode {
 
 		final CommandContext userDefinition = latexVisitor.getCommandDefinitions().get(commandName);
 		if (userDefinition != null) {
-			return visitUserDefinedCommand(commandContext, commandName, userDefinition);
+			visitUserDefinedCommand(commandContext, commandName, userDefinition);
+			return null;
 		}
 
 		if (commandName.equals("end")) {

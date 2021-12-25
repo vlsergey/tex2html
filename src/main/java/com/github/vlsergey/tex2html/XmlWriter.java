@@ -58,14 +58,13 @@ public class XmlWriter {
 		final Element newElement = doc.createElement(tagName);
 		stack.peek().appendChild(newElement);
 		stack.push(newElement);
-		try {
-			runnable.run();
-		} finally {
-			final Element toClose = stack.poll();
-			if (!StringUtils.equals(toClose.getTagName(), tagName)) {
-				throw new IllegalStateException(
-						"Closing wront tag: " + toClose.getTagName() + ", but assumed " + tagName);
-			}
+
+		// do not use finally here to prevent main error loosing
+
+		runnable.run();
+		final Element toClose = stack.poll();
+		if (!StringUtils.equals(toClose.getTagName(), tagName)) {
+			throw new IllegalStateException("Closing wront tag: " + toClose.getTagName() + ", but expected " + tagName);
 		}
 	}
 

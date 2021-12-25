@@ -98,7 +98,7 @@ public abstract class Mode implements Frame {
 		}
 	}
 
-	protected Void visitUserDefinedCommand(final CommandContext invocationContext, final String commandName,
+	protected void visitUserDefinedCommand(final CommandContext invocationContext, final String commandName,
 			final CommandContext definition) {
 		log.info("Found invocation of previously defined command '{}'", commandName);
 
@@ -106,10 +106,9 @@ public abstract class Mode implements Frame {
 		latexVisitor.with(invocationFrame, () -> {
 			visitRequiredArgument(definition, 1);
 		});
-		return null;
 	}
 
-	protected Void visitUserDefinedEnvironmentBegin(final CommandContext invocationContext,
+	protected void visitUserDefinedEnvironmentBegin(final CommandContext invocationContext,
 			final String environmentName, final CommandContext definition) {
 		log.info("Found begin of previously defined environment '{}'", environmentName);
 
@@ -117,16 +116,14 @@ public abstract class Mode implements Frame {
 		latexVisitor.push(invocationFrame);
 
 		visitRequiredArgument(definition, 1);
-		return null;
 	}
 
-	protected Void visitUserDefinedEnvironmentEnd(final CommandContext invocationContext, final String environmentName,
+	protected void visitUserDefinedEnvironmentEnd(final CommandContext invocationContext, final String environmentName,
 			final CommandContext definition) {
 		log.info("Found end of previously defined environment '{}'", environmentName);
 		visitRequiredArgument(definition, 2);
 		latexVisitor.poll(CommandInvocationFrame.class::isInstance,
 				"CommandInvocationFrame for user defined environment " + environmentName);
-		return null;
 	}
 
 }

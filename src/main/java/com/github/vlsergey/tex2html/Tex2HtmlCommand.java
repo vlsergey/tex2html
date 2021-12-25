@@ -58,7 +58,7 @@ public class Tex2HtmlCommand implements Callable<Integer> {
 		final XmlWriter xmlWriter = new XmlWriter();
 		final LatexVisitor visitor = new LatexVisitor(xmlWriter);
 
-		visitor.visit(new TexFile(visitor, this.in.getPath()));
+		visitor.visitFile(new TexFile(visitor, this.in.getPath()));
 
 		Document doc = xmlWriter.getDoc();
 		if (this.debugXml) {
