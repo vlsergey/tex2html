@@ -256,6 +256,9 @@ public class TextMode extends Mode {
 			case LatexLexer.TILDA:
 				xmlWriter.appendElement("nonbreaking-interword-space");
 				break;
+			case LatexLexer.UNDERSCORE:
+				xmlWriter.appendTextNode("_");
+				break;
 			case LatexLexer.ESCAPED_AMPERSAND:
 				xmlWriter.appendTextNode("&");
 				break;
