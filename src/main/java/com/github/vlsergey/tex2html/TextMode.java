@@ -85,6 +85,11 @@ public class TextMode extends Mode {
 				return null;
 			}
 			default: {
+				final CommandContext envDef = latexVisitor.getEnvironmentDefinition().get(innerCommandName);
+				if (envDef != null) {
+					return visitUserDefinedEnvironmentBegin(commandContext, innerCommandName, envDef);
+				}
+
 				latexVisitor.push(new CommandFrame(commandContext, innerCommandName));
 				appendCommandArguments(commandContext);
 				latexVisitor.push(new CommandContentFrame());
@@ -96,6 +101,25 @@ public class TextMode extends Mode {
 			visitAddBibResourceCommand(commandContext);
 			return null;
 		}
+		case "end": {
+			final String innerCommandName = commandContext.commandArguments().getChild(RequiredArgumentContext.class, 0)
+					.curlyToken().content().getText();
+
+			final CommandContext envDef = latexVisitor.getEnvironmentDefinition().get(innerCommandName);
+			if (envDef != null) {
+				return visitUserDefinedEnvironmentEnd(commandContext, innerCommandName, envDef);
+			}
+
+			latexVisitor.poll(CommandContentFrame.class::isInstance,
+					"command '" + innerCommandName + "' content frame");
+
+			latexVisitor.poll(
+					frame -> frame instanceof CommandFrame
+							&& innerCommandName.equals(((CommandFrame) frame).getCommandName()),
+					"command '" + innerCommandName + "' frame");
+
+			return null;
+		}
 		case "input": {
 			final String path = commandContext.commandArguments().getChild(RequiredArgumentContext.class, 0)
 					.curlyToken().content().getText();
@@ -103,11 +127,22 @@ public class TextMode extends Mode {
 			latexVisitor.visit(new TexFile(latexVisitor, path));
 			return null;
 		}
+		case "makeatletter":
+			return null;
+		case "makeatother":
+			return null;
 		case "newcommand": {
 			final String definedCommandName = commandContext.commandArguments()
 					.getChild(RequiredArgumentContext.class, 0).curlyToken().content().getText();
 			latexVisitor.getCommandDefinitions().put(definedCommandName.substring(1), commandContext);
 			log.info("Found '{}' command definition", definedCommandName);
+			return null;
+		}
+		case "newenvironment": {
+			final String definedEnvironmentName = commandContext.commandArguments()
+					.getChild(RequiredArgumentContext.class, 0).curlyToken().content().getText();
+			latexVisitor.getEnvironmentDefinition().put(definedEnvironmentName, commandContext);
+			log.info("Found '{}' environment definition", definedEnvironmentName);
 			return null;
 		}
 		case "subimport*": {
@@ -118,20 +153,6 @@ public class TextMode extends Mode {
 
 			final TexFile texFile = new TexFile(latexVisitor, folder + "/" + file);
 			latexVisitor.visit(texFile);
-			return null;
-		}
-		case "end": {
-			final String innerCommandName = commandContext.commandArguments().getChild(RequiredArgumentContext.class, 0)
-					.curlyToken().content().getText();
-
-			latexVisitor.poll(CommandContentFrame.class::isInstance,
-					"command '" + innerCommandName + "' content frame");
-
-			latexVisitor.poll(
-					frame -> frame instanceof CommandFrame
-							&& innerCommandName.equals(((CommandFrame) frame).getCommandName()),
-					"command '" + innerCommandName + "' frame");
-
 			return null;
 		}
 		default:

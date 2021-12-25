@@ -32,6 +32,7 @@ import lombok.extern.slf4j.Slf4j;
 public class LatexVisitor extends AbstractParseTreeVisitor<Void> {
 
 	private final Map<String, CommandContext> commandDefinitions = new LinkedHashMap<>();
+	private final Map<String, CommandContext> environmentDefinition = new LinkedHashMap<>();
 	private final @NonNull XmlWriter out;
 	private final @NonNull LinkedList<Frame> stack = new LinkedList<>();
 

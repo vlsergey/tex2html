@@ -52,6 +52,14 @@ public abstract class Mode implements Frame {
 		throw new UnsupportedOperationException("This type of child shall not appear in " + this);
 	}
 
+	protected void visitRequiredArgument(final CommandContext command, final int argumentIndex) {
+		final RequiredArgumentContext contentToVisit = command.commandArguments()
+				.getChild(RequiredArgumentContext.class, argumentIndex);
+		if (contentToVisit != null) {
+			latexVisitor.visit(contentToVisit);
+		}
+	}
+
 	protected Void visitSubstitution(final @NonNull TerminalNode node, final @NonNull Token token) {
 		latexVisitor.findFrame(CommandInvocationFrame.class).ifPresent(frame -> {
 
@@ -96,12 +104,28 @@ public abstract class Mode implements Frame {
 
 		CommandInvocationFrame invocationFrame = new CommandInvocationFrame(definition, invocationContext);
 		latexVisitor.with(invocationFrame, () -> {
-			final RequiredArgumentContext contentToVisit = definition.commandArguments()
-					.getChild(RequiredArgumentContext.class, 1);
-			if (contentToVisit != null) {
-				latexVisitor.visit(contentToVisit);
-			}
+			visitRequiredArgument(definition, 1);
 		});
+		return null;
+	}
+
+	protected Void visitUserDefinedEnvironmentBegin(final CommandContext invocationContext,
+			final String environmentName, final CommandContext definition) {
+		log.info("Found begin of previously defined environment '{}'", environmentName);
+
+		CommandInvocationFrame invocationFrame = new CommandInvocationFrame(definition, invocationContext);
+		latexVisitor.push(invocationFrame);
+
+		visitRequiredArgument(definition, 1);
+		return null;
+	}
+
+	protected Void visitUserDefinedEnvironmentEnd(final CommandContext invocationContext, final String environmentName,
+			final CommandContext definition) {
+		log.info("Found end of previously defined environment '{}'", environmentName);
+		visitRequiredArgument(definition, 2);
+		latexVisitor.poll(CommandInvocationFrame.class::isInstance,
+				"CommandInvocationFrame for user defined environment " + environmentName);
 		return null;
 	}
 
