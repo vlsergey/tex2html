@@ -26,7 +26,7 @@ import lombok.SneakyThrows;
 public class ParagraphProcessor implements TexXmlProcessor {
 
 	private static final Set<String> NON_BLOCK_ELEMENTS = new HashSet<>(
-			Arrays.asList("a", "b", "em", "i", "span", "tt", "u"));
+			Arrays.asList("a", "b", "em", "i", "span", "tt", "u", "wbr"));
 
 	private static boolean canBePartOfParagraph(Node node) {
 		return node instanceof Text || (node instanceof Element && NON_BLOCK_ELEMENTS.contains(node.getNodeName()));
