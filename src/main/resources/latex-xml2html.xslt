@@ -12,17 +12,6 @@
     <html>
       <head>
         <meta charset="utf-8" />
-        <style type="text/css">
-          <xsl:text><![CDATA[
-div.mathjax {
-  padding-top: .5em;
-  padding-bottom: .5em;
-}
-span.nonbreaking-interword-space {
-  white-space: nowrap;
-}
-]]></xsl:text>
-        </style>
       </head>
       <xsl:apply-templates select="./file/command[@name='document']" />
     </html>
@@ -38,26 +27,6 @@ span.nonbreaking-interword-space {
         <xsl:attribute name="lang"><xsl:value-of select="@lang-code" /></xsl:attribute>
       </xsl:if>
       <xsl:apply-templates select="content/node()" />
-      <script>
-        <xsl:text>
-window.MathJax = {
-  loader: {
-    load: ['[tex]/tagformat'],
-  },
-  options: {
-    processHtmlClass: 'mathjax'
-  },
-  tex: {
-    packages: {
-      '[+]': ['base', 'ams', 'physics', 'textcomp']
-    },
-    inlineMath: [['$', '$']],
-  },
-};
-</xsl:text>
-      </script>
-      <script src="https://polyfill.io/v3/polyfill.min.js?features=es6" />
-      <script id="MathJax-script" async="yes" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js" />
     </body>
   </xsl:template>
 
@@ -376,25 +345,21 @@ window.MathJax = {
   </xsl:template>
 
   <xsl:template match="tex-formula-block">
-    <div class="mathjax" style="text-align: center;">
-      <xsl:text>$$</xsl:text>
+    <tex-formula-block>
       <xsl:apply-templates select="." mode="string-join-mode" />
-      <xsl:text>$$</xsl:text>
-    </div>
+    </tex-formula-block>
   </xsl:template>
 
   <xsl:template match="tex-formula-inline">
-    <span class="mathjax">
-      <xsl:value-of select="concat('$', text(), '$')" />
-    </span>
+    <tex-formula-inline>
+      <xsl:apply-templates select="." mode="string-join-mode" />
+    </tex-formula-inline>
   </xsl:template>
 
   <xsl:template match="tex-formula-multline">
-    <div class="mathjax" style="text-align: center;">
-      <xsl:text>$$\begin{eqnarray}</xsl:text>
+    <tex-formula-multline>
       <xsl:apply-templates select="." mode="string-join-mode" />
-      <xsl:text>\end{eqnarray}$$</xsl:text>
-    </div>
+    </tex-formula-multline>
   </xsl:template>
 
   <xsl:template match="verbatim">

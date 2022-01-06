@@ -19,6 +19,7 @@ import com.github.vlsergey.tex2html.Tex2HtmlOptions;
 import com.github.vlsergey.tex2html.utils.DomUtils;
 import com.github.vlsergey.tex2html.utils.StreamUtils;
 
+import lombok.NonNull;
 import lombok.SneakyThrows;
 
 @Component
@@ -26,15 +27,16 @@ import lombok.SneakyThrows;
 public class ParagraphProcessor implements TexXmlProcessor {
 
 	private static final Set<String> NON_BLOCK_ELEMENTS = new HashSet<>(
-			Arrays.asList("a", "b", "em", "i", "span", "tt", "u", "wbr"));
+			Arrays.asList("a", "b", "em", "i", "span", "tex-formula-inline", "tt", "u", "wbr"));
 
 	private static boolean canBePartOfParagraph(Node node) {
 		return node instanceof Text || (node instanceof Element && NON_BLOCK_ELEMENTS.contains(node.getNodeName()));
 	}
 
+	@NonNull
 	@Override
 	@SneakyThrows
-	public Document process(Tex2HtmlOptions command, Document xhtmlDoc) {
+	public Document process(final @NonNull Tex2HtmlOptions command, final @NonNull Document xhtmlDoc) {
 		DomUtils.concatenateTextNodes(xhtmlDoc);
 
 		DomUtils.visit(xhtmlDoc, node -> {
@@ -63,7 +65,7 @@ public class ParagraphProcessor implements TexXmlProcessor {
 					});
 				});
 
-				if (grouped.size() > 1) {
+				if (!grouped.isEmpty()) {
 					grouped.forEach(DomUtils::trim);
 
 					// remove empty pars

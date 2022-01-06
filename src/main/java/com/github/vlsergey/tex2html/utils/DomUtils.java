@@ -19,11 +19,12 @@ import lombok.NonNull;
 
 public class DomUtils {
 
-	public static Stream<Node> childrenStream(Node node) {
+	@NonNull
+	public static Stream<Node> childrenStream(final @NonNull Node node) {
 		return stream(node.getChildNodes());
 	}
 
-	public static void concatenateTextNodes(Node root) {
+	public static void concatenateTextNodes(final @NonNull Node root) {
 		visit(root, node -> {
 			for (int i = node.getChildNodes().getLength() - 1; i >= 1; i--) {
 				Node first = node.getChildNodes().item(i - 1);
@@ -39,7 +40,7 @@ public class DomUtils {
 		});
 	}
 
-	public static final void copyChildren(Element src, Element dst) {
+	public static final void copyChildren(final @NonNull Element src, final @NonNull Element dst) {
 		DomUtils.childrenStream(src).forEach(child -> dst.appendChild(child.cloneNode(true)));
 	}
 
@@ -70,7 +71,7 @@ public class DomUtils {
 		});
 	}
 
-	public static List<List<Node>> splitOnce(Node parent, String separator) {
+	public static List<List<Node>> splitOnce(final @NonNull Node parent, final @NonNull String separator) {
 		concatenateTextNodes(parent);
 		final List<Node> children = childrenStream(parent).collect(toList());
 
@@ -102,11 +103,13 @@ public class DomUtils {
 		return singletonList(children);
 	}
 
-	public static Stream<Node> stream(NodeList nodeList) {
+	@NonNull
+	public static Stream<Node> stream(final @NonNull NodeList nodeList) {
 		return Stream.iterate(0, i -> i + 1).limit(nodeList.getLength()).map(nodeList::item);
 	}
 
-	public static List<Node> trim(List<Node> nodes) {
+	@NonNull
+	public static List<Node> trim(final @NonNull List<Node> nodes) {
 		boolean hasChanges = true;
 		while (hasChanges) {
 			hasChanges = false;
@@ -145,7 +148,8 @@ public class DomUtils {
 		return nodes;
 	}
 
-	public static <E extends Throwable> void visit(Node node, ThrowingFunction<Node, Boolean, E> consumer) throws E {
+	public static <E extends Throwable> void visit(final @NonNull Node node,
+			final @NonNull ThrowingFunction<Node, Boolean, E> consumer) throws E {
 		if (!consumer.apply(node)) {
 			return;
 		}

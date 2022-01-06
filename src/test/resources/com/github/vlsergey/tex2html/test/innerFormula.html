@@ -3,35 +3,14 @@
     <head>
         <META http-equiv="Content-Type" content="text/html; charset=UTF-8">
         <meta charset="utf-8">
-        <style type="text/css">
-div.mathjax {
-  padding-top: .5em;
-  padding-bottom: .5em;
-}
-span.nonbreaking-interword-space {
-  white-space: nowrap;
-}
-</style>
     </head>
     <body>
         <p>
-            Hello, <span class="mathjax">$42$</span> and <span class="mathjax">$84$</span>!
+            Hello, 
+            <tex-formula-inline>42</tex-formula-inline>
+             and 
+            <tex-formula-inline>84</tex-formula-inline>
+            !
         </p>
-        <script>
-window.MathJax = {
-  loader: {
-    load: ['[tex]/tagformat'],
-  },
-  options: {
-    processHtmlClass: 'mathjax'
-  },
-  tex: {
-    packages: {
-      '[+]': ['base', 'ams', 'physics', 'textcomp']
-    },
-    inlineMath: [['$', '$']],
-  },
-};
-</script><script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script><script async="yes" id="MathJax-script" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     </body>
 </html>
