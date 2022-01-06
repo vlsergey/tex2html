@@ -6,18 +6,14 @@ import static java.util.stream.Collectors.toMap;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.io.InputStream;
 import java.math.BigDecimal;
-import java.nio.file.Files;
 import java.util.Map;
 
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.tree.ParseTree;
-import org.apache.pdfbox.util.Hex;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
-import org.springframework.util.DigestUtils;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -36,7 +32,6 @@ import com.github.vlsergey.tex2html.utils.FileUtils;
 import com.github.vlsergey.tex2html.utils.TexXmlUtils;
 
 import lombok.NonNull;
-import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 
 @Component
@@ -90,13 +85,6 @@ public class IncludeGraphicsProcessor implements TexXmlProcessor {
 		return TexXmlUtils.visitCommandNodes(xmlDoc, "includegraphics", command -> processImpl(options, command));
 	}
 
-	@SneakyThrows
-	private static String md5(File file) {
-		try (InputStream is = Files.newInputStream(file.toPath())) {
-			return Hex.getString(DigestUtils.md5Digest(is));
-		}
-	}
-
 	@Autowired
 	private Pdf2PngConverter pdf2PngConverter;
 
@@ -113,8 +101,8 @@ public class IncludeGraphicsProcessor implements TexXmlProcessor {
 								"Image " + filePath + "' not found with base '" + basePath.getPath()
 										+ "' and one of possible extensions: " + SUPPORTED_IMAGE_EXTENSIONS));
 
-				if (input.getPath().endsWith(".pdf") && options.getImagesFolder() != null) {
-					File updated = new File(options.getImagesFolder(), md5(input) + ".png");
+				if (input.getPath().endsWith(".pdf")) {
+					File updated = new File(options.getTempImagesFolder(), FileUtils.md5(input) + ".png");
 					if (!updated.exists() || updated.lastModified() < input.lastModified()) {
 						pdf2PngConverter.convert(input, updated);
 						log.info("Converted {} to {}", input, updated);

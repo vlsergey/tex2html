@@ -1,20 +1,25 @@
 package com.github.vlsergey.tex2html;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.util.List;
 import java.util.concurrent.Callable;
 
-import javax.xml.transform.stream.StreamResult;
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.transform.TransformerException;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.w3c.dom.Document;
 
 import com.github.vlsergey.tex2html.frames.TexFile;
+import com.github.vlsergey.tex2html.output.OutputFormatter;
 import com.github.vlsergey.tex2html.processors.TexXmlProcessor;
+import com.github.vlsergey.tex2html.utils.FileUtils;
 import com.github.vlsergey.tex2html.utils.XmlUtils;
 
 import lombok.AccessLevel;
+import lombok.NonNull;
 import lombok.Setter;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
@@ -30,30 +35,39 @@ public class Tex2HtmlCommand implements Callable<Integer> {
 	@Setter(AccessLevel.PACKAGE)
 	private boolean debugXml;
 
-	@Option(names = "--images-folder", description = "Destination folder for converted and formulas.", required = false)
+	@Option(names = "--format", description = "Output format (${COMPLETION-CANDIDATES}).", required = true, split = ",")
 	@Setter(AccessLevel.PACKAGE)
-	private File imagesFolder;
+	private @NonNull OutputFormat[] format;
 
 	@Option(names = "--in", description = "Source TeX file.", required = true)
 	@Setter(AccessLevel.PACKAGE)
-	private File in;
+	private @NonNull File in;
 
 	@Option(names = "--indent", description = "Indent output.", required = false, defaultValue = "false")
 	@Setter(AccessLevel.PACKAGE)
 	private boolean indent;
 
-	@Option(names = "--out", description = "Destination HTML file. Output result to console if not specified.", required = false)
+	@Option(names = "--out", description = "Destination folder for output.", required = true)
 	@Setter(AccessLevel.PACKAGE)
-	private File out;
+	private @NonNull File out;
 
 	@Autowired
-	private List<TexXmlProcessor> texXmlProcessors;
+	private @NonNull List<OutputFormatter> outputFormatters;
+
+	@Autowired
+	private @NonNull List<TexXmlProcessor> texXmlProcessors;
 
 	@Override
 	@SneakyThrows
 	public Integer call() {
-		final Tex2HtmlOptions options = new Tex2HtmlOptions();
-		options.setImagesFolder(imagesFolder);
+		FileUtils.withTemporaryFolder("tex2html-", "-images", this::callImpl);
+		return 0;
+	}
+
+	private void callImpl(final @NonNull File temporaryImagesFolder)
+			throws ParserConfigurationException, FileNotFoundException, TransformerException {
+		final Tex2HtmlOptions options = new Tex2HtmlOptions(temporaryImagesFolder);
+		options.setIndent(indent);
 
 		final XmlWriter xmlWriter = new XmlWriter();
 		final LatexVisitor visitor = new LatexVisitor(xmlWriter);
@@ -74,13 +88,22 @@ public class Tex2HtmlCommand implements Callable<Integer> {
 			}
 		}
 
-		if (this.out == null) {
-			XmlUtils.writeAsHtml(doc, this.indent, new StreamResult(System.out));
-			return 0;
+		if (format.length == 1) {
+			output(options, doc, this.format[0], this.out);
+		} else {
+			for (OutputFormat format : this.format) {
+				output(options, doc, this.format[0], new File(this.out, format.getDefaultChildFileName()));
+			}
 		}
+	}
 
-		XmlUtils.writeAsHtml(doc, this.indent, new StreamResult(this.out));
-		return 0;
+	private void output(final @NonNull Tex2HtmlOptions options, final @NonNull Document doc,
+			final @NonNull OutputFormat outputFormat, final @NonNull File out) {
+		final OutputFormatter formatter = outputFormatters.stream().filter(f -> f.isSupported(outputFormat)).findFirst()
+				.orElseThrow(() -> new AssertionError(
+						"No formatters registered that supports " + outputFormat + " format. Contact tool developer."));
+
+		formatter.process(options, doc, out);
 	}
 
 }

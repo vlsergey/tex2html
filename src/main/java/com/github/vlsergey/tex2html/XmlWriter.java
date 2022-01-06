@@ -14,13 +14,14 @@ import org.w3c.dom.Element;
 import com.github.vlsergey.tex2html.utils.ThrowingRunnable;
 
 import lombok.Getter;
+import lombok.NonNull;
 
 public class XmlWriter {
 
 	@Getter
-	private final Document doc;
+	private final @NonNull Document doc;
 
-	private final Deque<Element> stack = new LinkedList<>();
+	private final @NonNull Deque<Element> stack = new LinkedList<>();
 
 	public XmlWriter() throws ParserConfigurationException {
 		final DocumentBuilder documentBuilder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
