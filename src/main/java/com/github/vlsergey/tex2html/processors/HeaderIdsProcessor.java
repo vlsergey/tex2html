@@ -33,16 +33,16 @@ public class HeaderIdsProcessor implements TexXmlProcessor {
 				return true;
 			}
 
-			String value = node.getTextContent();
-			StringBuffer buffer = new StringBuffer();
-			value.chars().filter(c -> Character.isLetter(c) || Character.isDigit(c) || Character.isWhitespace(c))
-					.forEach(c -> {
-						if (Character.isWhitespace(c)) {
-							buffer.append("_");
-						} else {
-							buffer.append((char) c);
-						}
-					});
+			final StringBuffer buffer = new StringBuffer();
+			for (char c : node.getTextContent().toCharArray()) {
+				if (Character.isDigit(c) || Character.isLetter(c)) {
+					buffer.append(c);
+				} else {
+					if (buffer.length() == 0 || buffer.charAt(buffer.length() - 1) != '_') {
+						buffer.append('_');
+					}
+				}
+			}
 			final String filtered = buffer.toString();
 
 			int counter = 1;
