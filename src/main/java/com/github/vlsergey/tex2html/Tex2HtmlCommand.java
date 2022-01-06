@@ -1,12 +1,14 @@
 package com.github.vlsergey.tex2html;
 
 import static com.github.vlsergey.tex2html.utils.DomUtils.writeAsXmlString;
+import static org.apache.commons.io.FileUtils.forceMkdir;
 
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.List;
 import java.util.concurrent.Callable;
 
+import javax.annotation.Nullable;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.TransformerException;
 
@@ -56,13 +58,25 @@ public class Tex2HtmlCommand implements Callable<Integer> {
 	@Autowired
 	private @NonNull List<OutputFormatter> outputFormatters;
 
+	@Option(names = "--temp-images-folder", description = "Folder for temporary images. "
+			+ "Can be used as rendered images cache between runs. "
+			+ "Temporary folder will be used (and deleted) if not specified.", required = false)
+	@Setter(AccessLevel.PACKAGE)
+	private @Nullable File tempImagesFolder;
+
 	@Autowired
 	private @NonNull List<TexXmlProcessor> texXmlProcessors;
 
 	@Override
 	@SneakyThrows
 	public Integer call() {
-		FileUtils.withTemporaryFolder("tex2html-", "-images", this::callImpl);
+		final File tempImagesFolder = this.tempImagesFolder;
+		if (tempImagesFolder != null) {
+			forceMkdir(tempImagesFolder);
+			this.callImpl(tempImagesFolder);
+		} else {
+			FileUtils.withTemporaryFolder("tex2html-", "-images", this::callImpl);
+		}
 		return 0;
 	}
 
