@@ -21,8 +21,25 @@ div.mathjax {
   padding-top: .5em;
   padding-bottom: .5em;
 }
+
 span.nonbreaking-interword-space {
   white-space: nowrap;
+}
+
+div.toc-item-h2 {
+  padding-left: 2em;
+}
+div.toc-item-h3 {
+  padding-left: 4em;
+}
+div.toc-item-h4 {
+  padding-left: 6em;
+}
+div.toc-item-h5 {
+  padding-left: 8em;
+}
+div.toc-item-h6 {
+  padding-left: 10em;
 }
 ]]></xsl:text>
         </style>
@@ -57,6 +74,23 @@ window.MathJax = {
       <script src="https://polyfill.io/v3/polyfill.min.js?features=es6" />
       <script id="MathJax-script" async="yes" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js" />
     </body>
+  </xsl:template>
+
+  <xsl:template match="table-of-contents">
+    <h1>
+      <xsl:value-of select="@localized-label" />
+    </h1>
+    <xsl:for-each select="/html/body//*[name()='h1' or name()='h2' or name()='h3' or name()='h4']">
+      <div class="toc-item-{name()}">
+        <a>
+          <xsl:attribute name="href">
+            <xsl:text>#</xsl:text>
+            <xsl:value-of select="@id" />
+          </xsl:attribute>
+          <xsl:apply-templates select="./node()" />
+        </a>
+      </div>
+    </xsl:for-each>
   </xsl:template>
 
   <xsl:template match="tex-formula-block">

@@ -4,10 +4,19 @@ import static java.util.Collections.emptyList;
 import static java.util.Collections.singletonList;
 import static java.util.stream.Collectors.toList;
 
+import java.io.StringWriter;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Stream;
+
+import javax.xml.transform.OutputKeys;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerException;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
 
 import org.apache.commons.lang3.StringUtils;
 import org.w3c.dom.Element;
@@ -161,6 +170,18 @@ public class DomUtils {
 				i--;
 			}
 		}
+	}
+
+	public static String writeAsXmlString(final @NonNull Node doc, final boolean indent) throws TransformerException {
+		Transformer transformer = TransformerFactory.newInstance().newTransformer();
+		transformer.setOutputProperty(OutputKeys.ENCODING, StandardCharsets.UTF_8.name());
+		transformer.setOutputProperty(OutputKeys.INDENT, indent ? "yes" : "no");
+		transformer.setOutputProperty(OutputKeys.METHOD, "xml");
+
+		final StringWriter writer = new StringWriter();
+		StreamResult streamResult = new StreamResult(writer);
+		transformer.transform(new DOMSource(doc), streamResult);
+		return writer.getBuffer().toString();
 	}
 
 }

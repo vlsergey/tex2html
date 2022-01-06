@@ -31,6 +31,7 @@ import org.w3c.dom.Document;
 import com.github.vlsergey.tex2html.grammar.LatexLexer;
 import com.github.vlsergey.tex2html.grammar.LatexParser;
 import com.github.vlsergey.tex2html.grammar.LatexParser.ContentContext;
+import com.github.vlsergey.tex2html.output.OutputFormat;
 
 import lombok.NonNull;
 
@@ -38,6 +39,7 @@ import lombok.NonNull;
 class MainTest {
 
 	@Configuration
+	@ComponentScan("com.github.vlsergey.tex2html.output")
 	@ComponentScan("com.github.vlsergey.tex2html.processors")
 	@EnableConfigurationProperties
 	public static class TestConfiguration {
@@ -62,8 +64,9 @@ class MainTest {
 				FileUtils.writeStringToFile(in, src, StandardCharsets.UTF_8);
 
 				tex2HtmlCommand.setIn(in);
-				tex2HtmlCommand.setOut(out);
+				tex2HtmlCommand.setFormat(new OutputFormat[] { OutputFormat.INTERMEDIATE });
 				tex2HtmlCommand.setIndent(true);
+				tex2HtmlCommand.setOut(out);
 				tex2HtmlCommand.call();
 
 				String actual = FileUtils.readFileToString(out, StandardCharsets.UTF_8).replace("\r\n", "\n").trim();

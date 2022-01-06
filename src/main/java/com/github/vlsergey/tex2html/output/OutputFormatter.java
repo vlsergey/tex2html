@@ -4,7 +4,6 @@ import java.io.File;
 
 import org.w3c.dom.Document;
 
-import com.github.vlsergey.tex2html.OutputFormat;
 import com.github.vlsergey.tex2html.Tex2HtmlOptions;
 
 import lombok.NonNull;

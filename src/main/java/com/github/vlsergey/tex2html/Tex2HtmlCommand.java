@@ -1,5 +1,7 @@
 package com.github.vlsergey.tex2html;
 
+import static com.github.vlsergey.tex2html.utils.DomUtils.writeAsXmlString;
+
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.List;
@@ -13,10 +15,10 @@ import org.springframework.stereotype.Component;
 import org.w3c.dom.Document;
 
 import com.github.vlsergey.tex2html.frames.TexFile;
+import com.github.vlsergey.tex2html.output.OutputFormat;
 import com.github.vlsergey.tex2html.output.OutputFormatter;
 import com.github.vlsergey.tex2html.processors.TexXmlProcessor;
 import com.github.vlsergey.tex2html.utils.FileUtils;
-import com.github.vlsergey.tex2html.utils.XmlUtils;
 
 import lombok.AccessLevel;
 import lombok.NonNull;
@@ -76,7 +78,7 @@ public class Tex2HtmlCommand implements Callable<Integer> {
 
 		Document doc = xmlWriter.getDoc();
 		if (this.debugXml) {
-			log.info("XML after parsing TEX before all processors:\n{}", XmlUtils.writeAsXmlString(doc, this.indent));
+			log.info("XML after parsing TEX before all processors:\n{}", writeAsXmlString(doc, this.indent));
 		}
 
 		for (TexXmlProcessor texXmlProcessor : texXmlProcessors) {
@@ -84,7 +86,7 @@ public class Tex2HtmlCommand implements Callable<Integer> {
 
 			if (this.debugXml) {
 				log.info("XML after parsing TEX after {} processor:\n{}", texXmlProcessor,
-						XmlUtils.writeAsXmlString(doc, this.indent));
+						writeAsXmlString(doc, this.indent));
 			}
 		}
 

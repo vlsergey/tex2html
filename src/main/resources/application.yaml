@@ -11,14 +11,17 @@ app:
         section: Abschnitt
         figure: Figur
         table: Tabelle
+        tableofcontents: Inhaltsverzeichnis
       russian:
         chapter: Глава
         section: Раздел
         figure: Рис.
         table: Таблица
+        tableofcontents: Оглавление
       english:
         chapter: Chapter
         section: Section
         figure: Fig.
         table: Table
+        tableofcontents: Table of Contents
 #logging.level.com.github.vlsergey: DEBUG

@@ -171,6 +171,21 @@
     </figure>
   </xsl:template>
 
+  <xsl:template match="command[@name='tableofcontents']">
+    <table-of-contents>
+      <xsl:attribute name="localized-label">
+      <xsl:choose>
+        <xsl:when test="@localized-label">
+          <xsl:value-of select="@localized-label" />
+        </xsl:when>
+        <xsl:otherwise>
+          <xsl:text>Table of Contents</xsl:text>
+        </xsl:otherwise>
+      </xsl:choose>
+      </xsl:attribute>
+    </table-of-contents>
+  </xsl:template>
+
   <xsl:template match="command[@name='textbf']">
     <b>
       <xsl:apply-templates select="./argument[@required='true']/node()" />
