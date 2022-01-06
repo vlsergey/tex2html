@@ -2,7 +2,6 @@ package com.github.vlsergey.tex2html.utils;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.function.BiConsumer;
 
 import lombok.NonNull;
 import lombok.experimental.UtilityClass;
@@ -11,7 +10,8 @@ import lombok.experimental.UtilityClass;
 public class StreamUtils {
 
 	@NonNull
-	public static <T> List<List<T>> group(final @NonNull BiConsumer<List<T>, Runnable> nextGroupAndFlush) {
+	public static <T, E extends Throwable> List<List<T>> group(
+			final @NonNull ThrowingBiConsumer<List<T>, Runnable, E> nextGroupAndFlush) throws E {
 		final List<T> nextGroup = new ArrayList<>();
 		final List<List<T>> grouped = new ArrayList<>();
 		final Runnable flush = () -> {

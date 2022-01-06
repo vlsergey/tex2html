@@ -15,8 +15,10 @@ import javax.xml.transform.OutputKeys;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.dom.DOMResult;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
+import javax.xml.transform.stream.StreamSource;
 
 import org.apache.commons.lang3.StringUtils;
 import org.w3c.dom.Element;
@@ -24,7 +26,10 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.w3c.dom.Text;
 
+import com.github.vlsergey.tex2html.XmlWriter;
+
 import lombok.NonNull;
+import lombok.SneakyThrows;
 
 public class DomUtils {
 
@@ -115,6 +120,23 @@ public class DomUtils {
 	@NonNull
 	public static Stream<Node> stream(final @NonNull NodeList nodeList) {
 		return Stream.iterate(0, i -> i + 1).limit(nodeList.getLength()).map(nodeList::item);
+	}
+
+	@NonNull
+	@SneakyThrows
+	public static <T extends Node> T transform(final @NonNull T src, final @NonNull String classPathResourcePath) {
+		final @NonNull Transformer transformer = TransformerFactory.newInstance()
+				.newTransformer(new StreamSource(XmlWriter.class.getResourceAsStream(classPathResourcePath)));
+		return transform(src, transformer);
+	}
+
+	@NonNull
+	@SneakyThrows
+	@SuppressWarnings("unchecked")
+	public static <T extends Node> T transform(final @NonNull T src, final @NonNull Transformer transformer) {
+		final @NonNull DOMResult domResult = new DOMResult();
+		transformer.transform(new DOMSource(src), domResult);
+		return (T) domResult.getNode();
 	}
 
 	@NonNull

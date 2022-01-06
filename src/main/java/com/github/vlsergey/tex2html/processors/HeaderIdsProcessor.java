@@ -12,14 +12,13 @@ import org.w3c.dom.Node;
 
 import com.github.vlsergey.tex2html.Tex2HtmlOptions;
 import com.github.vlsergey.tex2html.utils.DomUtils;
+import com.github.vlsergey.tex2html.utils.HtmlUtils;
 
 import lombok.NonNull;
 
 @Component
 @Order(2000)
 public class HeaderIdsProcessor implements TexXmlProcessor {
-
-	private static final String[] HEADERS = { "h1", "h2", "h3", "h4", "h5", "h6" };
 
 	@Override
 	public @NonNull Document process(final @NonNull Tex2HtmlOptions options, final @NonNull Document xmlDoc) {
@@ -28,7 +27,8 @@ public class HeaderIdsProcessor implements TexXmlProcessor {
 
 		DomUtils.visit(xmlDoc, node -> {
 
-			if (node.getNodeType() != Node.ELEMENT_NODE || !StringUtils.equalsAnyIgnoreCase(node.getNodeName(), HEADERS)
+			if (node.getNodeType() != Node.ELEMENT_NODE
+					|| !StringUtils.equalsAnyIgnoreCase(node.getNodeName(), HtmlUtils.HEADERS)
 					|| StringUtils.isNotBlank(((Element) node).getAttribute("id"))) {
 				return true;
 			}

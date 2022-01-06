@@ -11,6 +11,8 @@ public enum OutputFormat {
 
 	SINGLE_HTML("singlehtml"),
 
+	WEBSITE("website"),
+
 	;
 
 	private final String defaultChildFileName;
