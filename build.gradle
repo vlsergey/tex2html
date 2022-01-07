@@ -67,6 +67,7 @@ sourceSets.main.java.srcDir "build/generated-src/antlr/"
 
 test {
 	useJUnitPlatform()
+	systemProperty "file.encoding", "utf-8"
 	testLogging {
 		events "passed", "skipped", "failed"
 	}
