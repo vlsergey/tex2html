@@ -40,12 +40,14 @@ jobs:
 
     - name: Grant execute permission for gradlew
       run: chmod +x gradlew
+
     - name: Release new version
       run: ./gradlew release -Prelease.useAutomaticVersion=true -Prelease.releaseVersion=${{github.event.inputs.releaseVersion}}
-    - name: Publish
-      run: ./gradlew publish
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+    - name: Attach release artifact
+      uses: softprops/action-gh-release@v1
+      with:
+        files: build/libs/*.jar
 
     - name: Cleanup Gradle Cache
       # Remove some files from the Gradle cache, so they aren't cached by GitHub Actions.
