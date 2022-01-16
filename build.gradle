@@ -74,6 +74,30 @@ test {
 	}
 }
 
+java {
+	withSourcesJar()
+}
+
+bootJar {
+	classifier = 'application'
+	enabled = true
+	launchScript()
+}
+
+jar {
+	classifier = ''
+	enabled = true
+}
+
+publishing {
+	publications {
+		publication(MavenPublication) {
+			artifact bootJar
+			from components.java
+		}
+	}
+}
+
 //task regenerateReadme {
 //	doLast {
 //		def releaseVersion = project.property('release.releaseVersion');
