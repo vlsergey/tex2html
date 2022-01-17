@@ -162,6 +162,8 @@
     </a>
   </xsl:template>
 
+  <xsl:template match="command[@name='markboth']" />
+
   <xsl:template match="command[@name='multicols']">
     <multi-columns columns-count="{argument[@required='true'][2]/text()}">
       <xsl:apply-templates select="content/node()" />
@@ -171,6 +173,8 @@
   <xsl:template match="command[@name='No']">
     <xsl:text>№</xsl:text>
   </xsl:template>
+
+  <xsl:template match="command[@name='pagestyle']" />
 
   <xsl:template match="command[@name='quote']">
     <blockquote>
@@ -196,6 +200,11 @@
   <xsl:template match="command[@name='resizebox']">
     <!-- resizebox is not supported so far -->
     <xsl:apply-templates select="argument[@required='true'][3]/node()" />
+  </xsl:template>
+
+  <xsl:template match="command[@name='sloppy' or @name='usepackage']" />
+  <xsl:template match="command[@name='sloppypar']">
+    <xsl:apply-templates select="content/node()" />
   </xsl:template>
 
   <xsl:template match="command[@name='subcaptionbox'][./argument[@required='true'][2]/include-graphics]">
@@ -262,10 +271,7 @@
     </tiny>
   </xsl:template>
 
-  <xsl:template match="command[@name='sloppy' or @name='usepackage']" />
-  <xsl:template match="command[@name='sloppypar']">
-    <xsl:apply-templates select="content/node()" />
-  </xsl:template>
+  <xsl:template match="command[@name='thispagestyle']" />
 
   <xsl:key name="printbibliography" match="//printbibliography/*" use="@name" />
   <xsl:template match="cite">
