@@ -210,6 +210,12 @@
     </tt>
   </xsl:template>
 
+  <xsl:template match="command[@name='tiny']">
+    <tiny>
+      <xsl:apply-templates select="content/node()" />
+    </tiny>
+  </xsl:template>
+
   <xsl:template match="command[@name='sloppy' or @name='usepackage']" />
   <xsl:template match="command[@name='sloppypar']">
     <xsl:apply-templates select="content/node()" />

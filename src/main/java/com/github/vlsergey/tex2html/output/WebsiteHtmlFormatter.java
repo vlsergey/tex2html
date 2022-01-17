@@ -131,6 +131,7 @@ public class WebsiteHtmlFormatter implements OutputFormatter {
 			bootstrap.setParameter("nextPartTitle", i == partKeys.length - 1 ? Boolean.FALSE : partKeys[i + 1]);
 			toWrite = DomUtils.transform(toWrite, bootstrap);
 
+			toWrite = DomUtils.transform(toWrite, "/format-to-html.xslt");
 			toWrite = DomUtils.transform(toWrite, "/mathjax.xslt");
 
 			toHtml.transform(new DOMSource(toWrite), new StreamResult(new File(outputFolder, partKey + ".html")));

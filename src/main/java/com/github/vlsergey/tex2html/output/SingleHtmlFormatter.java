@@ -46,6 +46,7 @@ public class SingleHtmlFormatter implements OutputFormatter {
 
 		HtmlUtils.replaceImagesWithLocalOnes(newDoc, imagesFolder);
 
+		newDoc = DomUtils.transform(newDoc, "/format-to-html.xslt");
 		newDoc = DomUtils.transform(newDoc, "/generate-toc.xslt");
 		newDoc = DomUtils.transform(newDoc, "/mathjax.xslt");
 		newDoc = DomUtils.transform(newDoc, "/bootstrap.xslt");
