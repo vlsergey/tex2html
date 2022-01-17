@@ -28,7 +28,8 @@ public class HeaderIdsProcessor implements TexXmlProcessor {
 		DomUtils.visit(xmlDoc, node -> {
 
 			if (node.getNodeType() != Node.ELEMENT_NODE
-					|| !StringUtils.equalsAnyIgnoreCase(node.getNodeName(), HtmlUtils.HEADERS)
+					|| !(StringUtils.equalsAnyIgnoreCase(node.getNodeName(), HtmlUtils.HEADERS)
+							|| node.getNodeName().equals("add-contents-line"))
 					|| StringUtils.isNotBlank(((Element) node).getAttribute("id"))) {
 				return true;
 			}
@@ -50,6 +51,7 @@ public class HeaderIdsProcessor implements TexXmlProcessor {
 			while (already.contains(candidate)) {
 				candidate = candidate + (counter++);
 			}
+			already.add(candidate);
 
 			((Element) node).setAttribute("id", candidate);
 			return false;

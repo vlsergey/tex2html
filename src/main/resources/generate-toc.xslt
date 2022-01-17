@@ -29,20 +29,34 @@ div.toc-item-h6 {
     </head>
   </xsl:template>
 
+  <xsl:template match="add-contents-line">
+    <a name="{@id}" />
+  </xsl:template>
+
   <xsl:template match="table-of-contents">
     <h1 id="table-of-contents">
       <xsl:value-of select="@localized-label" />
     </h1>
-    <xsl:for-each select="/html/body//*[name()='h1' or name()='h2' or name()='h3' or name()='h4']">
-      <div class="toc-item-{name()}">
-        <a>
-          <xsl:attribute name="href">
-            <xsl:text>#</xsl:text>
-            <xsl:value-of select="@id" />
-          </xsl:attribute>
-          <xsl:apply-templates select="./node()" />
-        </a>
-      </div>
+    <xsl:for-each
+      select="/html/body//*[name()='h1' or name()='h2' or name()='h3' or name()='h4' or name()='add-contents-line'][@data-command-name != 'chapter*']">
+      <xsl:choose>
+        <xsl:when test="name()='add-contents-line'">
+          <div class="toc-item-h{@level}">
+            <a>
+              <xsl:attribute name="href"><xsl:text>#</xsl:text><xsl:value-of select="@id" /></xsl:attribute>
+              <xsl:apply-templates select="./node()" />
+            </a>
+          </div>
+        </xsl:when>
+        <xsl:otherwise>
+          <div class="toc-item-{name()}">
+            <a>
+              <xsl:attribute name="href"><xsl:text>#</xsl:text><xsl:value-of select="@id" /></xsl:attribute>
+              <xsl:apply-templates select="./node()" />
+            </a>
+          </div>
+        </xsl:otherwise>
+      </xsl:choose>
     </xsl:for-each>
   </xsl:template>
 

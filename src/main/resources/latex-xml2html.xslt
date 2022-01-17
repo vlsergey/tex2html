@@ -30,8 +30,32 @@
     </body>
   </xsl:template>
 
+  <xsl:template match="command[@name='addcontentsline']">
+    <add-contents-line data-command-name="{@name}" type="{./argument[@required='true'][1]/node()}">
+      <xsl:variable name="level" select="./argument[@required='true'][2]/text()" />
+      <xsl:choose>
+        <xsl:when test="$level='chapter'">
+          <xsl:attribute name="level">1</xsl:attribute>
+        </xsl:when>
+        <xsl:when test="$level='section'">
+          <xsl:attribute name="level">2</xsl:attribute>
+        </xsl:when>
+        <xsl:when test="$level='subsection'">
+          <xsl:attribute name="level">3</xsl:attribute>
+        </xsl:when>
+        <xsl:when test="$level='subsubsection'">
+          <xsl:attribute name="level">4</xsl:attribute>
+        </xsl:when>
+        <xsl:otherwise>
+          <xsl:attribute name="level"><xsl:value-of select="$level" /></xsl:attribute>
+        </xsl:otherwise>
+      </xsl:choose>
+      <xsl:apply-templates select="./argument[@required='true'][3]/node()" />
+    </add-contents-line>
+  </xsl:template>
+
   <xsl:template match="command[@name='chapter']">
-    <h1>
+    <h1 data-command-name="{@name}">
       <xsl:if test="@language-code">
         <xsl:attribute name="lang"><xsl:value-of select="@language-code" /></xsl:attribute>
       </xsl:if>
@@ -41,7 +65,7 @@
   </xsl:template>
 
   <xsl:template match="command[@name='chapter*']">
-    <h1>
+    <h1 data-command-name="{@name}">
       <xsl:if test="@language-code">
         <xsl:attribute name="lang"><xsl:value-of select="@language-code" /></xsl:attribute>
       </xsl:if>
@@ -50,17 +74,18 @@
   </xsl:template>
 
   <xsl:template match="command[@name='section']">
-    <h2>
+    <h2 data-command-name="{@name}">
       <xsl:apply-templates select="." mode="section-header-content" />
     </h2>
   </xsl:template>
+
   <xsl:template match="command[@name='subsection']">
-    <h3>
+    <h3 data-command-name="{@name}">
       <xsl:apply-templates select="." mode="section-header-content" />
     </h3>
   </xsl:template>
   <xsl:template match="command[@name='subsubsection']">
-    <h4>
+    <h4 data-command-name="{@name}">
       <xsl:apply-templates select="./argument[@required='true']/node()" />
     </h4>
   </xsl:template>
