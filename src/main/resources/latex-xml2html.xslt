@@ -40,6 +40,15 @@
     </h1>
   </xsl:template>
 
+  <xsl:template match="command[@name='chapter*']">
+    <h1>
+      <xsl:if test="@language-code">
+        <xsl:attribute name="lang"><xsl:value-of select="@language-code" /></xsl:attribute>
+      </xsl:if>
+      <xsl:apply-templates select="./argument[@required='true']/node()" />
+    </h1>
+  </xsl:template>
+
   <xsl:template match="command[@name='section']">
     <h2>
       <xsl:apply-templates select="." mode="section-header-content" />

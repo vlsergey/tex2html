@@ -14,6 +14,7 @@ import com.github.vlsergey.tex2html.Tex2HtmlOptions;
 import com.github.vlsergey.tex2html.utils.DomUtils;
 import com.github.vlsergey.tex2html.utils.TexXmlUtils;
 
+import lombok.NonNull;
 import lombok.SneakyThrows;
 
 @Component
@@ -22,11 +23,12 @@ public class NumerationProcessor implements TexXmlProcessor {
 
 	private final XPathFactory xPathFactory = XPathFactory.newInstance();
 
+	@NonNull
 	@Override
 	@SneakyThrows
-	public Document process(Tex2HtmlOptions command, Document xmlDoc) {
-		final boolean haveChapters = (Boolean) xPathFactory.newXPath().evaluate("count(//command[@name='chapter']) > 0",
-				xmlDoc, XPathConstants.BOOLEAN);
+	public Document process(final @NonNull Tex2HtmlOptions command, final @NonNull Document xmlDoc) {
+		final boolean haveChapters = (Boolean) xPathFactory.newXPath()
+				.evaluate("count(//command[@name='chapter' or @name='chapter*']) > 0", xmlDoc, XPathConstants.BOOLEAN);
 		final MutableInt chapterCounter = new MutableInt(0);
 		final MutableInt sectionCounter = new MutableInt(0);
 		final MutableInt subsectionCounter = new MutableInt(0);
@@ -55,6 +57,11 @@ public class NumerationProcessor implements TexXmlProcessor {
 				chapter.setAttribute("chapter-index", chapterCounter.toString());
 				chapter.setAttribute("level", "0");
 				chapter.setAttribute("index", chapterCounter.toString());
+			}
+
+			if (TexXmlUtils.isCommandElement(node, "chapter*")) {
+				final Element chapter = (Element) node;
+				chapter.setAttribute("level", "0");
 			}
 
 			if (TexXmlUtils.isCommandElement(node, "section")) {

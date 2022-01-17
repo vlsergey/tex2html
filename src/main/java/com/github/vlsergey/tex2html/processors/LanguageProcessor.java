@@ -17,6 +17,7 @@ import com.github.vlsergey.tex2html.Tex2HtmlOptions;
 import com.github.vlsergey.tex2html.utils.TexXmlUtils;
 
 import lombok.Getter;
+import lombok.NonNull;
 import lombok.Setter;
 
 @Component
@@ -60,8 +61,9 @@ public class LanguageProcessor implements TexXmlProcessor {
 		return Optional.empty();
 	}
 
+	@NonNull
 	@Override
-	public Document process(Tex2HtmlOptions options, Document xmlDoc) {
+	public Document process(final @NonNull Tex2HtmlOptions options, final @NonNull Document xmlDoc) {
 		TexXmlUtils.visitCommandNodes(xmlDoc, "selectlanguage", command -> {
 			final String language = TexXmlUtils.findRequiredArgument(command, 1);
 			if (StringUtils.isNotBlank(language)) {
@@ -84,11 +86,15 @@ public class LanguageProcessor implements TexXmlProcessor {
 								|| "tableofcontents".equals(((Element) node).getAttribute("name"))),
 				node -> {
 					final Element command = (Element) node;
-					final String language = findLanguage(command).orElse(fallback);
-					final Map<String, String> localizedLabels = this.langToLabels.getOrDefault(language, emptyMap());
 					final String commandName = command.getAttribute("name");
-					final String label = localizedLabels.getOrDefault(commandName, StringUtils.capitalize(commandName));
-					command.setAttribute("localized-label", label);
+					if (!"chapter*".equals(command)) {
+						final String language = findLanguage(command).orElse(fallback);
+						final Map<String, String> localizedLabels = this.langToLabels.getOrDefault(language,
+								emptyMap());
+						final String label = localizedLabels.getOrDefault(commandName,
+								StringUtils.capitalize(commandName));
+						command.setAttribute("localized-label", label);
+					}
 				});
 
 		return xmlDoc;
