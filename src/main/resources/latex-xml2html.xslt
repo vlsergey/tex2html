@@ -162,6 +162,12 @@
     </a>
   </xsl:template>
 
+  <xsl:template match="command[@name='multicols']">
+    <multi-columns columns-count="{argument[@required='true'][2]/text()}">
+      <xsl:apply-templates select="content/node()" />
+    </multi-columns>
+  </xsl:template>
+
   <xsl:template match="command[@name='No']">
     <xsl:text>№</xsl:text>
   </xsl:template>

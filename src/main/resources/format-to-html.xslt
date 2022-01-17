@@ -6,12 +6,6 @@
     </xsl:copy>
   </xsl:template>
 
-  <xsl:template match="tiny">
-    <span class="tiny">
-      <xsl:apply-templates select="@*|node()" />
-    </span>
-  </xsl:template>
-
   <xsl:template match="/html/head">
     <head>
       <xsl:apply-templates select="@*|node()" />
@@ -22,5 +16,19 @@ span.tiny {
 ]]></style>
     </head>
   </xsl:template>
+
+  <xsl:template match="multi-columns">
+    <div style="column-count: {@columns-count}">
+      <xsl:apply-templates select="node()" />
+    </div>
+  </xsl:template>
+
+
+  <xsl:template match="tiny">
+    <span class="tiny">
+      <xsl:apply-templates select="@*|node()" />
+    </span>
+  </xsl:template>
+
 
 </xsl:stylesheet>
