@@ -207,6 +207,12 @@
     <xsl:apply-templates select="content/node()" />
   </xsl:template>
 
+  <xsl:template match="command[@name='small']">
+    <small>
+      <xsl:apply-templates select="content/node()" />
+    </small>
+  </xsl:template>
+
   <xsl:template match="command[@name='subcaptionbox'][./argument[@required='true'][2]/include-graphics]">
     <figure>
       <xsl:attribute name="style">

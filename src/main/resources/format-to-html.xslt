@@ -10,6 +10,9 @@
     <head>
       <xsl:apply-templates select="@*|node()" />
       <style type="text/css"><![CDATA[ 
+span.small {
+  font-size: 90%
+}
 span.tiny {
   font-size: 50%
 }
@@ -23,12 +26,16 @@ span.tiny {
     </div>
   </xsl:template>
 
+  <xsl:template match="small">
+    <span class="small">
+      <xsl:apply-templates select="@*|node()" />
+    </span>
+  </xsl:template>
 
   <xsl:template match="tiny">
     <span class="tiny">
       <xsl:apply-templates select="@*|node()" />
     </span>
   </xsl:template>
-
 
 </xsl:stylesheet>
