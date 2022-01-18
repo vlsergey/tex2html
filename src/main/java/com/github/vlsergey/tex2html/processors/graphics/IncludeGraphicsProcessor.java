@@ -24,6 +24,7 @@ import com.github.vlsergey.tex2html.grammar.AttributesLexer;
 import com.github.vlsergey.tex2html.grammar.AttributesParser;
 import com.github.vlsergey.tex2html.grammar.AttributesParser.AttributeContext;
 import com.github.vlsergey.tex2html.grammar.AttributesParser.AttributesContext;
+import com.github.vlsergey.tex2html.grammar.AttributesParser.TextWidthContext;
 import com.github.vlsergey.tex2html.grammar.AttributesParser.TextWidthRelativeContext;
 import com.github.vlsergey.tex2html.processors.TexXmlProcessor;
 import com.github.vlsergey.tex2html.utils.AntlrUtils;
@@ -60,6 +61,10 @@ public class IncludeGraphicsProcessor implements TexXmlProcessor {
 		}
 
 		final ParseTree child = attrValue.getChild(0);
+
+		if (child instanceof TextWidthContext) {
+			return "100%";
+		}
 
 		if (child instanceof TextWidthRelativeContext) {
 			BigDecimal number = new BigDecimal(((TextWidthRelativeContext) child).number().getText());

@@ -11,11 +11,14 @@ options {
 attributes
 	: (attribute (COMMA attribute )* )? ;
 attribute	: name EQUALS value ;
-name		: ALPHA				;
-value		: textWidthRelative ;
+name		: ALPHA ;
+value		: textWidth | textWidthRelative ;
 
 number
 	: NUMERIC | ( NUMERIC DOT NUMERIC ) | ( DOT NUMERIC ) | ( NUMERIC DOT )
 	;
+
+textWidth	: TEXTWIDTH ;
+
 textWidthRelative	: number TEXTWIDTH ; 
 
