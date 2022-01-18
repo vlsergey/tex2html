@@ -38,8 +38,12 @@ div.toc-item-h6 {
       <xsl:value-of select="@localized-label" />
     </h1>
     <xsl:for-each
-      select="/html/body//*[name()='h1' or name()='h2' or name()='h3' or name()='h4' or name()='add-contents-line'][@data-command-name != 'chapter*']">
+      select="/html/body//*[name()='h1' or name()='h2' or name()='h3' or name()='h4' or name()='add-contents-line']">
       <xsl:choose>
+        <xsl:when test="@data-command-name = 'chapter*'" />
+        <xsl:when test="@data-command-name = 'section*'" />
+        <xsl:when test="@data-command-name = 'subsection*'" />
+        <xsl:when test="@data-command-name = 'subsubsection*'" />
         <xsl:when test="name()='add-contents-line'">
           <div class="toc-item-h{@level}">
             <a>

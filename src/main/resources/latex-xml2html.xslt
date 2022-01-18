@@ -79,6 +79,12 @@
     </h2>
   </xsl:template>
 
+  <xsl:template match="command[@name='section*']">
+    <h2 data-command-name="{@name}">
+      <xsl:apply-templates select="./argument[@required='true']/node()" />
+    </h2>
+  </xsl:template>
+
   <xsl:template match="command[@name='subsection']">
     <h3 data-command-name="{@name}">
       <xsl:apply-templates select="." mode="section-header-content" />

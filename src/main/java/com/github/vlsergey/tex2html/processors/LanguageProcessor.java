@@ -87,7 +87,7 @@ public class LanguageProcessor implements TexXmlProcessor {
 				node -> {
 					final Element command = (Element) node;
 					final String commandName = command.getAttribute("name");
-					if (!"chapter*".equals(command)) {
+					if (!commandName.endsWith("*")) {
 						final String language = findLanguage(command).orElse(fallback);
 						final Map<String, String> localizedLabels = this.langToLabels.getOrDefault(language,
 								emptyMap());

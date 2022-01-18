@@ -25,7 +25,8 @@ import lombok.extern.slf4j.Slf4j;
 public class TexXmlUtils {
 
 	public static final String[] STRUCTURAL_COMMANDS = { "document", "part", "chapter", "chapter*", "section",
-			"subsection", "subsubsection", "paragraph", "subparagraph" };
+			"section*", "subsection", "subsection*", "subsubsection", "subsubsection*", "paragraph", "paragraph*",
+			"subparagraph", "subparagraph*" };
 
 	public static final Set<String> STRUCTURAL_COMMANDS_SET = unmodifiableSet(
 			new LinkedHashSet<>(Arrays.asList(STRUCTURAL_COMMANDS)));
