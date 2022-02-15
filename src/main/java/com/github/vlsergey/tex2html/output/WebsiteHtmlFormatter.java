@@ -3,10 +3,14 @@ package com.github.vlsergey.tex2html.output;
 import static org.apache.commons.io.FileUtils.forceMkdir;
 
 import java.io.File;
+import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.function.Supplier;
 
+import javax.annotation.Nullable;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerFactory;
@@ -16,6 +20,8 @@ import javax.xml.transform.stream.StreamSource;
 import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathFactory;
 
+import org.apache.commons.lang3.ArrayUtils;
+import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
 import org.w3c.dom.Document;
@@ -28,6 +34,7 @@ import com.github.vlsergey.tex2html.XmlWriter;
 import com.github.vlsergey.tex2html.utils.DomUtils;
 import com.github.vlsergey.tex2html.utils.HtmlUtils;
 import com.github.vlsergey.tex2html.utils.StreamUtils;
+import com.github.vlsergey.tex2html.utils.TranslitirateRu;
 
 import lombok.NonNull;
 import lombok.SneakyThrows;
@@ -100,10 +107,15 @@ public class WebsiteHtmlFormatter implements OutputFormatter {
 
 		Map<@NonNull String, @NonNull Document> parts = new LinkedHashMap<>();
 		splitted.forEach(group -> {
+			final @NonNull Document part = toNewHtml(singleHtml, group);
+			final @Nullable String partTitle = getPartTitle(part);
+
 			if (parts.isEmpty()) {
-				parts.put("index", toNewHtml(singleHtml, group));
+				parts.put("index", part);
 			} else {
-				parts.put("part" + parts.size(), toNewHtml(singleHtml, group));
+				final @NonNull String partFileName = generateFileName(parts.keySet(), partTitle,
+						() -> ("part_" + (parts.size() + 1)));
+				parts.put(partFileName, part);
 			}
 		});
 
@@ -135,6 +147,33 @@ public class WebsiteHtmlFormatter implements OutputFormatter {
 
 			toHtml.transform(new DOMSource(toWrite), new StreamResult(new File(outputFolder, partKey + ".html")));
 		}
+	}
+
+	@NonNull
+	private String generateFileName(final Set<@NonNull String> alreadyUsed, final @Nullable String partTitle,
+			final @NonNull Supplier<@NonNull String> defaultTitle) {
+		if (partTitle == null || partTitle.isBlank()) {
+			return defaultTitle.get();
+		}
+
+		String translitirated = TranslitirateRu.transliterate(partTitle);
+		if (translitirated.matches("^[0-9_]*$")) {
+			return defaultTitle.get();
+		}
+
+		String candidate = translitirated;
+		int counter = 1;
+		while (alreadyUsed.contains(candidate)) {
+			candidate = translitirated + "_" + (++counter);
+		}
+		return candidate;
+	}
+
+	@Nullable
+	@SneakyThrows
+	private String getPartTitle(final Document part) {
+		return xPathFactory.newXPath().evaluateExpression("//*[name()='h1' or name()='h2']//text()", part,
+				String.class);
 	}
 
 	@NonNull
